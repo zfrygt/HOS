@@ -1,6 +1,7 @@
 # HOS: Home Operating System
 
 [![Build Status](https://travis-ci.org/tmguvenc/HOS.svg?branch=master)](https://travis-ci.org/tmguvenc/HOS.svg?branch=master)
+
 Open source operating system for home that people can "use" as they want to. 
 
 ###Basic principles:
