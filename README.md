@@ -1,7 +1,7 @@
 # HOS: Home Operating System
 Open source operating system for home that people can "use" as they want to. 
 
-##Basic principles:
+###Basic principles:
 	* Make life easier for humans, not harder
 	* Learn by yourself and require minimum human attention
 	* Give a specific level of security for humans
