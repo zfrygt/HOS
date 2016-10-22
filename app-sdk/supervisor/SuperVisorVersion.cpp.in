@@ -1,0 +1,17 @@
+#include "SuperVisorVersion.h"
+
+char* SuperVisorVersionString(){
+	return "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_TYPE@.@VERSION_BUILD@";
+}
+int SuperVisorVersionMajor(){
+	return @VERSION_MAJOR@;
+}
+int SuperVisorVersionMinor(){
+	return @VERSION_MINOR@;
+}
+int SuperVisorVersionType(){
+	return @VERSION_TYPE@;
+}
+int SuperVisorVersionBuild(){
+	return @VERSION_BUILD@;
+}
