@@ -58,4 +58,5 @@ set(OPEN_SSL_BINS ${PROVIDEO_DEPENDS_FOLDER}/openssl-1.0.1h-vs2013/bin64)
 set(OPEN_SSL_LINK debug "libeay32MTd" optimized "libeay32MT" debug "ssleay32MTd" optimized "ssleay32MT")
 
 add_subdirectory (supervisor)
+add_subdirectory (common)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
