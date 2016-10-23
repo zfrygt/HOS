@@ -26,6 +26,7 @@ FILE(GLOB TARGET_SRC		 				"src/*.c*")
 include_directories(include/)
 include_directories(${TBB_INCLUDE})
 include_directories(${ZEROMQ_INCLUDE})
+include_directories(${CMAKE_SOURCE_DIR}/common/include)
 
 # add library directories
 link_directories(${TBB_LIBS})
@@ -37,6 +38,7 @@ add_executable(${PROJECT_NAME} ${TARGET_SRC} ${TARGET_H} ${CMAKE_CURRENT_BINARY_
 target_link_libraries(${PROJECT_NAME} ${SODIUM_LINK})
 target_link_libraries(${PROJECT_NAME} ${TBB_LINK})
 target_link_libraries(${PROJECT_NAME} ${ZEROMQ_LINK})
+target_link_libraries(${PROJECT_NAME} Common)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different

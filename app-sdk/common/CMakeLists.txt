@@ -17,6 +17,7 @@ configure_file(
 
 FILE(GLOB TARGET_H 							"include/*.h*" "src/*.h*")
 FILE(GLOB TARGET_SRC		 				"src/*.c*")
+add_definitions(-DCOMMON_EXPORTS)
 
 include_directories(include/)
 include_directories(${TBB_INCLUDE})
