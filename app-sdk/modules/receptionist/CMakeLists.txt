@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.10)
 
 # Project Name
-project(secretary)
+project(receptionist)
 
 set(VERSION_MAJOR "1" CACHE STRING "Major")
 set(VERSION_MINOR "0" CACHE STRING "Minor")
@@ -16,8 +16,8 @@ configure_file(
   @ONLY)
   
  configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/SecretaryVersion.cpp.in
-  ${CMAKE_CURRENT_BINARY_DIR}/SecretaryVersion.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ReceptionistVersion.cpp.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ReceptionistVersion.cpp
   @ONLY)
 
 FILE(GLOB TARGET_H 							"include/*.h*" "src/*.h*")
@@ -34,7 +34,7 @@ link_directories(${ZEROMQ_LIBS})
 link_directories(${SODIUM_LIBS})
 link_directories(${PROTOBUF_LIBS})
 
-add_executable(${PROJECT_NAME} ${TARGET_SRC} ${TARGET_H} ${CMAKE_CURRENT_BINARY_DIR}/version.rc ${CMAKE_CURRENT_BINARY_DIR}/SecretaryVersion.cpp)
+add_executable(${PROJECT_NAME} ${TARGET_SRC} ${TARGET_H} ${CMAKE_CURRENT_BINARY_DIR}/version.rc ${CMAKE_CURRENT_BINARY_DIR}/ReceptionistVersion.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${SODIUM_LINK})
 target_link_libraries(${PROJECT_NAME} ${TBB_LINK})
@@ -55,3 +55,5 @@ foreach(file ${ZEROMQ_DLL})
 			${file}
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 endforeach()
+
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Modules")

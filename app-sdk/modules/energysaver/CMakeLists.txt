@@ -55,3 +55,5 @@ foreach(file ${ZEROMQ_DLL})
 			${file}
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 endforeach()
+
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Modules")
