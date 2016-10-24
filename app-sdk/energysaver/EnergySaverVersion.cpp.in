@@ -1,0 +1,17 @@
+#include "EnergySaverVersion.h"
+
+char* EnergySaverVersionString(){
+	return "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_TYPE@.@VERSION_BUILD@";
+}
+int EnergySaverVersionMajor(){
+	return @VERSION_MAJOR@;
+}
+int EnergySaverVersionMinor(){
+	return @VERSION_MINOR@;
+}
+int EnergySaverVersionType(){
+	return @VERSION_TYPE@;
+}
+int EnergySaverVersionBuild(){
+	return @VERSION_BUILD@;
+}
