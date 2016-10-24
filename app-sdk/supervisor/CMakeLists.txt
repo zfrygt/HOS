@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.10)
 
 # Project Name
-project(SuperVisor)
+project(supervisor)
 
 set(VERSION_MAJOR "1" CACHE STRING "Major")
 set(VERSION_MINOR "0" CACHE STRING "Minor")
