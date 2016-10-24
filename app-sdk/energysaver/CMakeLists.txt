@@ -32,6 +32,7 @@ include_directories(${CMAKE_SOURCE_DIR}/common/include)
 link_directories(${TBB_LIBS})
 link_directories(${ZEROMQ_LIBS})
 link_directories(${SODIUM_LIBS})
+link_directories(${PROTOBUF_LIBS})
 
 add_executable(${PROJECT_NAME} ${TARGET_SRC} ${TARGET_H} ${CMAKE_CURRENT_BINARY_DIR}/version.rc ${CMAKE_CURRENT_BINARY_DIR}/EnergySaverVersion.cpp)
 
