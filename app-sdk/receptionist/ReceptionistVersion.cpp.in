@@ -1,0 +1,17 @@
+#include "ReceptionistVersion.h"
+
+char* ReceptionistVersionString(){
+	return "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_TYPE@.@VERSION_BUILD@";
+}
+int ReceptionistVersionMajor(){
+	return @VERSION_MAJOR@;
+}
+int ReceptionistVersionMinor(){
+	return @VERSION_MINOR@;
+}
+int ReceptionistVersionType(){
+	return @VERSION_TYPE@;
+}
+int ReceptionistVersionBuild(){
+	return @VERSION_BUILD@;
+}
