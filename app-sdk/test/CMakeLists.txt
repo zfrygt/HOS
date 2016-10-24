@@ -17,7 +17,7 @@ link_directories(${PROTOBUF_LIBS})
 link_libraries(common)
 link_libraries(${ZEROMQ_LINK})
 
-set(COMMON_BIN ${CMAKE_BINARY_DIR}/common/Debug)
+set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)
 
 foreach(test ${tests})
 	add_executable(${test} ${test}.cpp)
