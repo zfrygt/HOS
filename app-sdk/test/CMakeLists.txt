@@ -10,6 +10,7 @@ set(tests
 # add library and include dirs for all targets
 include_directories("../utility/common/include")
 include_directories(${ZEROMQ_INCLUDE})
+include_directories(${PROTOBUF_INCLUDE})
 link_directories(${ZEROMQ_LIBS})
 link_directories(${SODIUM_LIBS})
 link_directories(${TBB_LIBS})
