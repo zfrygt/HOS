@@ -1,37 +1,60 @@
 #include "connector.h"
 #include <zmq.h>
 #include <assert.h>
+#include <hos_protocol.pb.h>
 
-Connector::Connector(void* ctx, const std::string& uri, const std::string& module_name):
-m_context(ctx),
-m_uri(std::move(uri)),
-m_module_name(std::move(module_name)),
+#define HEARTHBEAT_INTERVAL_IN_SECONDS 5 
+#define TIMEOUT_INTERVAL_IN_SECONDS 15
+#define TIMEOUT_CHECK_INTERVAL_IN_SECONDS 2
+
+Connector::Connector(const char* uri, const char* module_name):
 m_lastSendMessageTime(-1),
 m_lastReceivedMessageTime(-1)
 {
+	memset(m_uri, 0, MAX_LEN);
+	memset(m_module_name, 0, MAX_LEN);
+
+	m_uri_len = strlen(uri);
+	assert(m_uri_len > 0);
+	m_module_name_len = strlen(module_name);
+	assert(m_module_name_len > 0);
+
+	memcpy(m_uri, uri, m_uri_len);
+	memcpy(m_module_name, module_name, m_module_name_len);
+
+	m_context = zmq_ctx_new();
+	assert(m_context != nullptr);
 	m_socket = zmq_socket(m_context, ZMQ_DEALER);
+	assert(m_socket != nullptr);
+
 	auto linger = 0;
-	zmq_setsockopt(m_socket, ZMQ_LINGER, &linger, sizeof(linger)); // close cagirildiktan sonra beklemeden socket'i kapat.
+	auto r = zmq_setsockopt(m_socket, ZMQ_LINGER, &linger, sizeof(linger)); // close cagirildiktan sonra beklemeden socket'i kapat.
 
 	std::string sp("tPw$8v!-!O}kL[5VRvT<yg&NbWolkR=eVQC5Z8X6");
-	zmq_setsockopt(m_socket, ZMQ_CURVE_SERVERKEY, sp.c_str(), sp.length());
-	zmq_setsockopt(m_socket, ZMQ_IDENTITY, m_module_name.c_str(), m_module_name.length());
+	r = zmq_setsockopt(m_socket, ZMQ_CURVE_SERVERKEY, sp.c_str(), sp.length());
+	assert(r == 0);
+	r = zmq_setsockopt(m_socket, ZMQ_IDENTITY, m_module_name, m_module_name_len);
+	assert(r == 0);
 
 	char public_key[41];
 	char secret_key[41];
 
-	zmq_curve_keypair(public_key, secret_key);
+	r = zmq_curve_keypair(public_key, secret_key);
+	assert(r == 0);
 
-	zmq_setsockopt(m_socket, ZMQ_CURVE_PUBLICKEY, public_key, sizeof(public_key));
-	zmq_setsockopt(m_socket, ZMQ_CURVE_SECRETKEY, secret_key, sizeof(secret_key));
+	r = zmq_setsockopt(m_socket, ZMQ_CURVE_PUBLICKEY, public_key, sizeof(public_key));
+	assert(r == 0);
+	r = zmq_setsockopt(m_socket, ZMQ_CURVE_SECRETKEY, secret_key, sizeof(secret_key));
+	assert(r == 0);
 
-	zmq_connect(m_socket, m_uri.c_str());
+	zmq_connect(m_socket, m_uri);
 }
 
 Connector::~Connector()
 {
-	zmq_disconnect(m_socket, m_uri.c_str());
+	zmq_disconnect(m_socket, m_uri);
 	zmq_close(m_socket);
+	zmq_ctx_destroy(m_context);
 }
 
 void Connector::start()
@@ -39,22 +62,48 @@ void Connector::start()
 
 }
 
-void Connector::heartbeat()
+void Connector::heartbeat(uint32_t timeout)
 {
-
+	zmq_pollitem_t items[] = {
+		{ m_socket, 0, ZMQ_POLLIN, 0 }
+	};
+	zmq_poll(items, 1, timeout);
+	if (items[0].revents & ZMQ_POLLIN){
+		receive();
+	}
+	auto currentTime = clock();
+	auto timeSinceLastMessageSend = currentTime - m_lastSendMessageTime;
+	auto timeSinceLastMessageReceived = currentTime - m_lastReceivedMessageTime;
+	auto secondsSinceLastMessageSend = timeSinceLastMessageSend / CLOCKS_PER_SEC;
+	auto secondsSinceLastMessageReceived = timeSinceLastMessageReceived / CLOCKS_PER_SEC;
+	if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
+		// Timeout all!
+		
+		// TODO It might be a good idea to destroy socket inorder to celar send buffer so previous messages will not be send accidentaly
+	}
+	if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
+		Request req;
+		req.set_request(Request_RequestType_Ping);
+		send(&req, nullptr, 0);
+	}
 }
 
-void Connector::send(int commandId, const void* data, size_t size)
+void Connector::send(Request* request, const void* data, size_t size)
 {
+	assert(request != nullptr);
 	// Send empty frame
 	int r1 = zmq_send(m_socket, nullptr, 0, ZMQ_SNDMORE);
 	assert(r1 == 0);
 	// Send resultIdentifier to track messages
-	int r2 = zmq_send(m_socket, m_module_name.c_str(), m_module_name.length(), ZMQ_SNDMORE);
-	assert(r2 == m_module_name.length());
+	int r2 = zmq_send(m_socket, m_module_name, m_module_name_len, ZMQ_SNDMORE);
+	assert(r2 == m_module_name_len);
 	// Send command id
-	int r3 = zmq_send(m_socket, &commandId, sizeof(commandId), size ? ZMQ_SNDMORE : 0);
-	assert(r3 == sizeof(commandId));
+
+	std::string output;
+	request->SerializeToString(&output);
+
+	int r3 = zmq_send(m_socket, output.c_str(), output.length(), size ? ZMQ_SNDMORE : 0);
+	assert(r3 == output.length());
 	// Send data if any
 	if (size)
 	{
@@ -68,5 +117,4 @@ void Connector::send(int commandId, const void* data, size_t size)
 
 void Connector::receive()
 {
-
 }

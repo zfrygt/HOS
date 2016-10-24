@@ -4,25 +4,37 @@
 #include <macros.h>
 #include <string>
 #include <time.h>
+#include <stdint.h>
+
+const uint32_t MAX_LEN = 80;
+
+class Request;
 
 // Connector class that abstracts the heartbeating and other communication details.
 class COMMON_EXPORT Connector
 {
 public:
-	Connector(void* ctx, const std::string& uri, const std::string& module_name);
+	Connector(const char* uri, const char* module_name);
 	virtual ~Connector();
 	void start();
-	void heartbeat();
+	void heartbeat(uint32_t timeout);
+
+private:
+	Connector(const Connector& other) = delete;
+	Connector(Connector&& other) = delete;
+	Connector& operator=(const Connector& other) = delete;
+	Connector& operator=(Connector&& other) = delete;
 
 protected:
-	virtual void send(int commandId, const void* data, size_t size);
 	virtual void receive();
+	virtual void send(Request* request, const void* data, size_t size);
 
 private:
 	void* m_context;
 	void* m_socket;
-	std::string m_uri;
-	std::string m_module_name;
+	char m_uri[MAX_LEN];
+	char m_module_name[MAX_LEN];
+	uint8_t m_uri_len, m_module_name_len;
 	clock_t m_lastSendMessageTime;
 	clock_t m_lastReceivedMessageTime;
 };
