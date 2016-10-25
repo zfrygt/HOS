@@ -23,7 +23,7 @@ int main()
 
 	auto connector = new Connector("tcp://localhost:5555", module_name.c_str());
 
-	connector->send(nullptr, nullptr, 0);
+	connector->send("murat", 5);
 
 	char rec_buf[80] = { 0 };
 
@@ -54,19 +54,10 @@ int main()
 	int r1 = zmq_send(server_socket, clientName.c_str(), ret_bytes, ZMQ_SNDMORE);
 	assert(r1 == 4);
 
-
 	int r2 = zmq_send(server_socket, nullptr, 0, ZMQ_SNDMORE);
 	assert(r2 == 0);
-	//std::cout << zmq_strerror(r1);
-	// Send resultIdentifier to track messages
-
-
-	//Response resp;
-
-	//resp.set_response(Response_ResponseType_Pong);
 
 	std::string output("murat");
-	//resp.SerializeToString(&output);
 
 	// Send command id
 	int r3 = zmq_send(server_socket, output.c_str(), output.length(), 0);
