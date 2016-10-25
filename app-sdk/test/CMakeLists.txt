@@ -23,7 +23,6 @@ set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)
 foreach(test ${tests})
 	add_executable(${test} ${test}.cpp)
 	add_test(NAME ${test} COMMAND ${test})
-
 	foreach(file ${ZEROMQ_DLL})
 		add_custom_command(TARGET ${test} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different

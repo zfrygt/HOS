@@ -7,6 +7,8 @@
 #define TIMEOUT_INTERVAL_IN_SECONDS 15
 #define TIMEOUT_CHECK_INTERVAL_IN_SECONDS 2
 
+#define ZMQ_CHECK(x){int result = (x); if (result==1)printf("%d\n",zmq_errno()); assert(result!=-1);}
+
 Connector::Connector(const char* uri, const char* module_name):
 m_lastSendMessageTime(-1),
 m_lastReceivedMessageTime(-1)
@@ -30,22 +32,22 @@ m_lastReceivedMessageTime(-1)
 	auto linger = 0;
 	auto r = zmq_setsockopt(m_socket, ZMQ_LINGER, &linger, sizeof(linger)); // close cagirildiktan sonra beklemeden socket'i kapat.
 
-	std::string sp("tPw$8v!-!O}kL[5VRvT<yg&NbWolkR=eVQC5Z8X6");
-	r = zmq_setsockopt(m_socket, ZMQ_CURVE_SERVERKEY, sp.c_str(), sp.length());
-	assert(r == 0);
+	//std::string sp("tPw$8v!-!O}kL[5VRvT<yg&NbWolkR=eVQC5Z8X6");
+	//r = zmq_setsockopt(m_socket, ZMQ_CURVE_SERVERKEY, sp.c_str(), sp.length());
+	//assert(r == 0);
 	r = zmq_setsockopt(m_socket, ZMQ_IDENTITY, m_module_name, m_module_name_len);
 	assert(r == 0);
 
-	char public_key[41];
-	char secret_key[41];
+	//char public_key[41];
+	//char secret_key[41];
 
-	r = zmq_curve_keypair(public_key, secret_key);
-	assert(r == 0);
+	//r = zmq_curve_keypair(public_key, secret_key);
+	//assert(r == 0);
 
-	r = zmq_setsockopt(m_socket, ZMQ_CURVE_PUBLICKEY, public_key, sizeof(public_key));
-	assert(r == 0);
-	r = zmq_setsockopt(m_socket, ZMQ_CURVE_SECRETKEY, secret_key, sizeof(secret_key));
-	assert(r == 0);
+	//r = zmq_setsockopt(m_socket, ZMQ_CURVE_PUBLICKEY, public_key, sizeof(public_key));
+	//assert(r == 0);
+	//r = zmq_setsockopt(m_socket, ZMQ_CURVE_SECRETKEY, secret_key, sizeof(secret_key));
+	//assert(r == 0);
 
 	zmq_connect(m_socket, m_uri);
 }
@@ -90,17 +92,13 @@ void Connector::heartbeat(uint32_t timeout)
 
 void Connector::send(Request* request, const void* data, size_t size)
 {
-	assert(request != nullptr);
+	//assert(request != nullptr);
 	// Send empty frame
 	int r1 = zmq_send(m_socket, nullptr, 0, ZMQ_SNDMORE);
 	assert(r1 == 0);
-	// Send resultIdentifier to track messages
-	int r2 = zmq_send(m_socket, m_module_name, m_module_name_len, ZMQ_SNDMORE);
-	assert(r2 == m_module_name_len);
-	// Send command id
-
-	std::string output;
-	request->SerializeToString(&output);
+	
+	std::string output("murat");
+	//request->SerializeToString(&output);
 
 	int r3 = zmq_send(m_socket, output.c_str(), output.length(), size ? ZMQ_SNDMORE : 0);
 	assert(r3 == output.length());
@@ -117,4 +115,33 @@ void Connector::send(Request* request, const void* data, size_t size)
 
 void Connector::receive()
 {
+	zmq_msg_t msg;
+	int responseCode;
+	int more;
+	// Read NULL frame
+	{
+		zmq_msg_init(&msg);
+		ZMQ_CHECK(zmq_recvmsg(m_socket, &msg, 0));
+		more = zmq_msg_more(&msg);
+		assert(more);
+		zmq_msg_close(&msg);
+	}
+	// Read result identifier
+	{
+		zmq_msg_init(&msg);
+		ZMQ_CHECK(zmq_recvmsg(m_socket, &msg, 0));
+		more = zmq_msg_more(&msg);
+		assert(more == 0);
+		assert(strncmp("murat", static_cast<char*>(zmq_msg_data(&msg)), zmq_msg_size(&msg)) == 0);
+		zmq_msg_close(&msg);
+	}
+	
+	// Discard remaining!
+	while (more){
+		zmq_msg_init(&msg);
+		ZMQ_CHECK(zmq_recvmsg(m_socket, &msg, 0));
+		more = zmq_msg_more(&msg);
+		zmq_msg_close(&msg);
+	}
+	m_lastReceivedMessageTime = clock();
 }

@@ -25,7 +25,7 @@ private:
 	Connector& operator=(const Connector& other) = delete;
 	Connector& operator=(Connector&& other) = delete;
 
-protected:
+public:
 	virtual void receive();
 	virtual void send(Request* request, const void* data, size_t size);
 
