@@ -27,7 +27,8 @@ private:
 
 public:
 	virtual void receive();
-	virtual void send(Request* request, const void* data, size_t size);
+	virtual void send(const void* data, uint64_t size);
+	virtual void send(Request* request);
 
 private:
 	void* m_context;

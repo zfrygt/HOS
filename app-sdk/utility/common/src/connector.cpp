@@ -86,31 +86,8 @@ void Connector::heartbeat(uint32_t timeout)
 	if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
 		Request req;
 		req.set_request(Request_RequestType_Ping);
-		send(&req, nullptr, 0);
+		send(&req);
 	}
-}
-
-void Connector::send(Request* request, const void* data, size_t size)
-{
-	//assert(request != nullptr);
-	// Send empty frame
-	int r1 = zmq_send(m_socket, nullptr, 0, ZMQ_SNDMORE);
-	assert(r1 == 0);
-	
-	std::string output("murat");
-	//request->SerializeToString(&output);
-
-	int r3 = zmq_send(m_socket, output.c_str(), output.length(), size ? ZMQ_SNDMORE : 0);
-	assert(r3 == output.length());
-	// Send data if any
-	if (size)
-	{
-		int r4 = zmq_send(m_socket, data, size, 0);
-		assert(r4 == size);
-	}
-	m_lastSendMessageTime = clock();
-	if (m_lastReceivedMessageTime < 0)
-		m_lastReceivedMessageTime = m_lastSendMessageTime;
 }
 
 void Connector::receive()
@@ -144,4 +121,29 @@ void Connector::receive()
 		zmq_msg_close(&msg);
 	}
 	m_lastReceivedMessageTime = clock();
+}
+
+void Connector::send(const void* data, uint64_t size)
+{
+	assert(data != nullptr);
+	assert(size > 0);
+
+	// Send empty frame
+	int r1 = zmq_send(m_socket, nullptr, 0, ZMQ_SNDMORE);
+	assert(r1 == 0);
+
+	int r4 = zmq_send(m_socket, data, size, 0);
+	assert(r4 == size);
+
+	m_lastSendMessageTime = clock();
+
+	if (m_lastReceivedMessageTime < 0)
+		m_lastReceivedMessageTime = m_lastSendMessageTime;
+}
+
+void Connector::send(Request* request)
+{
+	assert(request != nullptr);
+
+
 }
