@@ -6,6 +6,7 @@ PROJECT(tests)
 
 set(tests 
 			test_test1
+			test_test2
 			)
 # add library and include dirs for all targets
 include_directories("../utility/common/include")
@@ -19,9 +20,10 @@ link_libraries(common)
 link_libraries(${ZEROMQ_LINK})
 
 set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)
+set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
 
 foreach(test ${tests})
-	add_executable(${test} ${test}.cpp)
+	add_executable(${test} ${test}.cpp "${COMMON_PATH}/include/hos_protocol.pb.h" "${COMMON_PATH}/src/hos_protocol.pb.cc")
 	add_test(NAME ${test} COMMAND ${test})
 	foreach(file ${ZEROMQ_DLL})
 		add_custom_command(TARGET ${test} POST_BUILD
