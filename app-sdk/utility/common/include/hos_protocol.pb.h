@@ -35,55 +35,56 @@ void protobuf_AddDesc_hos_5fprotocol_2eproto();
 void protobuf_AssignDesc_hos_5fprotocol_2eproto();
 void protobuf_ShutdownFile_hos_5fprotocol_2eproto();
 
-class Request;
-class Response;
+class ServerMessage;
+class ClientMessage;
 
-enum Request_RequestType {
-  Request_RequestType_Ping = 0
+enum ServerMessage_Type {
+  ServerMessage_Type_Ping = 0
 };
-bool Request_RequestType_IsValid(int value);
-const Request_RequestType Request_RequestType_RequestType_MIN = Request_RequestType_Ping;
-const Request_RequestType Request_RequestType_RequestType_MAX = Request_RequestType_Ping;
-const int Request_RequestType_RequestType_ARRAYSIZE = Request_RequestType_RequestType_MAX + 1;
+bool ServerMessage_Type_IsValid(int value);
+const ServerMessage_Type ServerMessage_Type_Type_MIN = ServerMessage_Type_Ping;
+const ServerMessage_Type ServerMessage_Type_Type_MAX = ServerMessage_Type_Ping;
+const int ServerMessage_Type_Type_ARRAYSIZE = ServerMessage_Type_Type_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* Request_RequestType_descriptor();
-inline const ::std::string& Request_RequestType_Name(Request_RequestType value) {
+const ::google::protobuf::EnumDescriptor* ServerMessage_Type_descriptor();
+inline const ::std::string& ServerMessage_Type_Name(ServerMessage_Type value) {
   return ::google::protobuf::internal::NameOfEnum(
-    Request_RequestType_descriptor(), value);
+    ServerMessage_Type_descriptor(), value);
 }
-inline bool Request_RequestType_Parse(
-    const ::std::string& name, Request_RequestType* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<Request_RequestType>(
-    Request_RequestType_descriptor(), name, value);
+inline bool ServerMessage_Type_Parse(
+    const ::std::string& name, ServerMessage_Type* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<ServerMessage_Type>(
+    ServerMessage_Type_descriptor(), name, value);
 }
-enum Response_ResponseType {
-  Response_ResponseType_Pong = 0
+enum ClientMessage_Type {
+  ClientMessage_Type_Pong = 0,
+  ClientMessage_Type_Init = 1
 };
-bool Response_ResponseType_IsValid(int value);
-const Response_ResponseType Response_ResponseType_ResponseType_MIN = Response_ResponseType_Pong;
-const Response_ResponseType Response_ResponseType_ResponseType_MAX = Response_ResponseType_Pong;
-const int Response_ResponseType_ResponseType_ARRAYSIZE = Response_ResponseType_ResponseType_MAX + 1;
+bool ClientMessage_Type_IsValid(int value);
+const ClientMessage_Type ClientMessage_Type_Type_MIN = ClientMessage_Type_Pong;
+const ClientMessage_Type ClientMessage_Type_Type_MAX = ClientMessage_Type_Init;
+const int ClientMessage_Type_Type_ARRAYSIZE = ClientMessage_Type_Type_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* Response_ResponseType_descriptor();
-inline const ::std::string& Response_ResponseType_Name(Response_ResponseType value) {
+const ::google::protobuf::EnumDescriptor* ClientMessage_Type_descriptor();
+inline const ::std::string& ClientMessage_Type_Name(ClientMessage_Type value) {
   return ::google::protobuf::internal::NameOfEnum(
-    Response_ResponseType_descriptor(), value);
+    ClientMessage_Type_descriptor(), value);
 }
-inline bool Response_ResponseType_Parse(
-    const ::std::string& name, Response_ResponseType* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<Response_ResponseType>(
-    Response_ResponseType_descriptor(), name, value);
+inline bool ClientMessage_Type_Parse(
+    const ::std::string& name, ClientMessage_Type* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<ClientMessage_Type>(
+    ClientMessage_Type_descriptor(), name, value);
 }
 // ===================================================================
 
-class Request : public ::google::protobuf::Message {
+class ServerMessage : public ::google::protobuf::Message {
  public:
-  Request();
-  virtual ~Request();
+  ServerMessage();
+  virtual ~ServerMessage();
 
-  Request(const Request& from);
+  ServerMessage(const ServerMessage& from);
 
-  inline Request& operator=(const Request& from) {
+  inline ServerMessage& operator=(const ServerMessage& from) {
     CopyFrom(from);
     return *this;
   }
@@ -97,19 +98,19 @@ class Request : public ::google::protobuf::Message {
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const Request& default_instance();
+  static const ServerMessage& default_instance();
 
-  void Swap(Request* other);
+  void Swap(ServerMessage* other);
 
   // implements Message ----------------------------------------------
 
-  inline Request* New() const { return New(NULL); }
+  inline ServerMessage* New() const { return New(NULL); }
 
-  Request* New(::google::protobuf::Arena* arena) const;
+  ServerMessage* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const Request& from);
-  void MergeFrom(const Request& from);
+  void CopyFrom(const ServerMessage& from);
+  void MergeFrom(const ServerMessage& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -124,7 +125,7 @@ class Request : public ::google::protobuf::Message {
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(Request* other);
+  void InternalSwap(ServerMessage* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -138,64 +139,64 @@ class Request : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
-  typedef Request_RequestType RequestType;
-  static const RequestType Ping = Request_RequestType_Ping;
-  static inline bool RequestType_IsValid(int value) {
-    return Request_RequestType_IsValid(value);
+  typedef ServerMessage_Type Type;
+  static const Type Ping = ServerMessage_Type_Ping;
+  static inline bool Type_IsValid(int value) {
+    return ServerMessage_Type_IsValid(value);
   }
-  static const RequestType RequestType_MIN =
-    Request_RequestType_RequestType_MIN;
-  static const RequestType RequestType_MAX =
-    Request_RequestType_RequestType_MAX;
-  static const int RequestType_ARRAYSIZE =
-    Request_RequestType_RequestType_ARRAYSIZE;
+  static const Type Type_MIN =
+    ServerMessage_Type_Type_MIN;
+  static const Type Type_MAX =
+    ServerMessage_Type_Type_MAX;
+  static const int Type_ARRAYSIZE =
+    ServerMessage_Type_Type_ARRAYSIZE;
   static inline const ::google::protobuf::EnumDescriptor*
-  RequestType_descriptor() {
-    return Request_RequestType_descriptor();
+  Type_descriptor() {
+    return ServerMessage_Type_descriptor();
   }
-  static inline const ::std::string& RequestType_Name(RequestType value) {
-    return Request_RequestType_Name(value);
+  static inline const ::std::string& Type_Name(Type value) {
+    return ServerMessage_Type_Name(value);
   }
-  static inline bool RequestType_Parse(const ::std::string& name,
-      RequestType* value) {
-    return Request_RequestType_Parse(name, value);
+  static inline bool Type_Parse(const ::std::string& name,
+      Type* value) {
+    return ServerMessage_Type_Parse(name, value);
   }
 
   // accessors -------------------------------------------------------
 
-  // required .Request.RequestType request = 1;
-  inline bool has_request() const;
-  inline void clear_request();
-  static const int kRequestFieldNumber = 1;
-  inline ::Request_RequestType request() const;
-  inline void set_request(::Request_RequestType value);
+  // required .ServerMessage.Type type = 1;
+  inline bool has_type() const;
+  inline void clear_type();
+  static const int kTypeFieldNumber = 1;
+  inline ::ServerMessage_Type type() const;
+  inline void set_type(::ServerMessage_Type value);
 
-  // @@protoc_insertion_point(class_scope:Request)
+  // @@protoc_insertion_point(class_scope:ServerMessage)
  private:
-  inline void set_has_request();
-  inline void clear_has_request();
+  inline void set_has_type();
+  inline void clear_has_type();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  int request_;
+  int type_;
   friend void  protobuf_AddDesc_hos_5fprotocol_2eproto();
   friend void protobuf_AssignDesc_hos_5fprotocol_2eproto();
   friend void protobuf_ShutdownFile_hos_5fprotocol_2eproto();
 
   void InitAsDefaultInstance();
-  static Request* default_instance_;
+  static ServerMessage* default_instance_;
 };
 // -------------------------------------------------------------------
 
-class Response : public ::google::protobuf::Message {
+class ClientMessage : public ::google::protobuf::Message {
  public:
-  Response();
-  virtual ~Response();
+  ClientMessage();
+  virtual ~ClientMessage();
 
-  Response(const Response& from);
+  ClientMessage(const ClientMessage& from);
 
-  inline Response& operator=(const Response& from) {
+  inline ClientMessage& operator=(const ClientMessage& from) {
     CopyFrom(from);
     return *this;
   }
@@ -209,19 +210,19 @@ class Response : public ::google::protobuf::Message {
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const Response& default_instance();
+  static const ClientMessage& default_instance();
 
-  void Swap(Response* other);
+  void Swap(ClientMessage* other);
 
   // implements Message ----------------------------------------------
 
-  inline Response* New() const { return New(NULL); }
+  inline ClientMessage* New() const { return New(NULL); }
 
-  Response* New(::google::protobuf::Arena* arena) const;
+  ClientMessage* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const Response& from);
-  void MergeFrom(const Response& from);
+  void CopyFrom(const ClientMessage& from);
+  void MergeFrom(const ClientMessage& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -236,7 +237,7 @@ class Response : public ::google::protobuf::Message {
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(Response* other);
+  void InternalSwap(ClientMessage* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -250,113 +251,114 @@ class Response : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
-  typedef Response_ResponseType ResponseType;
-  static const ResponseType Pong = Response_ResponseType_Pong;
-  static inline bool ResponseType_IsValid(int value) {
-    return Response_ResponseType_IsValid(value);
+  typedef ClientMessage_Type Type;
+  static const Type Pong = ClientMessage_Type_Pong;
+  static const Type Init = ClientMessage_Type_Init;
+  static inline bool Type_IsValid(int value) {
+    return ClientMessage_Type_IsValid(value);
   }
-  static const ResponseType ResponseType_MIN =
-    Response_ResponseType_ResponseType_MIN;
-  static const ResponseType ResponseType_MAX =
-    Response_ResponseType_ResponseType_MAX;
-  static const int ResponseType_ARRAYSIZE =
-    Response_ResponseType_ResponseType_ARRAYSIZE;
+  static const Type Type_MIN =
+    ClientMessage_Type_Type_MIN;
+  static const Type Type_MAX =
+    ClientMessage_Type_Type_MAX;
+  static const int Type_ARRAYSIZE =
+    ClientMessage_Type_Type_ARRAYSIZE;
   static inline const ::google::protobuf::EnumDescriptor*
-  ResponseType_descriptor() {
-    return Response_ResponseType_descriptor();
+  Type_descriptor() {
+    return ClientMessage_Type_descriptor();
   }
-  static inline const ::std::string& ResponseType_Name(ResponseType value) {
-    return Response_ResponseType_Name(value);
+  static inline const ::std::string& Type_Name(Type value) {
+    return ClientMessage_Type_Name(value);
   }
-  static inline bool ResponseType_Parse(const ::std::string& name,
-      ResponseType* value) {
-    return Response_ResponseType_Parse(name, value);
+  static inline bool Type_Parse(const ::std::string& name,
+      Type* value) {
+    return ClientMessage_Type_Parse(name, value);
   }
 
   // accessors -------------------------------------------------------
 
-  // required .Response.ResponseType response = 1;
-  inline bool has_response() const;
-  inline void clear_response();
-  static const int kResponseFieldNumber = 1;
-  inline ::Response_ResponseType response() const;
-  inline void set_response(::Response_ResponseType value);
+  // required .ClientMessage.Type type = 1;
+  inline bool has_type() const;
+  inline void clear_type();
+  static const int kTypeFieldNumber = 1;
+  inline ::ClientMessage_Type type() const;
+  inline void set_type(::ClientMessage_Type value);
 
-  // @@protoc_insertion_point(class_scope:Response)
+  // @@protoc_insertion_point(class_scope:ClientMessage)
  private:
-  inline void set_has_response();
-  inline void clear_has_response();
+  inline void set_has_type();
+  inline void clear_has_type();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  int response_;
+  int type_;
   friend void  protobuf_AddDesc_hos_5fprotocol_2eproto();
   friend void protobuf_AssignDesc_hos_5fprotocol_2eproto();
   friend void protobuf_ShutdownFile_hos_5fprotocol_2eproto();
 
   void InitAsDefaultInstance();
-  static Response* default_instance_;
+  static ClientMessage* default_instance_;
 };
 // ===================================================================
 
 
 // ===================================================================
 
-// Request
+// ServerMessage
 
-// required .Request.RequestType request = 1;
-inline bool Request::has_request() const {
+// required .ServerMessage.Type type = 1;
+inline bool ServerMessage::has_type() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void Request::set_has_request() {
+inline void ServerMessage::set_has_type() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void Request::clear_has_request() {
+inline void ServerMessage::clear_has_type() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void Request::clear_request() {
-  request_ = 0;
-  clear_has_request();
+inline void ServerMessage::clear_type() {
+  type_ = 0;
+  clear_has_type();
 }
-inline ::Request_RequestType Request::request() const {
-  // @@protoc_insertion_point(field_get:Request.request)
-  return static_cast< ::Request_RequestType >(request_);
+inline ::ServerMessage_Type ServerMessage::type() const {
+  // @@protoc_insertion_point(field_get:ServerMessage.type)
+  return static_cast< ::ServerMessage_Type >(type_);
 }
-inline void Request::set_request(::Request_RequestType value) {
-  assert(::Request_RequestType_IsValid(value));
-  set_has_request();
-  request_ = value;
-  // @@protoc_insertion_point(field_set:Request.request)
+inline void ServerMessage::set_type(::ServerMessage_Type value) {
+  assert(::ServerMessage_Type_IsValid(value));
+  set_has_type();
+  type_ = value;
+  // @@protoc_insertion_point(field_set:ServerMessage.type)
 }
 
 // -------------------------------------------------------------------
 
-// Response
+// ClientMessage
 
-// required .Response.ResponseType response = 1;
-inline bool Response::has_response() const {
+// required .ClientMessage.Type type = 1;
+inline bool ClientMessage::has_type() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void Response::set_has_response() {
+inline void ClientMessage::set_has_type() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void Response::clear_has_response() {
+inline void ClientMessage::clear_has_type() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void Response::clear_response() {
-  response_ = 0;
-  clear_has_response();
+inline void ClientMessage::clear_type() {
+  type_ = 0;
+  clear_has_type();
 }
-inline ::Response_ResponseType Response::response() const {
-  // @@protoc_insertion_point(field_get:Response.response)
-  return static_cast< ::Response_ResponseType >(response_);
+inline ::ClientMessage_Type ClientMessage::type() const {
+  // @@protoc_insertion_point(field_get:ClientMessage.type)
+  return static_cast< ::ClientMessage_Type >(type_);
 }
-inline void Response::set_response(::Response_ResponseType value) {
-  assert(::Response_ResponseType_IsValid(value));
-  set_has_response();
-  response_ = value;
-  // @@protoc_insertion_point(field_set:Response.response)
+inline void ClientMessage::set_type(::ClientMessage_Type value) {
+  assert(::ClientMessage_Type_IsValid(value));
+  set_has_type();
+  type_ = value;
+  // @@protoc_insertion_point(field_set:ClientMessage.type)
 }
 
 
@@ -366,15 +368,15 @@ inline void Response::set_response(::Response_ResponseType value) {
 namespace google {
 namespace protobuf {
 
-template <> struct is_proto_enum< ::Request_RequestType> : ::google::protobuf::internal::true_type {};
+template <> struct is_proto_enum< ::ServerMessage_Type> : ::google::protobuf::internal::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::Request_RequestType>() {
-  return ::Request_RequestType_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::ServerMessage_Type>() {
+  return ::ServerMessage_Type_descriptor();
 }
-template <> struct is_proto_enum< ::Response_ResponseType> : ::google::protobuf::internal::true_type {};
+template <> struct is_proto_enum< ::ClientMessage_Type> : ::google::protobuf::internal::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::Response_ResponseType>() {
-  return ::Response_ResponseType_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::ClientMessage_Type>() {
+  return ::ClientMessage_Type_descriptor();
 }
 
 }  // namespace protobuf

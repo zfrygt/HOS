@@ -2,6 +2,7 @@
 #include <zmq.h>
 #include <assert.h>
 #include <hos_protocol.pb.h>
+#include <serializer.h>
 
 #define HEARTHBEAT_INTERVAL_IN_SECONDS 5 
 #define TIMEOUT_INTERVAL_IN_SECONDS 15
@@ -9,7 +10,7 @@
 
 #define ZMQ_CHECK(x){int result = (x); if (result==1)printf("%d\n",zmq_errno()); assert(result!=-1);}
 
-Connector::Connector(const char* uri, const char* module_name):
+Connector::Connector(const char* uri, const char* module_name) :
 m_lastSendMessageTime(-1),
 m_lastReceivedMessageTime(-1)
 {
@@ -50,6 +51,11 @@ m_lastReceivedMessageTime(-1)
 	//assert(r == 0);
 
 	zmq_connect(m_socket, m_uri);
+
+	ClientMessage client_message;
+	client_message.set_type(ClientMessage_Type_Init);
+	auto aa = Serializer::serialize(&client_message);
+	send(aa->get_buf(), aa->get_size());
 }
 
 Connector::~Connector()
@@ -57,11 +63,6 @@ Connector::~Connector()
 	zmq_disconnect(m_socket, m_uri);
 	zmq_close(m_socket);
 	zmq_ctx_destroy(m_context);
-}
-
-void Connector::start()
-{
-
 }
 
 void Connector::heartbeat(uint32_t timeout)
@@ -80,20 +81,20 @@ void Connector::heartbeat(uint32_t timeout)
 	auto secondsSinceLastMessageReceived = timeSinceLastMessageReceived / CLOCKS_PER_SEC;
 	if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
 		// Timeout all!
-		
+
 		// TODO It might be a good idea to destroy socket inorder to celar send buffer so previous messages will not be send accidentaly
 	}
 	if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
-		Request req;
-		req.set_request(Request_RequestType_Ping);
-		send(&req);
+		ClientMessage response;
+		response.set_type(ClientMessage_Type_Pong);
+		auto aa = Serializer::serialize(&response);
+		send(aa->get_buf(), aa->get_size());
 	}
 }
 
 void Connector::receive()
 {
 	zmq_msg_t msg;
-	int responseCode;
 	int more;
 	// Read NULL frame
 	{
@@ -109,10 +110,17 @@ void Connector::receive()
 		ZMQ_CHECK(zmq_recvmsg(m_socket, &msg, 0));
 		more = zmq_msg_more(&msg);
 		assert(more == 0);
-		assert(strncmp("murat", static_cast<char*>(zmq_msg_data(&msg)), zmq_msg_size(&msg)) == 0);
+
+		auto size = zmq_msg_size(&msg);
+		auto data = static_cast<char*>(zmq_msg_data(&msg));
+		auto buffer = malloc(size);
+		memcpy(buffer, data, size);
+
+		auto s = Serializer::deserialize<ServerMessage>(std::make_unique<SerializedObject>(buffer, size));
+		assert(s->type() == ClientMessage_Type_Pong);
 		zmq_msg_close(&msg);
 	}
-	
+
 	// Discard remaining!
 	while (more){
 		zmq_msg_init(&msg);
@@ -139,11 +147,4 @@ void Connector::send(const void* data, uint64_t size)
 
 	if (m_lastReceivedMessageTime < 0)
 		m_lastReceivedMessageTime = m_lastSendMessageTime;
-}
-
-void Connector::send(Request* request)
-{
-	assert(request != nullptr);
-
-
 }

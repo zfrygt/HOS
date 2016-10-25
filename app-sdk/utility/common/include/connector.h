@@ -16,19 +16,15 @@ class COMMON_EXPORT Connector
 public:
 	Connector(const char* uri, const char* module_name);
 	virtual ~Connector();
-	void start();
+	void receive();
+	void send(const void* data, uint64_t size);
 	void heartbeat(uint32_t timeout);
 
-private:
+protected:
 	Connector(const Connector& other) = delete;
 	Connector(Connector&& other) = delete;
 	Connector& operator=(const Connector& other) = delete;
 	Connector& operator=(Connector&& other) = delete;
-
-public:
-	virtual void receive();
-	virtual void send(const void* data, uint64_t size);
-	virtual void send(Request* request);
 
 private:
 	void* m_context;
