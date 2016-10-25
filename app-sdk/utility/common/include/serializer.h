@@ -28,8 +28,11 @@ public:
 	}
 	~SerializedObject()
 	{
-		free(m_buf);
-		m_buf = nullptr;
+		if (m_buf)
+		{
+			free(m_buf);
+			m_buf = nullptr;
+		}
 		m_size = 0;
 	}
 
@@ -45,17 +48,22 @@ class Serializer
 {
 public:
 	template<typename T>
-	std::unique_ptr<SerializedObject> serialize(T* t)
+	static std::unique_ptr<SerializedObject> serialize(T* t)
 	{
-		assert(t != nullptr);
 		auto size = t->ByteSize();
-
 		assert(size > 0);
-
 		auto buf = malloc(size);
 		t->SerializeToArray(buf, size);
-
 		return std::make_unique<SerializedObject>(buf, size);
+	}
+
+	template<typename T>
+	static std::unique_ptr<T> deserialize(std::unique_ptr<SerializedObject> t)
+	{
+		auto temp = std::make_unique<T>();
+		auto success = temp->ParseFromArray(t->get_buf(), t->get_size());
+		assert(success);
+		return temp;
 	}
 };
 
