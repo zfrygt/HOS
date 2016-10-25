@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <hos_protocol.pb.h>
 #include <iostream>
+#include <serializer.h>
 
 int main()
 {
@@ -23,8 +24,6 @@ int main()
 
 	auto connector = new Connector("tcp://localhost:5555", module_name.c_str());
 
-	connector->send("murat", 5);
-
 	char rec_buf[80] = { 0 };
 
 	std::string clientName;
@@ -43,27 +42,16 @@ int main()
 	assert(strncmp(rec_buf, "", ret_bytes2) == 0);
 
 	//read data
-	std::string data;
-	data.reserve(10);
 	memset(rec_buf, 0, sizeof rec_buf);
+
+
 	auto ret_bytes3 = zmq_recv(server_socket, rec_buf, sizeof rec_buf, 0);
-	strcpy(&data[0], rec_buf);
-	assert(ret_bytes3 == std::string("murat").length());
-	assert(strncmp(data.c_str(), "murat", ret_bytes3) == 0);
+	auto temp_buf = malloc(ret_bytes3);
+	memcpy(temp_buf, rec_buf, ret_bytes3);
+
+	auto data = move(Serializer::deserialize<ClientMessage>(std::make_unique<SerializedObject>(temp_buf, ret_bytes3)));
+	assert(data->type() == ClientMessage_Type_Init);
 	
-	int r1 = zmq_send(server_socket, clientName.c_str(), ret_bytes, ZMQ_SNDMORE);
-	assert(r1 == 4);
-
-	int r2 = zmq_send(server_socket, nullptr, 0, ZMQ_SNDMORE);
-	assert(r2 == 0);
-
-	std::string output("murat");
-
-	// Send command id
-	int r3 = zmq_send(server_socket, output.c_str(), output.length(), 0);
-	assert(r3 == output.length());
-
-	connector->heartbeat(25);
 	delete connector;
 
 	zmq_close(server_socket);

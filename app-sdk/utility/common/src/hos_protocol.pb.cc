@@ -18,14 +18,14 @@
 
 namespace {
 
-const ::google::protobuf::Descriptor* Request_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* ServerMessage_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  Request_reflection_ = NULL;
-const ::google::protobuf::EnumDescriptor* Request_RequestType_descriptor_ = NULL;
-const ::google::protobuf::Descriptor* Response_descriptor_ = NULL;
+  ServerMessage_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* ServerMessage_Type_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* ClientMessage_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  Response_reflection_ = NULL;
-const ::google::protobuf::EnumDescriptor* Response_ResponseType_descriptor_ = NULL;
+  ClientMessage_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* ClientMessage_Type_descriptor_ = NULL;
 
 }  // namespace
 
@@ -36,38 +36,38 @@ void protobuf_AssignDesc_hos_5fprotocol_2eproto() {
     ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
       "hos_protocol.proto");
   GOOGLE_CHECK(file != NULL);
-  Request_descriptor_ = file->message_type(0);
-  static const int Request_offsets_[1] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Request, request_),
+  ServerMessage_descriptor_ = file->message_type(0);
+  static const int ServerMessage_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ServerMessage, type_),
   };
-  Request_reflection_ =
+  ServerMessage_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      Request_descriptor_,
-      Request::default_instance_,
-      Request_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Request, _has_bits_[0]),
+      ServerMessage_descriptor_,
+      ServerMessage::default_instance_,
+      ServerMessage_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ServerMessage, _has_bits_[0]),
       -1,
       -1,
-      sizeof(Request),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Request, _internal_metadata_),
+      sizeof(ServerMessage),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ServerMessage, _internal_metadata_),
       -1);
-  Request_RequestType_descriptor_ = Request_descriptor_->enum_type(0);
-  Response_descriptor_ = file->message_type(1);
-  static const int Response_offsets_[1] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, response_),
+  ServerMessage_Type_descriptor_ = ServerMessage_descriptor_->enum_type(0);
+  ClientMessage_descriptor_ = file->message_type(1);
+  static const int ClientMessage_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, type_),
   };
-  Response_reflection_ =
+  ClientMessage_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      Response_descriptor_,
-      Response::default_instance_,
-      Response_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, _has_bits_[0]),
+      ClientMessage_descriptor_,
+      ClientMessage::default_instance_,
+      ClientMessage_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, _has_bits_[0]),
       -1,
       -1,
-      sizeof(Response),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, _internal_metadata_),
+      sizeof(ClientMessage),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, _internal_metadata_),
       -1);
-  Response_ResponseType_descriptor_ = Response_descriptor_->enum_type(0);
+  ClientMessage_Type_descriptor_ = ClientMessage_descriptor_->enum_type(0);
 }
 
 namespace {
@@ -81,18 +81,18 @@ inline void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      Request_descriptor_, &Request::default_instance());
+      ServerMessage_descriptor_, &ServerMessage::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      Response_descriptor_, &Response::default_instance());
+      ClientMessage_descriptor_, &ClientMessage::default_instance());
 }
 
 }  // namespace
 
 void protobuf_ShutdownFile_hos_5fprotocol_2eproto() {
-  delete Request::default_instance_;
-  delete Request_reflection_;
-  delete Response::default_instance_;
-  delete Response_reflection_;
+  delete ServerMessage::default_instance_;
+  delete ServerMessage_reflection_;
+  delete ClientMessage::default_instance_;
+  delete ClientMessage_reflection_;
 }
 
 void protobuf_AddDesc_hos_5fprotocol_2eproto() {
@@ -102,17 +102,17 @@ void protobuf_AddDesc_hos_5fprotocol_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\022hos_protocol.proto\"I\n\007Request\022%\n\007reque"
-    "st\030\001 \002(\0162\024.Request.RequestType\"\027\n\013Reques"
-    "tType\022\010\n\004Ping\020\000\"N\n\010Response\022(\n\010response\030"
-    "\001 \002(\0162\026.Response.ResponseType\"\030\n\014Respons"
-    "eType\022\010\n\004Pong\020\000", 175);
+    "\n\022hos_protocol.proto\"D\n\rServerMessage\022!\n"
+    "\004type\030\001 \002(\0162\023.ServerMessage.Type\"\020\n\004Type"
+    "\022\010\n\004Ping\020\000\"N\n\rClientMessage\022!\n\004type\030\001 \002("
+    "\0162\023.ClientMessage.Type\"\032\n\004Type\022\010\n\004Pong\020\000"
+    "\022\010\n\004Init\020\001", 170);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "hos_protocol.proto", &protobuf_RegisterTypes);
-  Request::default_instance_ = new Request();
-  Response::default_instance_ = new Response();
-  Request::default_instance_->InitAsDefaultInstance();
-  Response::default_instance_->InitAsDefaultInstance();
+  ServerMessage::default_instance_ = new ServerMessage();
+  ClientMessage::default_instance_ = new ClientMessage();
+  ServerMessage::default_instance_->InitAsDefaultInstance();
+  ClientMessage::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_hos_5fprotocol_2eproto);
 }
 
@@ -135,11 +135,11 @@ static void MergeFromFail(int line) {
 
 // ===================================================================
 
-const ::google::protobuf::EnumDescriptor* Request_RequestType_descriptor() {
+const ::google::protobuf::EnumDescriptor* ServerMessage_Type_descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return Request_RequestType_descriptor_;
+  return ServerMessage_Type_descriptor_;
 }
-bool Request_RequestType_IsValid(int value) {
+bool ServerMessage_Type_IsValid(int value) {
   switch(value) {
     case 0:
       return true;
@@ -149,100 +149,100 @@ bool Request_RequestType_IsValid(int value) {
 }
 
 #ifndef _MSC_VER
-const Request_RequestType Request::Ping;
-const Request_RequestType Request::RequestType_MIN;
-const Request_RequestType Request::RequestType_MAX;
-const int Request::RequestType_ARRAYSIZE;
+const ServerMessage_Type ServerMessage::Ping;
+const ServerMessage_Type ServerMessage::Type_MIN;
+const ServerMessage_Type ServerMessage::Type_MAX;
+const int ServerMessage::Type_ARRAYSIZE;
 #endif  // _MSC_VER
 #ifndef _MSC_VER
-const int Request::kRequestFieldNumber;
+const int ServerMessage::kTypeFieldNumber;
 #endif  // !_MSC_VER
 
-Request::Request()
+ServerMessage::ServerMessage()
   : ::google::protobuf::Message() , _internal_metadata_(NULL)  {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Request)
+  // @@protoc_insertion_point(constructor:ServerMessage)
 }
 
-void Request::InitAsDefaultInstance() {
+void ServerMessage::InitAsDefaultInstance() {
 }
 
-Request::Request(const Request& from)
+ServerMessage::ServerMessage(const ServerMessage& from)
   : ::google::protobuf::Message(),
     _internal_metadata_(NULL) {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:Request)
+  // @@protoc_insertion_point(copy_constructor:ServerMessage)
 }
 
-void Request::SharedCtor() {
+void ServerMessage::SharedCtor() {
   _cached_size_ = 0;
-  request_ = 0;
+  type_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-Request::~Request() {
-  // @@protoc_insertion_point(destructor:Request)
+ServerMessage::~ServerMessage() {
+  // @@protoc_insertion_point(destructor:ServerMessage)
   SharedDtor();
 }
 
-void Request::SharedDtor() {
+void ServerMessage::SharedDtor() {
   if (this != default_instance_) {
   }
 }
 
-void Request::SetCachedSize(int size) const {
+void ServerMessage::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* Request::descriptor() {
+const ::google::protobuf::Descriptor* ServerMessage::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return Request_descriptor_;
+  return ServerMessage_descriptor_;
 }
 
-const Request& Request::default_instance() {
+const ServerMessage& ServerMessage::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_hos_5fprotocol_2eproto();
   return *default_instance_;
 }
 
-Request* Request::default_instance_ = NULL;
+ServerMessage* ServerMessage::default_instance_ = NULL;
 
-Request* Request::New(::google::protobuf::Arena* arena) const {
-  Request* n = new Request;
+ServerMessage* ServerMessage::New(::google::protobuf::Arena* arena) const {
+  ServerMessage* n = new ServerMessage;
   if (arena != NULL) {
     arena->Own(n);
   }
   return n;
 }
 
-void Request::Clear() {
-  request_ = 0;
+void ServerMessage::Clear() {
+  type_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   if (_internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->Clear();
   }
 }
 
-bool Request::MergePartialFromCodedStream(
+bool ServerMessage::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:Request)
+  // @@protoc_insertion_point(parse_start:ServerMessage)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required .Request.RequestType request = 1;
+      // required .ServerMessage.Type type = 1;
       case 1: {
         if (tag == 8) {
           int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
                  input, &value)));
-          if (::Request_RequestType_IsValid(value)) {
-            set_request(static_cast< ::Request_RequestType >(value));
+          if (::ServerMessage_Type_IsValid(value)) {
+            set_type(static_cast< ::ServerMessage_Type >(value));
           } else {
             mutable_unknown_fields()->AddVarint(1, value);
           }
@@ -267,54 +267,54 @@ bool Request::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:Request)
+  // @@protoc_insertion_point(parse_success:ServerMessage)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:Request)
+  // @@protoc_insertion_point(parse_failure:ServerMessage)
   return false;
 #undef DO_
 }
 
-void Request::SerializeWithCachedSizes(
+void ServerMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:Request)
-  // required .Request.RequestType request = 1;
-  if (has_request()) {
+  // @@protoc_insertion_point(serialize_start:ServerMessage)
+  // required .ServerMessage.Type type = 1;
+  if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
-      1, this->request(), output);
+      1, this->type(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:Request)
+  // @@protoc_insertion_point(serialize_end:ServerMessage)
 }
 
-::google::protobuf::uint8* Request::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* ServerMessage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Request)
-  // required .Request.RequestType request = 1;
-  if (has_request()) {
+  // @@protoc_insertion_point(serialize_to_array_start:ServerMessage)
+  // required .ServerMessage.Type type = 1;
+  if (has_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
-      1, this->request(), target);
+      1, this->type(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Request)
+  // @@protoc_insertion_point(serialize_to_array_end:ServerMessage)
   return target;
 }
 
-int Request::ByteSize() const {
+int ServerMessage::ByteSize() const {
   int total_size = 0;
 
-  // required .Request.RequestType request = 1;
-  if (has_request()) {
+  // required .ServerMessage.Type type = 1;
+  if (has_type()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::EnumSize(this->request());
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
   }
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
@@ -327,10 +327,10 @@ int Request::ByteSize() const {
   return total_size;
 }
 
-void Request::MergeFrom(const ::google::protobuf::Message& from) {
+void ServerMessage::MergeFrom(const ::google::protobuf::Message& from) {
   if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-  const Request* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const Request*>(
+  const ServerMessage* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ServerMessage*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -339,11 +339,11 @@ void Request::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void Request::MergeFrom(const Request& from) {
+void ServerMessage::MergeFrom(const ServerMessage& from) {
   if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_request()) {
-      set_request(from.request());
+    if (from.has_type()) {
+      set_type(from.type());
     }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
@@ -351,53 +351,54 @@ void Request::MergeFrom(const Request& from) {
   }
 }
 
-void Request::CopyFrom(const ::google::protobuf::Message& from) {
+void ServerMessage::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void Request::CopyFrom(const Request& from) {
+void ServerMessage::CopyFrom(const ServerMessage& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool Request::IsInitialized() const {
+bool ServerMessage::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
 
   return true;
 }
 
-void Request::Swap(Request* other) {
+void ServerMessage::Swap(ServerMessage* other) {
   if (other == this) return;
   InternalSwap(other);
 }
-void Request::InternalSwap(Request* other) {
-  std::swap(request_, other->request_);
+void ServerMessage::InternalSwap(ServerMessage* other) {
+  std::swap(type_, other->type_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
-::google::protobuf::Metadata Request::GetMetadata() const {
+::google::protobuf::Metadata ServerMessage::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = Request_descriptor_;
-  metadata.reflection = Request_reflection_;
+  metadata.descriptor = ServerMessage_descriptor_;
+  metadata.reflection = ServerMessage_reflection_;
   return metadata;
 }
 
 
 // ===================================================================
 
-const ::google::protobuf::EnumDescriptor* Response_ResponseType_descriptor() {
+const ::google::protobuf::EnumDescriptor* ClientMessage_Type_descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return Response_ResponseType_descriptor_;
+  return ClientMessage_Type_descriptor_;
 }
-bool Response_ResponseType_IsValid(int value) {
+bool ClientMessage_Type_IsValid(int value) {
   switch(value) {
     case 0:
+    case 1:
       return true;
     default:
       return false;
@@ -405,100 +406,101 @@ bool Response_ResponseType_IsValid(int value) {
 }
 
 #ifndef _MSC_VER
-const Response_ResponseType Response::Pong;
-const Response_ResponseType Response::ResponseType_MIN;
-const Response_ResponseType Response::ResponseType_MAX;
-const int Response::ResponseType_ARRAYSIZE;
+const ClientMessage_Type ClientMessage::Pong;
+const ClientMessage_Type ClientMessage::Init;
+const ClientMessage_Type ClientMessage::Type_MIN;
+const ClientMessage_Type ClientMessage::Type_MAX;
+const int ClientMessage::Type_ARRAYSIZE;
 #endif  // _MSC_VER
 #ifndef _MSC_VER
-const int Response::kResponseFieldNumber;
+const int ClientMessage::kTypeFieldNumber;
 #endif  // !_MSC_VER
 
-Response::Response()
+ClientMessage::ClientMessage()
   : ::google::protobuf::Message() , _internal_metadata_(NULL)  {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Response)
+  // @@protoc_insertion_point(constructor:ClientMessage)
 }
 
-void Response::InitAsDefaultInstance() {
+void ClientMessage::InitAsDefaultInstance() {
 }
 
-Response::Response(const Response& from)
+ClientMessage::ClientMessage(const ClientMessage& from)
   : ::google::protobuf::Message(),
     _internal_metadata_(NULL) {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:Response)
+  // @@protoc_insertion_point(copy_constructor:ClientMessage)
 }
 
-void Response::SharedCtor() {
+void ClientMessage::SharedCtor() {
   _cached_size_ = 0;
-  response_ = 0;
+  type_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-Response::~Response() {
-  // @@protoc_insertion_point(destructor:Response)
+ClientMessage::~ClientMessage() {
+  // @@protoc_insertion_point(destructor:ClientMessage)
   SharedDtor();
 }
 
-void Response::SharedDtor() {
+void ClientMessage::SharedDtor() {
   if (this != default_instance_) {
   }
 }
 
-void Response::SetCachedSize(int size) const {
+void ClientMessage::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* Response::descriptor() {
+const ::google::protobuf::Descriptor* ClientMessage::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return Response_descriptor_;
+  return ClientMessage_descriptor_;
 }
 
-const Response& Response::default_instance() {
+const ClientMessage& ClientMessage::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_hos_5fprotocol_2eproto();
   return *default_instance_;
 }
 
-Response* Response::default_instance_ = NULL;
+ClientMessage* ClientMessage::default_instance_ = NULL;
 
-Response* Response::New(::google::protobuf::Arena* arena) const {
-  Response* n = new Response;
+ClientMessage* ClientMessage::New(::google::protobuf::Arena* arena) const {
+  ClientMessage* n = new ClientMessage;
   if (arena != NULL) {
     arena->Own(n);
   }
   return n;
 }
 
-void Response::Clear() {
-  response_ = 0;
+void ClientMessage::Clear() {
+  type_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   if (_internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->Clear();
   }
 }
 
-bool Response::MergePartialFromCodedStream(
+bool ClientMessage::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:Response)
+  // @@protoc_insertion_point(parse_start:ClientMessage)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required .Response.ResponseType response = 1;
+      // required .ClientMessage.Type type = 1;
       case 1: {
         if (tag == 8) {
           int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
                  input, &value)));
-          if (::Response_ResponseType_IsValid(value)) {
-            set_response(static_cast< ::Response_ResponseType >(value));
+          if (::ClientMessage_Type_IsValid(value)) {
+            set_type(static_cast< ::ClientMessage_Type >(value));
           } else {
             mutable_unknown_fields()->AddVarint(1, value);
           }
@@ -523,54 +525,54 @@ bool Response::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:Response)
+  // @@protoc_insertion_point(parse_success:ClientMessage)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:Response)
+  // @@protoc_insertion_point(parse_failure:ClientMessage)
   return false;
 #undef DO_
 }
 
-void Response::SerializeWithCachedSizes(
+void ClientMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:Response)
-  // required .Response.ResponseType response = 1;
-  if (has_response()) {
+  // @@protoc_insertion_point(serialize_start:ClientMessage)
+  // required .ClientMessage.Type type = 1;
+  if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
-      1, this->response(), output);
+      1, this->type(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:Response)
+  // @@protoc_insertion_point(serialize_end:ClientMessage)
 }
 
-::google::protobuf::uint8* Response::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* ClientMessage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Response)
-  // required .Response.ResponseType response = 1;
-  if (has_response()) {
+  // @@protoc_insertion_point(serialize_to_array_start:ClientMessage)
+  // required .ClientMessage.Type type = 1;
+  if (has_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
-      1, this->response(), target);
+      1, this->type(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Response)
+  // @@protoc_insertion_point(serialize_to_array_end:ClientMessage)
   return target;
 }
 
-int Response::ByteSize() const {
+int ClientMessage::ByteSize() const {
   int total_size = 0;
 
-  // required .Response.ResponseType response = 1;
-  if (has_response()) {
+  // required .ClientMessage.Type type = 1;
+  if (has_type()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::EnumSize(this->response());
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
   }
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
@@ -583,10 +585,10 @@ int Response::ByteSize() const {
   return total_size;
 }
 
-void Response::MergeFrom(const ::google::protobuf::Message& from) {
+void ClientMessage::MergeFrom(const ::google::protobuf::Message& from) {
   if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-  const Response* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const Response*>(
+  const ClientMessage* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ClientMessage*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -595,11 +597,11 @@ void Response::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void Response::MergeFrom(const Response& from) {
+void ClientMessage::MergeFrom(const ClientMessage& from) {
   if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_response()) {
-      set_response(from.response());
+    if (from.has_type()) {
+      set_type(from.type());
     }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
@@ -607,40 +609,40 @@ void Response::MergeFrom(const Response& from) {
   }
 }
 
-void Response::CopyFrom(const ::google::protobuf::Message& from) {
+void ClientMessage::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void Response::CopyFrom(const Response& from) {
+void ClientMessage::CopyFrom(const ClientMessage& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool Response::IsInitialized() const {
+bool ClientMessage::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
 
   return true;
 }
 
-void Response::Swap(Response* other) {
+void ClientMessage::Swap(ClientMessage* other) {
   if (other == this) return;
   InternalSwap(other);
 }
-void Response::InternalSwap(Response* other) {
-  std::swap(response_, other->response_);
+void ClientMessage::InternalSwap(ClientMessage* other) {
+  std::swap(type_, other->type_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
-::google::protobuf::Metadata Response::GetMetadata() const {
+::google::protobuf::Metadata ClientMessage::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = Response_descriptor_;
-  metadata.reflection = Response_reflection_;
+  metadata.descriptor = ClientMessage_descriptor_;
+  metadata.reflection = ClientMessage_reflection_;
   return metadata;
 }
 

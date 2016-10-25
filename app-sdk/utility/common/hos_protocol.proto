@@ -1,126 +1,16 @@
 syntax = "proto2";
 
-message Request{
-	enum RequestType {
+message ServerMessage{
+	enum Type {
 		Ping = 0;
 	}
-	required RequestType request = 1;
+	required Type type = 1;
 }
 
-message Response{
-	enum ResponseType {
+message ClientMessage{
+	enum Type {
 		Pong = 0;
+		Init = 1;
 	}
-	required ResponseType response = 1;
+	required Type type = 1;
 }
-
-// message Point{
-	// required uint32 x = 1;
-	// required uint32 y = 2;
-// }
-
-// message Line{
-	// required Point start_point = 1;
-	// required Point end_point = 2;
-// }
-
-// message MOGParams{
-	// required uint32 history = 1;
-	// required uint32 threshold = 2;
-	// required bool detectShadows = 3;
-	// required float backgroundRatio = 4;
-	// optional float learningRate = 5;
-	// required float ftau = 6;
-// }
-
-// message ObjTrackParams{
-	// required uint32 historySize = 1;
-	// required float minWidth_ratio = 2;
-	// required float minHeight_ratio = 3;
-	// required float maxWidth_ratio = 4;
-	// required float maxHeight_ratio = 5;
-	// required uint32 acceptableDistanceDifference = 6;
-	// required uint32 acceptableAreaDifference = 7;
-// }
-
-// message SmokeDetectionParams{
-	// required MOGParams mogParams = 1;
-	// required float threshold1 = 2;
-	// required float threshold2 = 3;
-	// required uint32 blockSize = 4;
-// }
-
-// message AbObjDetectionParams{
-	// required StrElemParams strElemParams = 1;
-	// required MOGParams mogParams = 2;
-	// required float minWidth_ratio = 3;
-	// required float minHeight_ratio = 4;
-	// required float maxWidth_ratio = 5;
-	// required float maxHeight_ratio = 6;
-	// required uint32 minFrames = 7;
-	// required uint32 notThereFor = 8;
-	// required uint32 maxDistance = 9;
-	// required uint32 maxDeltaArea = 10;
-	// required uint32 history = 11;
-	// required uint32 interval = 12;
-	// required float expandFactor = 13;
-// }
-
-// message StoppedVehicleDetectionParams{
-	// required AbObjDetectionParams abobjParams = 1;
-	// required string modelFile = 2;
-// }
-
-// message ParkedVehicleParams{
-	// required StoppedVehicleDetectionParams stoppedVehicleParams = 1; 
-	// required string ocrFunction = 2;
-	// required uint32 interval = 3;
-// }
-
-// message LineCrossingParams{
-	// required StrElemParams strElemParams = 1;
-	// required MOGParams mogParams = 2;
-	// repeated Line lines = 3;
-// }
-
-// message ZoneEntryExitParams{
-	// required StrElemParams strElemParams = 1;
-	// required MOGParams mogParams = 2;
-	// required ObjTrackParams objTrackParams = 3;
-	// repeated Point points = 4;
-// }
-
-// message DropofVideoQualityParams{
-	// required uint32 shortTermHistorySize = 1; 
-	// required uint32 longTermHistorySize = 2;
-	// required uint32 threshold = 3;
-// }
-
-// message AlgorithmRequest{
-	// required AlgorithmType algorithmType = 1;
-	// required uint32 decodePeriod = 2;
-	// required string sourceUrl = 3;
-	// required Resolution resolution = 4;
-	// optional SmokeDetectionParams smokeParams = 5;
-	// optional ParkedVehicleParams pvParams = 6;
-	// optional LineCrossingParams lcParams = 7;
-	// optional StoppedVehicleDetectionParams svParams = 8;
-	// optional AbObjDetectionParams abobjParams = 9;
-	// optional DropofVideoQualityParams dropofvideoqualityParams = 10;
-	// optional ZoneEntryExitParams zoneentryexitParams = 11;
-// }
-
-// message AlgorithmResponse{
-	// enum State{
-		// Running = 0;
-		// ScriptSyntaxError = 1;
-		// Completed = 2;
-		// Error = 3;
-	// }
-	// required State state = 1;
-	// optional string errorString = 2;
-// }
-
-// message ProgressMessage{
-	// optional uint32 progress = 1;
-// }
