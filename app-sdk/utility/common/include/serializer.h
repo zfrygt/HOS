@@ -4,27 +4,12 @@
 #include <assert.h>
 #include <memory>
 
-class NonCopyable
+class SerializedObject
 {
 public:
-	NonCopyable() { }
-	virtual ~NonCopyable() { }
-
-private:
-	NonCopyable(const NonCopyable& other) = delete;
-	NonCopyable(NonCopyable&& other) = delete;
-	NonCopyable& operator=(const NonCopyable& other) = delete;
-	NonCopyable& operator=(NonCopyable&& other) = delete;
-};
-
-class SerializedObject : NonCopyable
-{
-public:
-	explicit SerializedObject(void* buf, uint64_t size) : 
-		m_buf(buf),
+	explicit SerializedObject(uint64_t size) : 
 		m_size(size)
 	{
-		
 		assert(size > 0);
 		m_buf = malloc(m_size);
 		assert(m_buf != nullptr);
@@ -60,9 +45,10 @@ public:
 	{
 		auto size = t->ByteSize();
 		assert(size > 0);
-		auto buf = malloc(size);
-		t->SerializeToArray(buf, size);
-		return std::make_unique<SerializedObject>(buf, size);
+
+		auto so = std::make_unique<SerializedObject>(size);
+		t->SerializeToArray(so->get_buf(), so->get_size());
+		return so;
 	}
 
 	template<typename T>
