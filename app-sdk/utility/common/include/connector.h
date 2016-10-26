@@ -18,7 +18,7 @@ public:
 	virtual ~Connector();
 	void receive();
 	void send(const void* data, uint64_t size);
-	void heartbeat(uint32_t timeout);
+	void heartbeat(long timeout);
 
 protected:
 	Connector(const Connector& other) = delete;

@@ -65,7 +65,7 @@ Connector::~Connector()
 	zmq_ctx_destroy(m_context);
 }
 
-void Connector::heartbeat(uint32_t timeout)
+void Connector::heartbeat(long timeout)
 {
 	zmq_pollitem_t items[] = {
 		{ m_socket, 0, ZMQ_POLLIN, 0 }
