@@ -36,7 +36,12 @@ public:
 		m_size = 0;
 	}
 
-	inline void* get_buf() const { return m_buf; }
+	SerializedObject(const SerializedObject& other) = delete;
+	SerializedObject(SerializedObject&& other) = delete;
+	SerializedObject& operator=(const SerializedObject& other) = delete;
+	SerializedObject& operator=(SerializedObject&& other) = delete;
+
+	inline void* get_buf() { return m_buf; }
 	inline uint64_t get_size() const { return m_size; }
 
 private:
