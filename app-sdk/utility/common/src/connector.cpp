@@ -53,7 +53,7 @@ m_lastReceivedMessageTime(-1)
 	zmq_connect(m_socket, m_uri);
 
 	ClientMessage client_message;
-	client_message.set_type(ClientMessage_Type_Init);
+	client_message.set_type(MessageType::Init);
 	auto aa = Serializer::serialize(&client_message);
 	send(aa->get_buf(), aa->get_size());
 }
