@@ -25,6 +25,9 @@ public:
 		m_size(size)
 	{
 		
+		assert(size > 0);
+		m_buf = malloc(m_size);
+		assert(m_buf != nullptr);
 	}
 	~SerializedObject()
 	{
