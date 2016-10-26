@@ -7,6 +7,7 @@ PROJECT(tests)
 set(tests 
 			test_test1
 			test_test2
+			test_heartbeat
 			)
 # add library and include dirs for all targets
 include_directories("../utility/common/include")
