@@ -33,7 +33,7 @@ int main()
 	zmq_recv(server_socket, buffer, sizeof buffer, 0);
 
 	ServerMessage req;
-	req.set_type(MessageType::Ping);
+	req.set_type(Ping);
 	auto so = Serializer::serialize(&req);
 
 	auto buf = so->get_buf();

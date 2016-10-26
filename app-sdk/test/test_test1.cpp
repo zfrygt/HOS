@@ -46,7 +46,7 @@ int main()
 	memcpy(so->get_buf(), rec_buf, ret_bytes3);
 
 	auto data = move(Serializer::deserialize<ClientMessage>(std::move(so)));
-	assert(data->type() == MessageType::Init);
+	assert(data->type() == Init);
 	
 	delete connector;
 

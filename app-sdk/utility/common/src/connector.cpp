@@ -53,7 +53,7 @@ m_lastReceivedMessageTime(-1)
 	zmq_connect(m_socket, m_uri);
 
 	ClientMessage client_message;
-	client_message.set_type(MessageType::Init);
+	client_message.set_type(Init);
 	auto aa = Serializer::serialize(&client_message);
 	send(aa->get_buf(), aa->get_size());
 }
@@ -86,7 +86,7 @@ void Connector::heartbeat(uint32_t timeout)
 	}
 	if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
 		ClientMessage response;
-		response.set_type(MessageType::Pong);
+		response.set_type(Pong);
 		auto aa = Serializer::serialize(&response);
 		send(aa->get_buf(), aa->get_size());
 	}
@@ -118,7 +118,7 @@ void Connector::receive()
 		memcpy(so->get_buf(), data, size);
 
 		auto s = Serializer::deserialize<ServerMessage>(move(so));
-		assert(s->type() == MessageType::Ping);
+		assert(s->type() == Ping);
 		zmq_msg_close(&msg);
 	}
 
