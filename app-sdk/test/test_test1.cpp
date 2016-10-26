@@ -26,14 +26,11 @@ int main()
 
 	char rec_buf[80] = { 0 };
 
-	std::string clientName;
-	clientName.reserve(10);
-	
 	// read identity
 	auto ret_bytes = zmq_recv(server_socket, rec_buf, sizeof rec_buf, 0);
-	strcpy(&clientName[0], rec_buf); // clientName lenght DOES NOT CHANGE!!! DO NOT TRY TO GET ClientName lenght!!
+	std::string clientName(rec_buf);
 	assert(ret_bytes == module_name.length());
-	assert(strncmp(clientName.c_str(), module_name.c_str(), ret_bytes) == 0);
+	assert(strncmp(clientName.c_str(), module_name.c_str(), module_name.length()) == 0);
 
 	//read empty delimiter
 	memset(rec_buf, 0, sizeof rec_buf);
@@ -43,14 +40,13 @@ int main()
 
 	//read data
 	memset(rec_buf, 0, sizeof rec_buf);
-
-
 	auto ret_bytes3 = zmq_recv(server_socket, rec_buf, sizeof rec_buf, 0);
-	auto temp_buf = malloc(ret_bytes3);
-	memcpy(temp_buf, rec_buf, ret_bytes3);
 
-	auto data = move(Serializer::deserialize<ClientMessage>(std::make_unique<SerializedObject>(temp_buf, ret_bytes3)));
-	assert(data->type() == ClientMessage_Type_Init);
+	auto so = std::make_unique<SerializedObject>(ret_bytes3);
+	memcpy(so->get_buf(), rec_buf, ret_bytes3);
+
+	auto data = move(Serializer::deserialize<ClientMessage>(std::move(so)));
+	assert(data->type() == MessageType::Init);
 	
 	delete connector;
 

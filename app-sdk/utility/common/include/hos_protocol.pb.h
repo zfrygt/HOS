@@ -38,42 +38,25 @@ void protobuf_ShutdownFile_hos_5fprotocol_2eproto();
 class ServerMessage;
 class ClientMessage;
 
-enum ServerMessage_Type {
-  ServerMessage_Type_Ping = 0
+enum MessageType {
+  Ping = 0,
+  Pong = 1,
+  Init = 2
 };
-bool ServerMessage_Type_IsValid(int value);
-const ServerMessage_Type ServerMessage_Type_Type_MIN = ServerMessage_Type_Ping;
-const ServerMessage_Type ServerMessage_Type_Type_MAX = ServerMessage_Type_Ping;
-const int ServerMessage_Type_Type_ARRAYSIZE = ServerMessage_Type_Type_MAX + 1;
+bool MessageType_IsValid(int value);
+const MessageType MessageType_MIN = Ping;
+const MessageType MessageType_MAX = Init;
+const int MessageType_ARRAYSIZE = MessageType_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* ServerMessage_Type_descriptor();
-inline const ::std::string& ServerMessage_Type_Name(ServerMessage_Type value) {
+const ::google::protobuf::EnumDescriptor* MessageType_descriptor();
+inline const ::std::string& MessageType_Name(MessageType value) {
   return ::google::protobuf::internal::NameOfEnum(
-    ServerMessage_Type_descriptor(), value);
+    MessageType_descriptor(), value);
 }
-inline bool ServerMessage_Type_Parse(
-    const ::std::string& name, ServerMessage_Type* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<ServerMessage_Type>(
-    ServerMessage_Type_descriptor(), name, value);
-}
-enum ClientMessage_Type {
-  ClientMessage_Type_Pong = 0,
-  ClientMessage_Type_Init = 1
-};
-bool ClientMessage_Type_IsValid(int value);
-const ClientMessage_Type ClientMessage_Type_Type_MIN = ClientMessage_Type_Pong;
-const ClientMessage_Type ClientMessage_Type_Type_MAX = ClientMessage_Type_Init;
-const int ClientMessage_Type_Type_ARRAYSIZE = ClientMessage_Type_Type_MAX + 1;
-
-const ::google::protobuf::EnumDescriptor* ClientMessage_Type_descriptor();
-inline const ::std::string& ClientMessage_Type_Name(ClientMessage_Type value) {
-  return ::google::protobuf::internal::NameOfEnum(
-    ClientMessage_Type_descriptor(), value);
-}
-inline bool ClientMessage_Type_Parse(
-    const ::std::string& name, ClientMessage_Type* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<ClientMessage_Type>(
-    ClientMessage_Type_descriptor(), name, value);
+inline bool MessageType_Parse(
+    const ::std::string& name, MessageType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<MessageType>(
+    MessageType_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -139,37 +122,14 @@ class ServerMessage : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
-  typedef ServerMessage_Type Type;
-  static const Type Ping = ServerMessage_Type_Ping;
-  static inline bool Type_IsValid(int value) {
-    return ServerMessage_Type_IsValid(value);
-  }
-  static const Type Type_MIN =
-    ServerMessage_Type_Type_MIN;
-  static const Type Type_MAX =
-    ServerMessage_Type_Type_MAX;
-  static const int Type_ARRAYSIZE =
-    ServerMessage_Type_Type_ARRAYSIZE;
-  static inline const ::google::protobuf::EnumDescriptor*
-  Type_descriptor() {
-    return ServerMessage_Type_descriptor();
-  }
-  static inline const ::std::string& Type_Name(Type value) {
-    return ServerMessage_Type_Name(value);
-  }
-  static inline bool Type_Parse(const ::std::string& name,
-      Type* value) {
-    return ServerMessage_Type_Parse(name, value);
-  }
-
   // accessors -------------------------------------------------------
 
-  // required .ServerMessage.Type type = 1;
+  // required .MessageType type = 1;
   inline bool has_type() const;
   inline void clear_type();
   static const int kTypeFieldNumber = 1;
-  inline ::ServerMessage_Type type() const;
-  inline void set_type(::ServerMessage_Type value);
+  inline ::MessageType type() const;
+  inline void set_type(::MessageType value);
 
   // @@protoc_insertion_point(class_scope:ServerMessage)
  private:
@@ -251,38 +211,14 @@ class ClientMessage : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
-  typedef ClientMessage_Type Type;
-  static const Type Pong = ClientMessage_Type_Pong;
-  static const Type Init = ClientMessage_Type_Init;
-  static inline bool Type_IsValid(int value) {
-    return ClientMessage_Type_IsValid(value);
-  }
-  static const Type Type_MIN =
-    ClientMessage_Type_Type_MIN;
-  static const Type Type_MAX =
-    ClientMessage_Type_Type_MAX;
-  static const int Type_ARRAYSIZE =
-    ClientMessage_Type_Type_ARRAYSIZE;
-  static inline const ::google::protobuf::EnumDescriptor*
-  Type_descriptor() {
-    return ClientMessage_Type_descriptor();
-  }
-  static inline const ::std::string& Type_Name(Type value) {
-    return ClientMessage_Type_Name(value);
-  }
-  static inline bool Type_Parse(const ::std::string& name,
-      Type* value) {
-    return ClientMessage_Type_Parse(name, value);
-  }
-
   // accessors -------------------------------------------------------
 
-  // required .ClientMessage.Type type = 1;
+  // required .MessageType type = 1;
   inline bool has_type() const;
   inline void clear_type();
   static const int kTypeFieldNumber = 1;
-  inline ::ClientMessage_Type type() const;
-  inline void set_type(::ClientMessage_Type value);
+  inline ::MessageType type() const;
+  inline void set_type(::MessageType value);
 
   // @@protoc_insertion_point(class_scope:ClientMessage)
  private:
@@ -307,7 +243,7 @@ class ClientMessage : public ::google::protobuf::Message {
 
 // ServerMessage
 
-// required .ServerMessage.Type type = 1;
+// required .MessageType type = 1;
 inline bool ServerMessage::has_type() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -321,12 +257,12 @@ inline void ServerMessage::clear_type() {
   type_ = 0;
   clear_has_type();
 }
-inline ::ServerMessage_Type ServerMessage::type() const {
+inline ::MessageType ServerMessage::type() const {
   // @@protoc_insertion_point(field_get:ServerMessage.type)
-  return static_cast< ::ServerMessage_Type >(type_);
+  return static_cast< ::MessageType >(type_);
 }
-inline void ServerMessage::set_type(::ServerMessage_Type value) {
-  assert(::ServerMessage_Type_IsValid(value));
+inline void ServerMessage::set_type(::MessageType value) {
+  assert(::MessageType_IsValid(value));
   set_has_type();
   type_ = value;
   // @@protoc_insertion_point(field_set:ServerMessage.type)
@@ -336,7 +272,7 @@ inline void ServerMessage::set_type(::ServerMessage_Type value) {
 
 // ClientMessage
 
-// required .ClientMessage.Type type = 1;
+// required .MessageType type = 1;
 inline bool ClientMessage::has_type() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -350,12 +286,12 @@ inline void ClientMessage::clear_type() {
   type_ = 0;
   clear_has_type();
 }
-inline ::ClientMessage_Type ClientMessage::type() const {
+inline ::MessageType ClientMessage::type() const {
   // @@protoc_insertion_point(field_get:ClientMessage.type)
-  return static_cast< ::ClientMessage_Type >(type_);
+  return static_cast< ::MessageType >(type_);
 }
-inline void ClientMessage::set_type(::ClientMessage_Type value) {
-  assert(::ClientMessage_Type_IsValid(value));
+inline void ClientMessage::set_type(::MessageType value) {
+  assert(::MessageType_IsValid(value));
   set_has_type();
   type_ = value;
   // @@protoc_insertion_point(field_set:ClientMessage.type)
@@ -368,15 +304,10 @@ inline void ClientMessage::set_type(::ClientMessage_Type value) {
 namespace google {
 namespace protobuf {
 
-template <> struct is_proto_enum< ::ServerMessage_Type> : ::google::protobuf::internal::true_type {};
+template <> struct is_proto_enum< ::MessageType> : ::google::protobuf::internal::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::ServerMessage_Type>() {
-  return ::ServerMessage_Type_descriptor();
-}
-template <> struct is_proto_enum< ::ClientMessage_Type> : ::google::protobuf::internal::true_type {};
-template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::ClientMessage_Type>() {
-  return ::ClientMessage_Type_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::MessageType>() {
+  return ::MessageType_descriptor();
 }
 
 }  // namespace protobuf

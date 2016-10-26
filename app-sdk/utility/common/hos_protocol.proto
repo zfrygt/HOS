@@ -1,16 +1,15 @@
 syntax = "proto2";
 
+enum MessageType{
+	Ping = 0;
+	Pong = 1;
+	Init = 2;
+}
+
 message ServerMessage{
-	enum Type {
-		Ping = 0;
-	}
-	required Type type = 1;
+	required MessageType type = 1;
 }
 
 message ClientMessage{
-	enum Type {
-		Pong = 0;
-		Init = 1;
-	}
-	required Type type = 1;
+	required MessageType type = 1;
 }

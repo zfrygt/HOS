@@ -33,14 +33,17 @@ int main()
 	zmq_recv(server_socket, buffer, sizeof buffer, 0);
 
 	ServerMessage req;
-	req.set_type(ServerMessage_Type_Ping);
-	auto aa = Serializer::serialize(&req);
+	req.set_type(MessageType::Ping);
+	auto so = Serializer::serialize(&req);
 
-	auto buf = aa->get_buf();
-	auto size = aa->get_size();
+	auto buf = so->get_buf();
+	auto size = so->get_size();
 
 	auto c = client_name.c_str();
 	auto s = client_name.length();
+
+	assert(c != nullptr);
+	assert(s > 0);
 
 	zmq_send(server_socket, c, s, ZMQ_SNDMORE);
 	zmq_send(server_socket, nullptr, 0, ZMQ_SNDMORE);

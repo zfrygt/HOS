@@ -21,11 +21,10 @@ namespace {
 const ::google::protobuf::Descriptor* ServerMessage_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ServerMessage_reflection_ = NULL;
-const ::google::protobuf::EnumDescriptor* ServerMessage_Type_descriptor_ = NULL;
 const ::google::protobuf::Descriptor* ClientMessage_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ClientMessage_reflection_ = NULL;
-const ::google::protobuf::EnumDescriptor* ClientMessage_Type_descriptor_ = NULL;
+const ::google::protobuf::EnumDescriptor* MessageType_descriptor_ = NULL;
 
 }  // namespace
 
@@ -51,7 +50,6 @@ void protobuf_AssignDesc_hos_5fprotocol_2eproto() {
       sizeof(ServerMessage),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ServerMessage, _internal_metadata_),
       -1);
-  ServerMessage_Type_descriptor_ = ServerMessage_descriptor_->enum_type(0);
   ClientMessage_descriptor_ = file->message_type(1);
   static const int ClientMessage_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, type_),
@@ -67,7 +65,7 @@ void protobuf_AssignDesc_hos_5fprotocol_2eproto() {
       sizeof(ClientMessage),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, _internal_metadata_),
       -1);
-  ClientMessage_Type_descriptor_ = ClientMessage_descriptor_->enum_type(0);
+  MessageType_descriptor_ = file->enum_type(0);
 }
 
 namespace {
@@ -102,11 +100,10 @@ void protobuf_AddDesc_hos_5fprotocol_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\022hos_protocol.proto\"D\n\rServerMessage\022!\n"
-    "\004type\030\001 \002(\0162\023.ServerMessage.Type\"\020\n\004Type"
-    "\022\010\n\004Ping\020\000\"N\n\rClientMessage\022!\n\004type\030\001 \002("
-    "\0162\023.ClientMessage.Type\"\032\n\004Type\022\010\n\004Pong\020\000"
-    "\022\010\n\004Init\020\001", 170);
+    "\n\022hos_protocol.proto\"+\n\rServerMessage\022\032\n"
+    "\004type\030\001 \002(\0162\014.MessageType\"+\n\rClientMessa"
+    "ge\022\032\n\004type\030\001 \002(\0162\014.MessageType*+\n\013Messag"
+    "eType\022\010\n\004Ping\020\000\022\010\n\004Pong\020\001\022\010\n\004Init\020\002", 155);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "hos_protocol.proto", &protobuf_RegisterTypes);
   ServerMessage::default_instance_ = new ServerMessage();
@@ -122,6 +119,21 @@ struct StaticDescriptorInitializer_hos_5fprotocol_2eproto {
     protobuf_AddDesc_hos_5fprotocol_2eproto();
   }
 } static_descriptor_initializer_hos_5fprotocol_2eproto_;
+const ::google::protobuf::EnumDescriptor* MessageType_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return MessageType_descriptor_;
+}
+bool MessageType_IsValid(int value) {
+  switch(value) {
+    case 0:
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
 
 namespace {
 
@@ -135,25 +147,6 @@ static void MergeFromFail(int line) {
 
 // ===================================================================
 
-const ::google::protobuf::EnumDescriptor* ServerMessage_Type_descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return ServerMessage_Type_descriptor_;
-}
-bool ServerMessage_Type_IsValid(int value) {
-  switch(value) {
-    case 0:
-      return true;
-    default:
-      return false;
-  }
-}
-
-#ifndef _MSC_VER
-const ServerMessage_Type ServerMessage::Ping;
-const ServerMessage_Type ServerMessage::Type_MIN;
-const ServerMessage_Type ServerMessage::Type_MAX;
-const int ServerMessage::Type_ARRAYSIZE;
-#endif  // _MSC_VER
 #ifndef _MSC_VER
 const int ServerMessage::kTypeFieldNumber;
 #endif  // !_MSC_VER
@@ -234,15 +227,15 @@ bool ServerMessage::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required .ServerMessage.Type type = 1;
+      // required .MessageType type = 1;
       case 1: {
         if (tag == 8) {
           int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
                  input, &value)));
-          if (::ServerMessage_Type_IsValid(value)) {
-            set_type(static_cast< ::ServerMessage_Type >(value));
+          if (::MessageType_IsValid(value)) {
+            set_type(static_cast< ::MessageType >(value));
           } else {
             mutable_unknown_fields()->AddVarint(1, value);
           }
@@ -278,7 +271,7 @@ failure:
 void ServerMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ServerMessage)
-  // required .ServerMessage.Type type = 1;
+  // required .MessageType type = 1;
   if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       1, this->type(), output);
@@ -294,7 +287,7 @@ void ServerMessage::SerializeWithCachedSizes(
 ::google::protobuf::uint8* ServerMessage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:ServerMessage)
-  // required .ServerMessage.Type type = 1;
+  // required .MessageType type = 1;
   if (has_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       1, this->type(), target);
@@ -311,7 +304,7 @@ void ServerMessage::SerializeWithCachedSizes(
 int ServerMessage::ByteSize() const {
   int total_size = 0;
 
-  // required .ServerMessage.Type type = 1;
+  // required .MessageType type = 1;
   if (has_type()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
@@ -391,27 +384,6 @@ void ServerMessage::InternalSwap(ServerMessage* other) {
 
 // ===================================================================
 
-const ::google::protobuf::EnumDescriptor* ClientMessage_Type_descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return ClientMessage_Type_descriptor_;
-}
-bool ClientMessage_Type_IsValid(int value) {
-  switch(value) {
-    case 0:
-    case 1:
-      return true;
-    default:
-      return false;
-  }
-}
-
-#ifndef _MSC_VER
-const ClientMessage_Type ClientMessage::Pong;
-const ClientMessage_Type ClientMessage::Init;
-const ClientMessage_Type ClientMessage::Type_MIN;
-const ClientMessage_Type ClientMessage::Type_MAX;
-const int ClientMessage::Type_ARRAYSIZE;
-#endif  // _MSC_VER
 #ifndef _MSC_VER
 const int ClientMessage::kTypeFieldNumber;
 #endif  // !_MSC_VER
@@ -492,15 +464,15 @@ bool ClientMessage::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required .ClientMessage.Type type = 1;
+      // required .MessageType type = 1;
       case 1: {
         if (tag == 8) {
           int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
                  input, &value)));
-          if (::ClientMessage_Type_IsValid(value)) {
-            set_type(static_cast< ::ClientMessage_Type >(value));
+          if (::MessageType_IsValid(value)) {
+            set_type(static_cast< ::MessageType >(value));
           } else {
             mutable_unknown_fields()->AddVarint(1, value);
           }
@@ -536,7 +508,7 @@ failure:
 void ClientMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ClientMessage)
-  // required .ClientMessage.Type type = 1;
+  // required .MessageType type = 1;
   if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       1, this->type(), output);
@@ -552,7 +524,7 @@ void ClientMessage::SerializeWithCachedSizes(
 ::google::protobuf::uint8* ClientMessage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:ClientMessage)
-  // required .ClientMessage.Type type = 1;
+  // required .MessageType type = 1;
   if (has_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       1, this->type(), target);
@@ -569,7 +541,7 @@ void ClientMessage::SerializeWithCachedSizes(
 int ClientMessage::ByteSize() const {
   int total_size = 0;
 
-  // required .ClientMessage.Type type = 1;
+  // required .MessageType type = 1;
   if (has_type()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());

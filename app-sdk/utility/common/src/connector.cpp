@@ -86,7 +86,7 @@ void Connector::heartbeat(uint32_t timeout)
 	}
 	if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
 		ClientMessage response;
-		response.set_type(ClientMessage_Type_Pong);
+		response.set_type(MessageType::Pong);
 		auto aa = Serializer::serialize(&response);
 		send(aa->get_buf(), aa->get_size());
 	}
@@ -113,11 +113,12 @@ void Connector::receive()
 
 		auto size = zmq_msg_size(&msg);
 		auto data = static_cast<char*>(zmq_msg_data(&msg));
-		auto buffer = malloc(size);
-		memcpy(buffer, data, size);
 
-		auto s = Serializer::deserialize<ServerMessage>(std::make_unique<SerializedObject>(buffer, size));
-		assert(s->type() == ClientMessage_Type_Pong);
+		auto so = std::make_unique<SerializedObject>(size);
+		memcpy(so->get_buf(), data, size);
+
+		auto s = Serializer::deserialize<ServerMessage>(move(so));
+		assert(s->type() == MessageType::Ping);
 		zmq_msg_close(&msg);
 	}
 
