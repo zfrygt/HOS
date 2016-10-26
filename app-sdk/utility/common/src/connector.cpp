@@ -14,16 +14,16 @@ Connector::Connector(const char* uri, const char* module_name) :
 m_lastSendMessageTime(-1),
 m_lastReceivedMessageTime(-1)
 {
-	memset(m_uri, 0, MAX_LEN);
-	memset(m_module_name, 0, MAX_LEN);
-
 	m_uri_len = strlen(uri);
 	assert(m_uri_len > 0);
 	m_module_name_len = strlen(module_name);
 	assert(m_module_name_len > 0);
 
-	memcpy(m_uri, uri, m_uri_len);
-	memcpy(m_module_name, module_name, m_module_name_len);
+	m_uri = static_cast<char*>(malloc(m_uri_len + 1));
+	strcpy(m_uri, uri);
+
+	m_module_name = static_cast<char*>(malloc(m_module_name_len + 1));
+	strcpy(m_module_name, module_name);
 
 	m_context = zmq_ctx_new();
 	assert(m_context != nullptr);
@@ -60,6 +60,16 @@ m_lastReceivedMessageTime(-1)
 
 Connector::~Connector()
 {
+	if (m_uri)
+	{
+		free(m_uri);
+		m_uri = nullptr;
+	}
+	if (m_module_name)
+	{
+		free(m_module_name);
+		m_module_name = nullptr;
+	}
 	zmq_disconnect(m_socket, m_uri);
 	zmq_close(m_socket);
 	zmq_ctx_destroy(m_context);

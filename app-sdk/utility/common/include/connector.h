@@ -6,10 +6,6 @@
 #include <time.h>
 #include <stdint.h>
 
-const uint32_t MAX_LEN = 80;
-
-class Request;
-
 // Connector class that abstracts the heartbeating and other communication details.
 class COMMON_EXPORT Connector
 {
@@ -29,8 +25,8 @@ protected:
 private:
 	void* m_context;
 	void* m_socket;
-	char m_uri[MAX_LEN];
-	char m_module_name[MAX_LEN];
+	char *m_uri;
+	char *m_module_name;
 	uint8_t m_uri_len, m_module_name_len;
 	clock_t m_lastSendMessageTime;
 	clock_t m_lastReceivedMessageTime;
