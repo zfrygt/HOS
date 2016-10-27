@@ -1,14 +1,8 @@
-#include <zmq.h>
+#include <utils.h>
 #include <connector.h>
-#include <assert.h>
-#include <hos_protocol.pb.h>
-#include <serializer.h>
 #include <thread>
 #include <future>
 #include <iostream>
-
-void sendHeartbeat(void*, const std::string&);
-std::unique_ptr<ClientMessage> recv_client_message(void*, std::string&);
 
 int main()
 {
@@ -69,48 +63,3 @@ int main()
 	return 0;
 }
 
-inline void sendHeartbeat(void* socket, const std::string& client_name)
-{
-	ServerMessage req;
-	req.set_type(Ping);
-	auto so = Serializer::serialize(&req);
-
-	auto buf = so->get_buf();
-	auto size = so->get_size();
-
-	auto c = client_name.c_str();
-	auto s = client_name.length();
-
-	assert(c != nullptr);
-	assert(s > 0);
-
-	zmq_send(socket, c, s, ZMQ_SNDMORE);
-	zmq_send(socket, nullptr, 0, ZMQ_SNDMORE);
-	zmq_send(socket, buf, size, 0);
-}
-
-std::unique_ptr<ClientMessage> recv_client_message(void* socket, std::string& client)
-{
-	// get client identifier
-	char buffer[80] = { 0 };
-	auto len_id = zmq_recv(socket, buffer, sizeof buffer, 0);
-	assert(len_id > 0);
-
-	client = std::string(buffer);
-
-	// read empty frame
-	auto len_ef = zmq_recv(socket, buffer, sizeof buffer, 0);
-	assert(len_ef == 0);
-
-	// read data
-	auto init_mes_size = zmq_recv(socket, buffer, sizeof buffer, 0);
-	assert(init_mes_size != -1);
-
-	// make sure the client sends init command when it connects to server.
-	auto so = std::make_unique<SerializedObject>(init_mes_size);
-	so->copyFrom(buffer);
-
-	auto client_message = Serializer::deserialize<ClientMessage>(std::move(so));
-
-	return client_message;
-}
