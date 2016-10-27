@@ -5,6 +5,20 @@
 #include <string>
 #include <time.h>
 #include <stdint.h>
+#include <job.h>
+#include <memory>
+
+namespace tbb
+{
+	template<typename T>
+	class cache_aligned_allocator;
+
+	template<typename T, class A = cache_aligned_allocator<T>>
+	class concurrent_bounded_queue;
+}
+
+class ServerMessage;
+class ClientMessage;
 
 // Connector class that abstracts the heartbeating and other communication details.
 class COMMON_EXPORT Connector
@@ -12,8 +26,8 @@ class COMMON_EXPORT Connector
 public:
 	Connector(const char* uri, const char* module_name);
 	virtual ~Connector();
-	void receive();
-	void send(const void* data, uint64_t size);
+	std::unique_ptr<ServerMessage> receive();
+	void send(const ClientMessage* client_message);
 	void heartbeat(long timeout);
 
 protected:
@@ -30,6 +44,8 @@ private:
 	uint8_t m_uri_len, m_module_name_len;
 	clock_t m_lastSendMessageTime;
 	clock_t m_lastReceivedMessageTime;
+
+	tbb::concurrent_bounded_queue<std::unique_ptr<IJob>>* m_job_queue;
 };
 
 #endif

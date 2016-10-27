@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <hos_protocol.pb.h>
 #include <serializer.h>
+#include <tbb/concurrent_queue.h>
+#include <utils.h>
 
 #define HEARTHBEAT_INTERVAL_IN_SECONDS 5 
 #define TIMEOUT_INTERVAL_IN_SECONDS 15
@@ -56,8 +58,7 @@ m_lastReceivedMessageTime(-1)
 
 	ClientMessage client_message;
 	client_message.set_type(Init);
-	auto aa = Serializer::serialize(&client_message);
-	send(aa->get_buf(), aa->get_size());
+	send(&client_message);
 }
 
 Connector::~Connector()
@@ -79,6 +80,7 @@ Connector::~Connector()
 
 void Connector::heartbeat(long timeout)
 {
+
 	zmq_pollitem_t items[] = {
 		{ m_socket, 0, ZMQ_POLLIN, 0 }
 	};
@@ -99,62 +101,20 @@ void Connector::heartbeat(long timeout)
 	if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
 		ClientMessage response;
 		response.set_type(Pong);
-		auto aa = Serializer::serialize(&response);
-		send(aa->get_buf(), aa->get_size());
+		send(&response);
 	}
 }
 
-void Connector::receive()
+std::unique_ptr<ServerMessage> Connector::receive()
 {
-	zmq_msg_t msg;
-	int more;
-	// Read NULL frame
-	{
-		zmq_msg_init(&msg);
-		ZMQ_CHECK(zmq_recvmsg(m_socket, &msg, 0));
-		more = zmq_msg_more(&msg);
-		assert(more);
-		zmq_msg_close(&msg);
-	}
-	// Read result identifier
-	{
-		zmq_msg_init(&msg);
-		ZMQ_CHECK(zmq_recvmsg(m_socket, &msg, 0));
-		more = zmq_msg_more(&msg);
-		assert(more == 0);
-
-		auto size = zmq_msg_size(&msg);
-		auto data = static_cast<char*>(zmq_msg_data(&msg));
-
-		auto serialized_obj = std::make_unique<SerializedObject>(size);
-		serialized_obj->copyFrom(data);
-
-		auto server_message = Serializer::deserialize<ServerMessage>(serialized_obj.get());
-		assert(server_message->type() == Ping);
-		zmq_msg_close(&msg);
-	}
-
-	// Discard remaining!
-	while (more){
-		zmq_msg_init(&msg);
-		ZMQ_CHECK(zmq_recvmsg(m_socket, &msg, 0));
-		more = zmq_msg_more(&msg);
-		zmq_msg_close(&msg);
-	}
+	auto server_message = recv_server_message(m_socket);
 	m_lastReceivedMessageTime = clock();
+	return server_message;
 }
 
-void Connector::send(const void* data, uint64_t size)
+void Connector::send(const ClientMessage* client_message)
 {
-	assert(data != nullptr);
-	assert(size > 0);
-
-	// Send empty frame
-	int r1 = zmq_send(m_socket, nullptr, 0, ZMQ_SNDMORE);
-	assert(r1 == 0);
-
-	int r4 = zmq_send(m_socket, data, size, 0);
-	assert(r4 == size);
+	send_client_message(m_socket, client_message);
 
 	m_lastSendMessageTime = clock();
 

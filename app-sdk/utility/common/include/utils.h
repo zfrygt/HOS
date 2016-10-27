@@ -2,14 +2,8 @@
 #define UTILS_H
 
 #include <zmq.h>
-#include <iostream>
 #include <hos_protocol.pb.h>
 #include <serializer.h>
-
-static inline std::string array_to_string(const char* arr)
-{
-	return std::string(arr);
-}
 
 inline void send_server_message(void* socket, const ServerMessage* server_message, const std::string& client_name)
 {
@@ -29,14 +23,31 @@ inline void send_server_message(void* socket, const ServerMessage* server_messag
 	zmq_send(socket, buf, size, 0);
 }
 
-inline std::unique_ptr<ClientMessage> recv_client_message(void* socket, std::string& client)
+inline void send_client_message(void* socket, const ClientMessage* client_message)
 {
-	// get client identifier
-	char buffer[80] = { 0 };
-	auto len_id = zmq_recv(socket, buffer, sizeof buffer, 0);
-	assert(len_id > 0);
+	assert(client_message != nullptr);
+	auto so = Serializer::serialize(client_message);
 
-	client = std::move(std::string(buffer));
+	auto buf = so->get_buf();
+	auto size = so->get_size();
+
+	assert(buf != nullptr);
+	assert(size > 0);
+
+	// Send empty frame
+	int r1 = zmq_send(socket, nullptr, 0, ZMQ_SNDMORE);
+	assert(r1 == 0);
+
+	int r4 = zmq_send(socket, buf, size, 0);
+	assert(r4 == size);
+}
+
+template <typename T>
+inline std::unique_ptr<T> recv_message(void* socket)
+{
+	assert(socket != nullptr);
+
+	char buffer[80] = { 0 };
 
 	// read empty frame
 	auto len_ef = zmq_recv(socket, buffer, sizeof buffer, 0);
@@ -46,11 +57,27 @@ inline std::unique_ptr<ClientMessage> recv_client_message(void* socket, std::str
 	auto data_size = zmq_recv(socket, buffer, sizeof buffer, 0);
 	assert(data_size != -1);
 
-	// make sure the client sends init command when it connects to server.
 	auto so = std::make_unique<SerializedObject>(data_size);
 	so->copyFrom(buffer);
 
-	return Serializer::deserialize<ClientMessage>(so.get());
+	return Serializer::deserialize<T>(so.get());
+}
+
+inline std::unique_ptr<ClientMessage> recv_client_message(void* socket, std::string& client)
+{
+	// get client identifier
+	char buffer[80] = { 0 };
+	auto len_id = zmq_recv(socket, buffer, sizeof buffer, 0);
+	assert(len_id > 0);
+
+	client = std::move(std::string(buffer));
+
+	return recv_message<ClientMessage>(socket);
+}
+
+inline std::unique_ptr<ServerMessage> recv_server_message(void* socket)
+{
+	return recv_message<ServerMessage>(socket);
 }
 
 #endif
