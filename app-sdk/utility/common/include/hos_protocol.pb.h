@@ -80,9 +80,14 @@ class ServerMessage : public ::google::protobuf::Message {
     return _internal_metadata_.mutable_unknown_fields();
   }
 
+  inline ::google::protobuf::Arena* GetArena() const { return GetArenaNoVirtual(); }
+  inline void* GetMaybeArenaPointer() const {
+    return MaybeArenaPtr();
+  }
   static const ::google::protobuf::Descriptor* descriptor();
   static const ServerMessage& default_instance();
 
+  void UnsafeArenaSwap(ServerMessage* other);
   void Swap(ServerMessage* other);
 
   // implements Message ----------------------------------------------
@@ -109,6 +114,11 @@ class ServerMessage : public ::google::protobuf::Message {
   void SharedDtor();
   void SetCachedSize(int size) const;
   void InternalSwap(ServerMessage* other);
+  protected:
+  explicit ServerMessage(::google::protobuf::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::google::protobuf::Arena* arena);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -137,6 +147,9 @@ class ServerMessage : public ::google::protobuf::Message {
   inline void clear_has_type();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  friend class ::google::protobuf::Arena;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   int type_;
@@ -169,9 +182,14 @@ class ClientMessage : public ::google::protobuf::Message {
     return _internal_metadata_.mutable_unknown_fields();
   }
 
+  inline ::google::protobuf::Arena* GetArena() const { return GetArenaNoVirtual(); }
+  inline void* GetMaybeArenaPointer() const {
+    return MaybeArenaPtr();
+  }
   static const ::google::protobuf::Descriptor* descriptor();
   static const ClientMessage& default_instance();
 
+  void UnsafeArenaSwap(ClientMessage* other);
   void Swap(ClientMessage* other);
 
   // implements Message ----------------------------------------------
@@ -198,6 +216,11 @@ class ClientMessage : public ::google::protobuf::Message {
   void SharedDtor();
   void SetCachedSize(int size) const;
   void InternalSwap(ClientMessage* other);
+  protected:
+  explicit ClientMessage(::google::protobuf::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::google::protobuf::Arena* arena);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -226,6 +249,9 @@ class ClientMessage : public ::google::protobuf::Message {
   inline void clear_has_type();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  friend class ::google::protobuf::Arena;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   int type_;
