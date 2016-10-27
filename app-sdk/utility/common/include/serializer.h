@@ -19,8 +19,9 @@ public:
 	}
 
 	template<typename T>
-	static std::unique_ptr<T> deserialize(std::unique_ptr<SerializedObject> t)
+	static std::unique_ptr<T> deserialize(SerializedObject* t)
 	{
+		assert(t != nullptr);
 		auto temp = std::make_unique<T>();
 		auto success = temp->ParseFromArray(t->get_buf(), t->get_size());
 		assert(success);
