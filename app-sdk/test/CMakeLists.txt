@@ -25,18 +25,25 @@ set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
 foreach(test ${tests})
 	add_executable(${test} ${test}.cpp "${COMMON_PATH}/include/hos_protocol.pb.h" "${COMMON_PATH}/src/hos_protocol.pb.cc")
 	add_test(NAME ${test} COMMAND ${test})
-	foreach(file ${ZEROMQ_DLL})
-		add_custom_command(TARGET ${test} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				${file}
-				$<TARGET_FILE_DIR:${test}>)
-	endforeach()
-	
-	add_custom_command(TARGET ${test} POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		"${COMMON_BIN}/common.dll"
-		$<TARGET_FILE_DIR:${test}>)
 
+	if (MSVC)
+		foreach(file ${ZEROMQ_DLL})
+			add_custom_command(TARGET ${test} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different
+					${file}
+					$<TARGET_FILE_DIR:${test}>)
+		endforeach()
+		
+		add_custom_command(TARGET ${test} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${COMMON_BIN}/common.dll"
+			$<TARGET_FILE_DIR:${test}>)
+		add_custom_command(TARGET ${test} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${TBB_BINS}/tbb_debug.dll"
+			$<TARGET_FILE_DIR:${test}>)
+	endif()
+	
 	set_target_properties(${test} PROPERTIES FOLDER "Tests")
 endforeach()
 		
