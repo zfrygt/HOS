@@ -13,3 +13,5 @@ message ServerMessage{
 message ClientMessage{
 	required MessageType type = 1;
 }
+
+option cc_enable_arenas = true;
