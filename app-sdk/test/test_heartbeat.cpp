@@ -24,6 +24,7 @@ int main()
 	auto connector_loop = [module_name]()
 	{
 		auto connector = new Connector("tcp://localhost:5555", module_name.c_str());
+		connector->start();
 
 		auto counter = 4;
 		while (counter--)
