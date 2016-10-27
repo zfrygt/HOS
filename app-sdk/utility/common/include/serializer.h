@@ -1,41 +1,8 @@
 #ifndef SERIALIZER_H
 #define SERIALIZER_H
 
-#include <assert.h>
 #include <memory>
-
-class SerializedObject
-{
-public:
-	explicit SerializedObject(uint64_t size) : 
-		m_size(size)
-	{
-		assert(size > 0);
-		m_buf = malloc(m_size);
-		assert(m_buf != nullptr);
-	}
-	~SerializedObject()
-	{
-		if (m_buf)
-		{
-			free(m_buf);
-			m_buf = nullptr;
-		}
-		m_size = 0;
-	}
-
-	SerializedObject(const SerializedObject& other) = delete;
-	SerializedObject(SerializedObject&& other) = delete;
-	SerializedObject& operator=(const SerializedObject& other) = delete;
-	SerializedObject& operator=(SerializedObject&& other) = delete;
-
-	inline void* get_buf() { return m_buf; }
-	inline uint64_t get_size() const { return m_size; }
-
-private:
-	void* m_buf;
-	uint64_t m_size;
-};
+#include <serializedobject.h>
 
 class Serializer
 {
