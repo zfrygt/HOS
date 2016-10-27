@@ -43,7 +43,7 @@ int main()
 	auto ret_bytes3 = zmq_recv(server_socket, rec_buf, sizeof rec_buf, 0);
 
 	auto so = std::make_unique<SerializedObject>(ret_bytes3);
-	memcpy(so->get_buf(), rec_buf, ret_bytes3);
+	so->copyFrom(rec_buf);
 
 	auto data = move(Serializer::deserialize<ClientMessage>(std::move(so)));
 	assert(data->type() == Init);

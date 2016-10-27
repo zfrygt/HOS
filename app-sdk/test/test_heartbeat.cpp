@@ -27,7 +27,7 @@ int main()
 
 	const std::string module_name("test");
 
-	auto connector_loop = [&module_name]()
+	auto connector_loop = [module_name]()
 	{
 		auto connector = new Connector("tcp://localhost:5555", module_name.c_str());
 
@@ -93,19 +93,22 @@ std::unique_ptr<ClientMessage> recv_client_message(void* socket, std::string& cl
 {
 	// get client identifier
 	char buffer[80] = { 0 };
-	zmq_recv(socket, buffer, sizeof buffer, 0);
+	auto len_id = zmq_recv(socket, buffer, sizeof buffer, 0);
+	assert(len_id > 0);
+
 	client = std::string(buffer);
 
 	// read empty frame
-	zmq_recv(socket, buffer, sizeof buffer, 0);
+	auto len_ef = zmq_recv(socket, buffer, sizeof buffer, 0);
+	assert(len_ef == 0);
 
 	// read data
 	auto init_mes_size = zmq_recv(socket, buffer, sizeof buffer, 0);
 	assert(init_mes_size != -1);
+
 	// make sure the client sends init command when it connects to server.
 	auto so = std::make_unique<SerializedObject>(init_mes_size);
-	memcpy(so->get_buf(), buffer, init_mes_size);
-	assert(so->get_buf() != nullptr);
+	so->copyFrom(buffer);
 
 	auto client_message = Serializer::deserialize<ClientMessage>(std::move(so));
 

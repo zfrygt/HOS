@@ -16,6 +16,7 @@ m_lastReceivedMessageTime(-1)
 {
 	m_uri_len = strlen(uri);
 	assert(m_uri_len > 0);
+
 	m_module_name_len = strlen(module_name);
 	assert(m_module_name_len > 0);
 
@@ -32,6 +33,7 @@ m_lastReceivedMessageTime(-1)
 
 	auto linger = 0;
 	auto r = zmq_setsockopt(m_socket, ZMQ_LINGER, &linger, sizeof(linger)); // close cagirildiktan sonra beklemeden socket'i kapat.
+	assert(r == 0);
 
 	//std::string sp("tPw$8v!-!O}kL[5VRvT<yg&NbWolkR=eVQC5Z8X6");
 	//r = zmq_setsockopt(m_socket, ZMQ_CURVE_SERVERKEY, sp.c_str(), sp.length());
@@ -125,7 +127,7 @@ void Connector::receive()
 		auto data = static_cast<char*>(zmq_msg_data(&msg));
 
 		auto so = std::make_unique<SerializedObject>(size);
-		memcpy(so->get_buf(), data, size);
+		so->copyFrom(data);
 
 		auto s = Serializer::deserialize<ServerMessage>(move(so));
 		assert(s->type() == Ping);
