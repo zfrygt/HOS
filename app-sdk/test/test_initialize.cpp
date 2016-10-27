@@ -21,6 +21,7 @@ int main()
 	const std::string module_name("test");
 
 	auto connector = new Connector("tcp://localhost:5555", module_name.c_str());
+	connector->start();
 
 	std::string clientName;
 
