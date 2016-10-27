@@ -5,8 +5,7 @@ cmake_minimum_required(VERSION "2.8.1")
 PROJECT(tests)
 
 set(tests 
-			test_test1
-			test_test2
+			test_initialize
 			test_heartbeat
 			)
 # add library and include dirs for all targets
