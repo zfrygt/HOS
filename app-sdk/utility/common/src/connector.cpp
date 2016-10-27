@@ -126,11 +126,11 @@ void Connector::receive()
 		auto size = zmq_msg_size(&msg);
 		auto data = static_cast<char*>(zmq_msg_data(&msg));
 
-		auto so = std::make_unique<SerializedObject>(size);
-		so->copyFrom(data);
+		auto serialized_obj = std::make_unique<SerializedObject>(size);
+		serialized_obj->copyFrom(data);
 
-		auto s = Serializer::deserialize<ServerMessage>(move(so));
-		assert(s->type() == Ping);
+		auto server_message = Serializer::deserialize<ServerMessage>(serialized_obj.get());
+		assert(server_message->type() == Ping);
 		zmq_msg_close(&msg);
 	}
 

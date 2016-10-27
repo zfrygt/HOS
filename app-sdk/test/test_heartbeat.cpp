@@ -46,8 +46,12 @@ int main()
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(6000));
 
-		sendHeartbeat(server_socket, client_name);
+		// send ping message
+		auto req = std::make_unique<ServerMessage>();
+		req->set_type(Ping);
+		send_server_message(server_socket, req.get(), client_name);
 
+		// expect pong message
 		std::string client_name_ping;
 		auto client = recv_client_message(server_socket, client_name_ping);
 		assert(client->type() == Pong);

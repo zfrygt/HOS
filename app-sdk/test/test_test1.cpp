@@ -45,7 +45,7 @@ int main()
 	auto so = std::make_unique<SerializedObject>(ret_bytes3);
 	so->copyFrom(rec_buf);
 
-	auto data = move(Serializer::deserialize<ClientMessage>(std::move(so)));
+	auto data = move(Serializer::deserialize<ClientMessage>(so.get()));
 	assert(data->type() == Init);
 	
 	delete connector;
