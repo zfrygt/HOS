@@ -20,17 +20,25 @@ namespace tbb
 class ServerMessage;
 class ClientMessage;
 
+namespace std
+{
+	template<typename T>
+	class future;
+}
+
 // Connector class that abstracts the heartbeating and other communication details.
 class COMMON_EXPORT Connector
 {
 public:
 	Connector(const char* uri, const char* module_name);
 	virtual ~Connector();
+	void heartbeat(long timeout);
+	void start();
 	std::unique_ptr<ServerMessage> receive();
 	void send(const ClientMessage* client_message);
-	void heartbeat(long timeout);
 
 protected:
+
 	Connector(const Connector& other) = delete;
 	Connector(Connector&& other) = delete;
 	Connector& operator=(const Connector& other) = delete;
@@ -44,8 +52,10 @@ private:
 	uint8_t m_uri_len, m_module_name_len;
 	clock_t m_lastSendMessageTime;
 	clock_t m_lastReceivedMessageTime;
-
-	tbb::concurrent_bounded_queue<std::unique_ptr<IJob>>* m_job_queue;
+	bool m_started;
+	using job_queue = tbb::concurrent_bounded_queue<std::shared_ptr<IJob>>;
+	job_queue* m_job_queue;
+	std::future<void>* m_job_thread;
 };
 
 #endif

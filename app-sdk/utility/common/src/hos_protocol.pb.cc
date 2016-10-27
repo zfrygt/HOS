@@ -103,7 +103,7 @@ void protobuf_AddDesc_hos_5fprotocol_2eproto() {
     "\n\022hos_protocol.proto\"+\n\rServerMessage\022\032\n"
     "\004type\030\001 \002(\0162\014.MessageType\"+\n\rClientMessa"
     "ge\022\032\n\004type\030\001 \002(\0162\014.MessageType*+\n\013Messag"
-    "eType\022\010\n\004Ping\020\000\022\010\n\004Pong\020\001\022\010\n\004Init\020\002", 155);
+    "eType\022\010\n\004Ping\020\000\022\010\n\004Pong\020\001\022\010\n\004Init\020\002B\003\370\001\001", 160);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "hos_protocol.proto", &protobuf_RegisterTypes);
   ServerMessage::default_instance_ = new ServerMessage();
@@ -157,6 +157,14 @@ ServerMessage::ServerMessage()
   // @@protoc_insertion_point(constructor:ServerMessage)
 }
 
+ServerMessage::ServerMessage(::google::protobuf::Arena* arena)
+  : ::google::protobuf::Message(),
+  _internal_metadata_(arena) {
+  SharedCtor();
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:ServerMessage)
+}
+
 void ServerMessage::InitAsDefaultInstance() {
 }
 
@@ -180,10 +188,20 @@ ServerMessage::~ServerMessage() {
 }
 
 void ServerMessage::SharedDtor() {
+  if (GetArenaNoVirtual() != NULL) {
+    return;
+  }
+
   if (this != default_instance_) {
   }
 }
 
+void ServerMessage::ArenaDtor(void* object) {
+  ServerMessage* _this = reinterpret_cast< ServerMessage* >(object);
+  (void)_this;
+}
+void ServerMessage::RegisterArenaDtor(::google::protobuf::Arena* arena) {
+}
 void ServerMessage::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
@@ -202,11 +220,7 @@ const ServerMessage& ServerMessage::default_instance() {
 ServerMessage* ServerMessage::default_instance_ = NULL;
 
 ServerMessage* ServerMessage::New(::google::protobuf::Arena* arena) const {
-  ServerMessage* n = new ServerMessage;
-  if (arena != NULL) {
-    arena->Own(n);
-  }
-  return n;
+  return ::google::protobuf::Arena::CreateMessage<ServerMessage>(arena);
 }
 
 void ServerMessage::Clear() {
@@ -364,6 +378,18 @@ bool ServerMessage::IsInitialized() const {
 
 void ServerMessage::Swap(ServerMessage* other) {
   if (other == this) return;
+  if (GetArenaNoVirtual() == other->GetArenaNoVirtual()) {
+    InternalSwap(other);
+  } else {
+    ServerMessage temp;
+    temp.MergeFrom(*this);
+    CopyFrom(*other);
+    other->CopyFrom(temp);
+  }
+}
+void ServerMessage::UnsafeArenaSwap(ServerMessage* other) {
+  if (other == this) return;
+  GOOGLE_DCHECK(GetArenaNoVirtual() == other->GetArenaNoVirtual());
   InternalSwap(other);
 }
 void ServerMessage::InternalSwap(ServerMessage* other) {
@@ -394,6 +420,14 @@ ClientMessage::ClientMessage()
   // @@protoc_insertion_point(constructor:ClientMessage)
 }
 
+ClientMessage::ClientMessage(::google::protobuf::Arena* arena)
+  : ::google::protobuf::Message(),
+  _internal_metadata_(arena) {
+  SharedCtor();
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:ClientMessage)
+}
+
 void ClientMessage::InitAsDefaultInstance() {
 }
 
@@ -417,10 +451,20 @@ ClientMessage::~ClientMessage() {
 }
 
 void ClientMessage::SharedDtor() {
+  if (GetArenaNoVirtual() != NULL) {
+    return;
+  }
+
   if (this != default_instance_) {
   }
 }
 
+void ClientMessage::ArenaDtor(void* object) {
+  ClientMessage* _this = reinterpret_cast< ClientMessage* >(object);
+  (void)_this;
+}
+void ClientMessage::RegisterArenaDtor(::google::protobuf::Arena* arena) {
+}
 void ClientMessage::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
@@ -439,11 +483,7 @@ const ClientMessage& ClientMessage::default_instance() {
 ClientMessage* ClientMessage::default_instance_ = NULL;
 
 ClientMessage* ClientMessage::New(::google::protobuf::Arena* arena) const {
-  ClientMessage* n = new ClientMessage;
-  if (arena != NULL) {
-    arena->Own(n);
-  }
-  return n;
+  return ::google::protobuf::Arena::CreateMessage<ClientMessage>(arena);
 }
 
 void ClientMessage::Clear() {
@@ -601,6 +641,18 @@ bool ClientMessage::IsInitialized() const {
 
 void ClientMessage::Swap(ClientMessage* other) {
   if (other == this) return;
+  if (GetArenaNoVirtual() == other->GetArenaNoVirtual()) {
+    InternalSwap(other);
+  } else {
+    ClientMessage temp;
+    temp.MergeFrom(*this);
+    CopyFrom(*other);
+    other->CopyFrom(temp);
+  }
+}
+void ClientMessage::UnsafeArenaSwap(ClientMessage* other) {
+  if (other == this) return;
+  GOOGLE_DCHECK(GetArenaNoVirtual() == other->GetArenaNoVirtual());
   InternalSwap(other);
 }
 void ClientMessage::InternalSwap(ClientMessage* other) {

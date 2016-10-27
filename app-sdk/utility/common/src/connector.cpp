@@ -2,19 +2,24 @@
 #include <zmq.h>
 #include <assert.h>
 #include <hos_protocol.pb.h>
-#include <serializer.h>
 #include <tbb/concurrent_queue.h>
 #include <utils.h>
+#include <job_pong.h>
+#include <future>
 
 #define HEARTHBEAT_INTERVAL_IN_SECONDS 5 
 #define TIMEOUT_INTERVAL_IN_SECONDS 15
 #define TIMEOUT_CHECK_INTERVAL_IN_SECONDS 2
 
 #define ZMQ_CHECK(x){int result = (x); if (result==1)printf("%d\n",zmq_errno()); assert(result!=-1);}
+#include <job_init.h>
 
 Connector::Connector(const char* uri, const char* module_name) :
 m_lastSendMessageTime(-1),
-m_lastReceivedMessageTime(-1)
+m_lastReceivedMessageTime(-1),
+m_started(false),
+m_job_queue(new job_queue),
+m_job_thread(nullptr)
 {
 	m_uri_len = strlen(uri);
 	assert(m_uri_len > 0);
@@ -55,10 +60,7 @@ m_lastReceivedMessageTime(-1)
 	//assert(r == 0);
 
 	zmq_connect(m_socket, m_uri);
-
-	ClientMessage client_message;
-	client_message.set_type(Init);
-	send(&client_message);
+	m_job_queue->push(move(std::make_shared<JobInit>(this)));
 }
 
 Connector::~Connector()
@@ -73,6 +75,14 @@ Connector::~Connector()
 		free(m_module_name);
 		m_module_name = nullptr;
 	}
+	if (m_job_queue)
+	{
+		m_job_queue->push(nullptr);
+		// join the job thread first!
+		m_job_thread->get();
+		assert(m_job_queue->empty());
+		delete m_job_queue;
+	}
 	zmq_disconnect(m_socket, m_uri);
 	zmq_close(m_socket);
 	zmq_ctx_destroy(m_context);
@@ -80,7 +90,6 @@ Connector::~Connector()
 
 void Connector::heartbeat(long timeout)
 {
-
 	zmq_pollitem_t items[] = {
 		{ m_socket, 0, ZMQ_POLLIN, 0 }
 	};
@@ -99,9 +108,31 @@ void Connector::heartbeat(long timeout)
 		// TODO It might be a good idea to destroy socket inorder to celar send buffer so previous messages will not be send accidentaly
 	}
 	if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
-		ClientMessage response;
-		response.set_type(Pong);
-		send(&response);
+		m_job_queue->push(move(std::make_shared<JobPong>(this)));
+	}
+}
+
+void Connector::start()
+{
+	if (!m_started && m_job_thread == nullptr)
+	{
+		m_started = true;
+		auto job_queue = m_job_queue;
+
+		auto loop = [job_queue]()
+		{
+			assert(job_queue != nullptr);
+
+			while (true)
+			{
+				std::shared_ptr<IJob> job;
+				job_queue->pop(job);
+				if (!job) break;
+				job->execute();
+			}
+		};
+
+		m_job_thread = new std::future<void>(std::move(std::async(std::launch::async, loop)));
 	}
 }
 
