@@ -8,6 +8,8 @@
 #include <job.h>
 #include <memory>
 
+
+#ifdef _WIN32
 namespace tbb
 {
 	template<typename T>
@@ -16,6 +18,9 @@ namespace tbb
 	template<typename T, class A = cache_aligned_allocator<T>>
 	class concurrent_bounded_queue;
 }
+#else
+    #include <tbb/concurrent_queue.h>
+#endif
 
 class ServerMessage;
 class ClientMessage;
@@ -27,7 +32,7 @@ namespace std
 }
 
 // Connector class that abstracts the heartbeating and other communication details.
-class COMMON_EXPORT Connector
+class Connector
 {
 public:
 	Connector(const char* uri, const char* module_name);
