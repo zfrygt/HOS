@@ -48,7 +48,8 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(6000));
 
 		// send ping message
-		auto req = std::make_unique<ServerMessage>();
+        //auto req = std::make_unique<ServerMessage>();
+        std::unique_ptr<ServerMessage> req(new ServerMessage);
 		req->set_type(Ping);
 		send_server_message(server_socket, req.get(), client_name);
 
