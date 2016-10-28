@@ -4,6 +4,16 @@
 #include <zmq.h>
 #include <hos_protocol.pb.h>
 #include <serializer.h>
+#include <memory>
+#include <time.h>
+
+inline clock_t current_time(){
+#if defined(_WIN32) && defined(_MSC_VER)
+    return clock();
+#else
+    return time(0);
+#endif
+}
 
 inline void send_server_message(void* socket, const ServerMessage* server_message, const std::string& client_name)
 {
@@ -59,6 +69,10 @@ inline std::unique_ptr<T> recv_message(void* socket)
 
 #if defined(_WIN32) && defined(_MSC_VER)
 	auto so = std::make_unique<SerializedObject>(data_size);
+#else
+    std::unique_ptr<SerializedObject> so(new SerializedObject(data_size));
+#endif
+
 	so->copyFrom(buffer);
 
 	return Serializer::deserialize<T>(so.get());
