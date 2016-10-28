@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 project(HOS)
 
@@ -88,8 +88,8 @@ else()
 	# protocol buffers
 	set(PROTOBUF_INCLUDE ${LOCAL}/include)
 	set(PROTOBUF_LIBS ${LOCAL}/lib)
-	set(PROTOBUF_BIN ${LOCAL}/lib)
-	set(PROTOBUF_LINK libprotobuf)
+	set(PROTOBUF_BIN ${LOCAL}/bin)
+	set(PROTOBUF_LINK protobuf)
 
 	# openssl
 	#set(OPEN_SSL_INCLUDE ${PROVIDEO_DEPENDS_FOLDER}/openssl-1.0.1h-vs2013/include)
