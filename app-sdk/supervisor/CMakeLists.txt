@@ -38,17 +38,19 @@ target_link_libraries(${PROJECT_NAME} ${SODIUM_LINK})
 target_link_libraries(${PROJECT_NAME} ${TBB_LINK})
 target_link_libraries(${PROJECT_NAME} ${ZEROMQ_LINK})
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		"${TBB_BINS}/tbb.dll"
-		$<TARGET_FILE_DIR:${PROJECT_NAME}>)
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		"${TBB_BINS}/tbb_debug.dll"
-		$<TARGET_FILE_DIR:${PROJECT_NAME}>)
-foreach(file ${ZEROMQ_DLL})
+if (MSVC)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${file}
+			"${TBB_BINS}/tbb.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
-endforeach()
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${TBB_BINS}/tbb_debug.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	foreach(file ${ZEROMQ_DLL})
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				${file}
+				$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	endforeach()
+endif()

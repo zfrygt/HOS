@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/port.h>
 #include <google/protobuf/stubs/once.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/wire_format_lite_inl.h>
@@ -29,6 +30,7 @@ const ::google::protobuf::EnumDescriptor* MessageType_descriptor_ = NULL;
 }  // namespace
 
 
+void protobuf_AssignDesc_hos_5fprotocol_2eproto() GOOGLE_ATTRIBUTE_COLD;
 void protobuf_AssignDesc_hos_5fprotocol_2eproto() {
   protobuf_AddDesc_hos_5fprotocol_2eproto();
   const ::google::protobuf::FileDescriptor* file =
@@ -42,14 +44,13 @@ void protobuf_AssignDesc_hos_5fprotocol_2eproto() {
   ServerMessage_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
       ServerMessage_descriptor_,
-      ServerMessage::default_instance_,
+      ServerMessage::internal_default_instance(),
       ServerMessage_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ServerMessage, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ServerMessage, _has_bits_),
       -1,
       -1,
       sizeof(ServerMessage),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ServerMessage, _internal_metadata_),
-      -1);
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ServerMessage, _internal_metadata_));
   ClientMessage_descriptor_ = file->message_type(1);
   static const int ClientMessage_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, type_),
@@ -57,48 +58,60 @@ void protobuf_AssignDesc_hos_5fprotocol_2eproto() {
   ClientMessage_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
       ClientMessage_descriptor_,
-      ClientMessage::default_instance_,
+      ClientMessage::internal_default_instance(),
       ClientMessage_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, _has_bits_),
       -1,
       -1,
       sizeof(ClientMessage),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, _internal_metadata_),
-      -1);
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ClientMessage, _internal_metadata_));
   MessageType_descriptor_ = file->enum_type(0);
 }
 
 namespace {
 
 GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
-inline void protobuf_AssignDescriptorsOnce() {
+void protobuf_AssignDescriptorsOnce() {
   ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
                  &protobuf_AssignDesc_hos_5fprotocol_2eproto);
 }
 
+void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      ServerMessage_descriptor_, &ServerMessage::default_instance());
+      ServerMessage_descriptor_, ServerMessage::internal_default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      ClientMessage_descriptor_, &ClientMessage::default_instance());
+      ClientMessage_descriptor_, ClientMessage::internal_default_instance());
 }
 
 }  // namespace
 
 void protobuf_ShutdownFile_hos_5fprotocol_2eproto() {
-  delete ServerMessage::default_instance_;
+  ServerMessage_default_instance_.Shutdown();
   delete ServerMessage_reflection_;
-  delete ClientMessage::default_instance_;
+  ClientMessage_default_instance_.Shutdown();
   delete ClientMessage_reflection_;
 }
 
-void protobuf_AddDesc_hos_5fprotocol_2eproto() {
-  static bool already_here = false;
-  if (already_here) return;
-  already_here = true;
+void protobuf_InitDefaults_hos_5fprotocol_2eproto_impl() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
+  ServerMessage_default_instance_.DefaultConstruct();
+  ClientMessage_default_instance_.DefaultConstruct();
+  ServerMessage_default_instance_.get_mutable()->InitAsDefaultInstance();
+  ClientMessage_default_instance_.get_mutable()->InitAsDefaultInstance();
+}
+
+GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_InitDefaults_hos_5fprotocol_2eproto_once_);
+void protobuf_InitDefaults_hos_5fprotocol_2eproto() {
+  ::google::protobuf::GoogleOnceInit(&protobuf_InitDefaults_hos_5fprotocol_2eproto_once_,
+                 &protobuf_InitDefaults_hos_5fprotocol_2eproto_impl);
+}
+void protobuf_AddDesc_hos_5fprotocol_2eproto_impl() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  protobuf_InitDefaults_hos_5fprotocol_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\022hos_protocol.proto\"+\n\rServerMessage\022\032\n"
     "\004type\030\001 \002(\0162\014.MessageType\"+\n\rClientMessa"
@@ -106,13 +119,14 @@ void protobuf_AddDesc_hos_5fprotocol_2eproto() {
     "eType\022\010\n\004Ping\020\000\022\010\n\004Pong\020\001\022\010\n\004Init\020\002B\003\370\001\001", 160);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "hos_protocol.proto", &protobuf_RegisterTypes);
-  ServerMessage::default_instance_ = new ServerMessage();
-  ClientMessage::default_instance_ = new ClientMessage();
-  ServerMessage::default_instance_->InitAsDefaultInstance();
-  ClientMessage::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_hos_5fprotocol_2eproto);
 }
 
+GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AddDesc_hos_5fprotocol_2eproto_once_);
+void protobuf_AddDesc_hos_5fprotocol_2eproto() {
+  ::google::protobuf::GoogleOnceInit(&protobuf_AddDesc_hos_5fprotocol_2eproto_once_,
+                 &protobuf_AddDesc_hos_5fprotocol_2eproto_impl);
+}
 // Force AddDescriptors() to be called at static initialization time.
 struct StaticDescriptorInitializer_hos_5fprotocol_2eproto {
   StaticDescriptorInitializer_hos_5fprotocol_2eproto() {
@@ -124,7 +138,7 @@ const ::google::protobuf::EnumDescriptor* MessageType_descriptor() {
   return MessageType_descriptor_;
 }
 bool MessageType_IsValid(int value) {
-  switch(value) {
+  switch (value) {
     case 0:
     case 1:
     case 2:
@@ -137,9 +151,9 @@ bool MessageType_IsValid(int value) {
 
 namespace {
 
-static void MergeFromFail(int line) GOOGLE_ATTRIBUTE_COLD;
+static void MergeFromFail(int line) GOOGLE_ATTRIBUTE_COLD GOOGLE_ATTRIBUTE_NORETURN;
 static void MergeFromFail(int line) {
-  GOOGLE_CHECK(false) << __FILE__ << ":" << line;
+  ::google::protobuf::internal::MergeFromFail(__FILE__, line);
 }
 
 }  // namespace
@@ -147,19 +161,22 @@ static void MergeFromFail(int line) {
 
 // ===================================================================
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int ServerMessage::kTypeFieldNumber;
-#endif  // !_MSC_VER
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 ServerMessage::ServerMessage()
-  : ::google::protobuf::Message() , _internal_metadata_(NULL)  {
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_hos_5fprotocol_2eproto();
   SharedCtor();
   // @@protoc_insertion_point(constructor:ServerMessage)
 }
-
 ServerMessage::ServerMessage(::google::protobuf::Arena* arena)
   : ::google::protobuf::Message(),
   _internal_metadata_(arena) {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  protobuf_InitDefaults_hos_5fprotocol_2eproto();
+#endif  // GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   SharedCtor();
   RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:ServerMessage)
@@ -172,14 +189,13 @@ ServerMessage::ServerMessage(const ServerMessage& from)
   : ::google::protobuf::Message(),
     _internal_metadata_(NULL) {
   SharedCtor();
-  MergeFrom(from);
+  UnsafeMergeFrom(from);
   // @@protoc_insertion_point(copy_constructor:ServerMessage)
 }
 
 void ServerMessage::SharedCtor() {
   _cached_size_ = 0;
   type_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
 ServerMessage::~ServerMessage() {
@@ -188,12 +204,11 @@ ServerMessage::~ServerMessage() {
 }
 
 void ServerMessage::SharedDtor() {
-  if (GetArenaNoVirtual() != NULL) {
+  ::google::protobuf::Arena* arena = GetArenaNoVirtual();
+  if (arena != NULL) {
     return;
   }
 
-  if (this != default_instance_) {
-  }
 }
 
 void ServerMessage::ArenaDtor(void* object) {
@@ -213,19 +228,20 @@ const ::google::protobuf::Descriptor* ServerMessage::descriptor() {
 }
 
 const ServerMessage& ServerMessage::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_hos_5fprotocol_2eproto();
-  return *default_instance_;
+  protobuf_InitDefaults_hos_5fprotocol_2eproto();
+  return *internal_default_instance();
 }
 
-ServerMessage* ServerMessage::default_instance_ = NULL;
+::google::protobuf::internal::ExplicitlyConstructed<ServerMessage> ServerMessage_default_instance_;
 
 ServerMessage* ServerMessage::New(::google::protobuf::Arena* arena) const {
   return ::google::protobuf::Arena::CreateMessage<ServerMessage>(arena);
 }
 
 void ServerMessage::Clear() {
+// @@protoc_insertion_point(message_clear_start:ServerMessage)
   type_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  _has_bits_.Clear();
   if (_internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->Clear();
   }
@@ -233,7 +249,7 @@ void ServerMessage::Clear() {
 
 bool ServerMessage::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ServerMessage)
   for (;;) {
@@ -298,8 +314,9 @@ void ServerMessage::SerializeWithCachedSizes(
   // @@protoc_insertion_point(serialize_end:ServerMessage)
 }
 
-::google::protobuf::uint8* ServerMessage::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
+::google::protobuf::uint8* ServerMessage::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:ServerMessage)
   // required .MessageType type = 1;
   if (has_type()) {
@@ -315,8 +332,9 @@ void ServerMessage::SerializeWithCachedSizes(
   return target;
 }
 
-int ServerMessage::ByteSize() const {
-  int total_size = 0;
+size_t ServerMessage::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:ServerMessage)
+  size_t total_size = 0;
 
   // required .MessageType type = 1;
   if (has_type()) {
@@ -328,46 +346,62 @@ int ServerMessage::ByteSize() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         unknown_fields());
   }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
+  _cached_size_ = cached_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
 void ServerMessage::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:ServerMessage)
   if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
   const ServerMessage* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const ServerMessage*>(
-      &from);
+      ::google::protobuf::internal::DynamicCastToGenerated<const ServerMessage>(
+          &from);
   if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:ServerMessage)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-    MergeFrom(*source);
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:ServerMessage)
+    UnsafeMergeFrom(*source);
   }
 }
 
 void ServerMessage::MergeFrom(const ServerMessage& from) {
-  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+// @@protoc_insertion_point(class_specific_merge_from_start:ServerMessage)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void ServerMessage::UnsafeMergeFrom(const ServerMessage& from) {
+  GOOGLE_DCHECK(&from != this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_type()) {
       set_type(from.type());
     }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
-    mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+    ::google::protobuf::UnknownFieldSet::MergeToInternalMetdata(
+      from.unknown_fields(), &_internal_metadata_);
   }
 }
 
 void ServerMessage::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:ServerMessage)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void ServerMessage::CopyFrom(const ServerMessage& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:ServerMessage)
   if (&from == this) return;
   Clear();
-  MergeFrom(from);
+  UnsafeMergeFrom(from);
 }
 
 bool ServerMessage::IsInitialized() const {
@@ -382,7 +416,7 @@ void ServerMessage::Swap(ServerMessage* other) {
     InternalSwap(other);
   } else {
     ServerMessage temp;
-    temp.MergeFrom(*this);
+    temp.UnsafeMergeFrom(*this);
     CopyFrom(*other);
     other->CopyFrom(temp);
   }
@@ -407,22 +441,57 @@ void ServerMessage::InternalSwap(ServerMessage* other) {
   return metadata;
 }
 
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// ServerMessage
+
+// required .MessageType type = 1;
+bool ServerMessage::has_type() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void ServerMessage::set_has_type() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void ServerMessage::clear_has_type() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void ServerMessage::clear_type() {
+  type_ = 0;
+  clear_has_type();
+}
+::MessageType ServerMessage::type() const {
+  // @@protoc_insertion_point(field_get:ServerMessage.type)
+  return static_cast< ::MessageType >(type_);
+}
+void ServerMessage::set_type(::MessageType value) {
+  assert(::MessageType_IsValid(value));
+  set_has_type();
+  type_ = value;
+  // @@protoc_insertion_point(field_set:ServerMessage.type)
+}
+
+inline const ServerMessage* ServerMessage::internal_default_instance() {
+  return &ServerMessage_default_instance_.get();
+}
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // ===================================================================
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int ClientMessage::kTypeFieldNumber;
-#endif  // !_MSC_VER
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 ClientMessage::ClientMessage()
-  : ::google::protobuf::Message() , _internal_metadata_(NULL)  {
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_hos_5fprotocol_2eproto();
   SharedCtor();
   // @@protoc_insertion_point(constructor:ClientMessage)
 }
-
 ClientMessage::ClientMessage(::google::protobuf::Arena* arena)
   : ::google::protobuf::Message(),
   _internal_metadata_(arena) {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  protobuf_InitDefaults_hos_5fprotocol_2eproto();
+#endif  // GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   SharedCtor();
   RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:ClientMessage)
@@ -435,14 +504,13 @@ ClientMessage::ClientMessage(const ClientMessage& from)
   : ::google::protobuf::Message(),
     _internal_metadata_(NULL) {
   SharedCtor();
-  MergeFrom(from);
+  UnsafeMergeFrom(from);
   // @@protoc_insertion_point(copy_constructor:ClientMessage)
 }
 
 void ClientMessage::SharedCtor() {
   _cached_size_ = 0;
   type_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
 ClientMessage::~ClientMessage() {
@@ -451,12 +519,11 @@ ClientMessage::~ClientMessage() {
 }
 
 void ClientMessage::SharedDtor() {
-  if (GetArenaNoVirtual() != NULL) {
+  ::google::protobuf::Arena* arena = GetArenaNoVirtual();
+  if (arena != NULL) {
     return;
   }
 
-  if (this != default_instance_) {
-  }
 }
 
 void ClientMessage::ArenaDtor(void* object) {
@@ -476,19 +543,20 @@ const ::google::protobuf::Descriptor* ClientMessage::descriptor() {
 }
 
 const ClientMessage& ClientMessage::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_hos_5fprotocol_2eproto();
-  return *default_instance_;
+  protobuf_InitDefaults_hos_5fprotocol_2eproto();
+  return *internal_default_instance();
 }
 
-ClientMessage* ClientMessage::default_instance_ = NULL;
+::google::protobuf::internal::ExplicitlyConstructed<ClientMessage> ClientMessage_default_instance_;
 
 ClientMessage* ClientMessage::New(::google::protobuf::Arena* arena) const {
   return ::google::protobuf::Arena::CreateMessage<ClientMessage>(arena);
 }
 
 void ClientMessage::Clear() {
+// @@protoc_insertion_point(message_clear_start:ClientMessage)
   type_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  _has_bits_.Clear();
   if (_internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->Clear();
   }
@@ -496,7 +564,7 @@ void ClientMessage::Clear() {
 
 bool ClientMessage::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ClientMessage)
   for (;;) {
@@ -561,8 +629,9 @@ void ClientMessage::SerializeWithCachedSizes(
   // @@protoc_insertion_point(serialize_end:ClientMessage)
 }
 
-::google::protobuf::uint8* ClientMessage::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
+::google::protobuf::uint8* ClientMessage::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:ClientMessage)
   // required .MessageType type = 1;
   if (has_type()) {
@@ -578,8 +647,9 @@ void ClientMessage::SerializeWithCachedSizes(
   return target;
 }
 
-int ClientMessage::ByteSize() const {
-  int total_size = 0;
+size_t ClientMessage::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:ClientMessage)
+  size_t total_size = 0;
 
   // required .MessageType type = 1;
   if (has_type()) {
@@ -591,46 +661,62 @@ int ClientMessage::ByteSize() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         unknown_fields());
   }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
+  _cached_size_ = cached_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
 void ClientMessage::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:ClientMessage)
   if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
   const ClientMessage* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const ClientMessage*>(
-      &from);
+      ::google::protobuf::internal::DynamicCastToGenerated<const ClientMessage>(
+          &from);
   if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:ClientMessage)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-    MergeFrom(*source);
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:ClientMessage)
+    UnsafeMergeFrom(*source);
   }
 }
 
 void ClientMessage::MergeFrom(const ClientMessage& from) {
-  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+// @@protoc_insertion_point(class_specific_merge_from_start:ClientMessage)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void ClientMessage::UnsafeMergeFrom(const ClientMessage& from) {
+  GOOGLE_DCHECK(&from != this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_type()) {
       set_type(from.type());
     }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
-    mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+    ::google::protobuf::UnknownFieldSet::MergeToInternalMetdata(
+      from.unknown_fields(), &_internal_metadata_);
   }
 }
 
 void ClientMessage::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:ClientMessage)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void ClientMessage::CopyFrom(const ClientMessage& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:ClientMessage)
   if (&from == this) return;
   Clear();
-  MergeFrom(from);
+  UnsafeMergeFrom(from);
 }
 
 bool ClientMessage::IsInitialized() const {
@@ -645,7 +731,7 @@ void ClientMessage::Swap(ClientMessage* other) {
     InternalSwap(other);
   } else {
     ClientMessage temp;
-    temp.MergeFrom(*this);
+    temp.UnsafeMergeFrom(*this);
     CopyFrom(*other);
     other->CopyFrom(temp);
   }
@@ -670,6 +756,38 @@ void ClientMessage::InternalSwap(ClientMessage* other) {
   return metadata;
 }
 
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// ClientMessage
+
+// required .MessageType type = 1;
+bool ClientMessage::has_type() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void ClientMessage::set_has_type() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void ClientMessage::clear_has_type() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void ClientMessage::clear_type() {
+  type_ = 0;
+  clear_has_type();
+}
+::MessageType ClientMessage::type() const {
+  // @@protoc_insertion_point(field_get:ClientMessage.type)
+  return static_cast< ::MessageType >(type_);
+}
+void ClientMessage::set_type(::MessageType value) {
+  assert(::MessageType_IsValid(value));
+  set_has_type();
+  type_ = value;
+  // @@protoc_insertion_point(field_set:ClientMessage.type)
+}
+
+inline const ClientMessage* ClientMessage::internal_default_instance() {
+  return &ClientMessage_default_instance_.get();
+}
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
 
