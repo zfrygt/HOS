@@ -12,6 +12,10 @@ message(STATUS "Version: " ${VERSION_MAJOR} "." ${VERSION_MINOR} "." ${VERSION_T
 
 set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
 
+if (NOT MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
+
 if(MSVC)
 	execute_process(COMMAND protoc -I=${COMMON_PATH} --cpp_out=${COMMON_PATH} ${COMMON_PATH}/hos_protocol.proto WORKING_DIRECTORY ${PROTOBUF_BIN})
 else()
