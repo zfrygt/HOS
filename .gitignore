@@ -45,6 +45,7 @@ build*/
 *.pidb
 *.log
 *.scc
+*.pb.*
 
 # Visual C++ cache files
 ipch/
@@ -161,3 +162,5 @@ $RECYCLE.BIN/
 /app-sdk/Utility/vacommunication/src/provideo.pb.cc
 provideo.pb.cc
 provideo.pb.h
+/app-sdk/utility/common/include/hos_protocol.pb.h
+/app-sdk/utility/common/src/hos_protocol.pb.cc
