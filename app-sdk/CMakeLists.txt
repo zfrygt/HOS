@@ -51,12 +51,6 @@ if (MSVC)
 	set(PROTOBUF_LIBS ${PROVIDEO_DEPENDS_FOLDER}/protobuf/lib/x64/Md)
 	set(PROTOBUF_BIN ${PROVIDEO_DEPENDS_FOLDER}/protobuf/bin)
 	set(PROTOBUF_LINK optimized "libprotobuf" debug "libprotobuf-d")
-
-	# openssl
-	set(OPEN_SSL_INCLUDE ${PROVIDEO_DEPENDS_FOLDER}/openssl-1.0.1h-vs2013/include)
-	set(OPEN_SSL_LIBS ${PROVIDEO_DEPENDS_FOLDER}/openssl-1.0.1h-vs2013/lib64)
-	set(OPEN_SSL_BINS ${PROVIDEO_DEPENDS_FOLDER}/openssl-1.0.1h-vs2013/bin64)
-	set(OPEN_SSL_LINK debug "libeay32MTd" optimized "libeay32MT" debug "ssleay32MTd" optimized "ssleay32MT")
 else()
 	set(LOCAL /usr/local)
 
@@ -64,7 +58,6 @@ else()
 	set(ZEROMQ_LIBS ${LOCAL}/lib)
 	set(ZEROMQ_BINS ${LOCAL}/lib)
 	set(ZEROMQ_LINK zmq)
-	#set(ZEROMQ_DLL "${ZEROMQ_BINS}/libzmq.dll" "${ZEROMQ_BINS}/libsodium.dll")
 
 	# sodium
 	set(SODIUM_INCLUDE ${LOCAL}/include)
@@ -77,7 +70,6 @@ else()
 	set(OPENCV_LIBS ${LOCAL}/lib)	
 	set(OPENCV_BINS ${LOCAL}/lib)	
 	set(OPENCV_LINK opencv_calib3d opencv_contrib opencv_core opencv_features2d opencv_flann opencv_gpu opencv_highgui opencv_imgproc opencv_legacy opencv_ml opencv_nonfree opencv_objdetect opencv_photo opencv_stitching opencv_superres opencv_ts opencv_ts opencv_video opencv_videostab)
-#	set(OPENCV_LINK_RELEASE optimized opencv_calib3d optimized opencv_contrib optimized opencv_core optimized opencv_features2d optimized opencv_flann optimized opencv_gpu optimized opencv_highgui optimized opencv_imgproc optimized opencv_legacy optimized opencv_ml optimized opencv_nonfree optimized opencv_objdetect optimized opencv_photo optimized opencv_stitching optimized opencv_superres optimized opencv_ts optimized opencv_ts optimized opencv_video optimized opencv_videostab)
 
 	# tbb
 	set(TBB_INCLUDE /usr/include)
@@ -91,11 +83,6 @@ else()
 	set(PROTOBUF_BIN ${LOCAL}/bin)
 	set(PROTOBUF_LINK protobuf)
 
-	# openssl
-	#set(OPEN_SSL_INCLUDE ${PROVIDEO_DEPENDS_FOLDER}/openssl-1.0.1h-vs2013/include)
-	#set(OPEN_SSL_LIBS ${PROVIDEO_DEPENDS_FOLDER}/openssl-1.0.1h-vs2013/lib64)
-	#set(OPEN_SSL_BINS ${PROVIDEO_DEPENDS_FOLDER}/openssl-1.0.1h-vs2013/bin64)
-	#set(OPEN_SSL_LINK debug "libeay32MTd" optimized "libeay32MT" debug "ssleay32MTd" optimized "ssleay32MT")
 endif()
 
 enable_testing ()
