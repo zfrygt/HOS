@@ -1,5 +1,4 @@
-# CMake build script for ZeroMQ tests
-cmake_minimum_required(VERSION "2.8.1")
+cmake_minimum_required(VERSION 3.1)
 
 # name of Windows project will tests.sln
 PROJECT(tests)
@@ -21,7 +20,6 @@ link_libraries(${ZEROMQ_LINK})
 
 set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)
 set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 foreach(test ${tests})
 	add_executable(${test} ${test}.cpp "${COMMON_PATH}/include/hos_protocol.pb.h" "${COMMON_PATH}/src/hos_protocol.pb.cc")
@@ -58,4 +56,3 @@ foreach(TEST_SOURCE ${ALL_TEST_SOURCES})
     message(AUTHOR_WARNING "Test '${TESTNAME}' is not known to CTest.")
   endif()
 endforeach()
-
