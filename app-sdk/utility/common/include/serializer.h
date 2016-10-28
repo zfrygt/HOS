@@ -13,7 +13,7 @@ public:
 		auto size = t->ByteSize();
 		assert(size > 0);
 
-		auto so = std::make_unique<SerializedObject>(size);
+        auto so = std::make_unique<SerializedObject>(size);
 		t->SerializeToArray(so->get_buf(), so->get_size());
 		return so;
 	}
@@ -21,8 +21,8 @@ public:
 	template<typename T>
 	static std::unique_ptr<T> deserialize(SerializedObject* t)
 	{
-		assert(t != nullptr);
-		auto temp = std::make_unique<T>();
+        assert(t != nullptr);
+        auto temp = std::make_unique<T>();
 		auto success = temp->ParseFromArray(t->get_buf(), t->get_size());
 		assert(success);
 		return temp;
