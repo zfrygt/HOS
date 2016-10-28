@@ -97,7 +97,7 @@ void Connector::heartbeat(long timeout)
 	if (items[0].revents & ZMQ_POLLIN){
 		receive();
 	}
-	auto currentTime = clock();
+	auto currentTime = current_time();
 	auto timeSinceLastMessageSend = currentTime - m_lastSendMessageTime;
 	auto timeSinceLastMessageReceived = currentTime - m_lastReceivedMessageTime;
 	auto secondsSinceLastMessageSend = timeSinceLastMessageSend / CLOCKS_PER_SEC;
