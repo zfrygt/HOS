@@ -32,7 +32,7 @@ namespace std
 }
 
 // Connector class that abstracts the heartbeating and other communication details.
-class Connector
+class COMMON_EXPORT Connector
 {
 public:
 	Connector(const char* uri, const char* module_name);
