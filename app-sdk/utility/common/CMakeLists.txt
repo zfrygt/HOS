@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.10)
+cmake_minimum_required(VERSION 3.1)
 
 # Project Name
 project(common)
@@ -12,9 +12,10 @@ message(STATUS "Version: " ${VERSION_MAJOR} "." ${VERSION_MINOR} "." ${VERSION_T
 
 set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
 
-# message(${COMMON_PATH})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-execute_process(COMMAND protoc -I=${COMMON_PATH} --cpp_out=${COMMON_PATH} ${COMMON_PATH}/hos_protocol.proto WORKING_DIRECTORY ${PROTOBUF_BIN})
+execute_process(COMMAND ${PROTOBUF_BIN}/protoc --version)
+execute_process(COMMAND ${PROTOBUF_BIN}/protoc -I=${COMMON_PATH} --cpp_out=${COMMON_PATH} ${COMMON_PATH}/hos_protocol.proto)
 
 file(RENAME ${COMMON_PATH}/hos_protocol.pb.h ${COMMON_PATH}/include/hos_protocol.pb.h)
 file(RENAME ${COMMON_PATH}/hos_protocol.pb.cc ${COMMON_PATH}/src/hos_protocol.pb.cc)
