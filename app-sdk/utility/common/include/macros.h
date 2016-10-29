@@ -8,9 +8,7 @@
 		#define COMMON_EXPORT __declspec(dllimport)
 	#endif
 #else
-	#ifdef COMMON_EXPORTS
-		#define COMMON_EXPORT
-	#endif
+	#define COMMON_EXPORT
 #endif
 
 #endif
