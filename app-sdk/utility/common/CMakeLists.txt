@@ -52,5 +52,7 @@ target_link_libraries(${PROJECT_NAME} ${SODIUM_LINK})
 target_link_libraries(${PROJECT_NAME} ${TBB_LINK})
 target_link_libraries(${PROJECT_NAME} ${ZEROMQ_LINK})
 target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LINK})
-
+if(NOT MSVC)
+	target_link_libraries(${PROJECT_NAME} pthread)
+endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Utility")
