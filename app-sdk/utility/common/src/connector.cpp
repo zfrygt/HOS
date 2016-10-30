@@ -6,9 +6,10 @@
 #include <utils.h>
 #include <job_pong.h>
 #include <future>
+#include <iostream>
 
 #define HEARTHBEAT_INTERVAL_IN_SECONDS 5 
-#define TIMEOUT_INTERVAL_IN_SECONDS 15
+#define TIMEOUT_INTERVAL_IN_SECONDS (3 * HEARTHBEAT_INTERVAL_IN_SECONDS)
 #define TIMEOUT_CHECK_INTERVAL_IN_SECONDS 2
 
 #define ZMQ_CHECK(x){int result = (x); if (result==1)printf("%d\n",zmq_errno()); assert(result!=-1);}
@@ -97,19 +98,19 @@ void Connector::heartbeat(long timeout)
 	if (items[0].revents & ZMQ_POLLIN){
 		receive();
 	}
-	auto currentTime = current_time();
-	auto timeSinceLastMessageSend = currentTime - m_lastSendMessageTime;
-	auto timeSinceLastMessageReceived = currentTime - m_lastReceivedMessageTime;
-	auto secondsSinceLastMessageSend = timeSinceLastMessageSend / CLOCKS_PER_SEC;
-	auto secondsSinceLastMessageReceived = timeSinceLastMessageReceived / CLOCKS_PER_SEC;
-	if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
-		// Timeout all!
-
-		// TODO It might be a good idea to destroy socket inorder to celar send buffer so previous messages will not be send accidentaly
-	}
-	if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
-		m_job_queue->push(move(std::make_shared<JobPong>(this)));
-	}
+    auto currentTime = current_time();
+    auto timeSinceLastMessageSend = currentTime - m_lastSendMessageTime;
+    auto timeSinceLastMessageReceived = currentTime - m_lastReceivedMessageTime;
+    auto secondsSinceLastMessageSend = timeSinceLastMessageSend / CLOCKS_PER_SEC;
+    auto secondsSinceLastMessageReceived = timeSinceLastMessageReceived / CLOCKS_PER_SEC;
+    if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
+        // Timeout all!
+        std::cout << "timeout!\n" << "m_lastReceivedMessageTime: " << currentTime;
+        m_job_queue->push(nullptr); // drop the connection and try to reconnect.
+    }
+    if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
+        m_job_queue->push(move(std::make_shared<JobPong>(this)));
+    }
 }
 
 void Connector::start()
@@ -127,7 +128,10 @@ void Connector::start()
 			{
 				std::shared_ptr<IJob> job;
 				job_queue->pop(job);
-				if (!job) break;
+                if (!job) {
+                    std::cout << "breaking!\n";
+                    break;
+                }
 				job->execute();
 			}
 		};

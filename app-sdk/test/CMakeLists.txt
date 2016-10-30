@@ -6,6 +6,7 @@ PROJECT(tests)
 set(tests 
 			test_initialize
 			test_heartbeat
+			test_timeout
 			)
 # add library and include dirs for all targets
 include_directories("../utility/common/include")
