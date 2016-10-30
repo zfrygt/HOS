@@ -42,6 +42,8 @@ public:
 	std::unique_ptr<ServerMessage> receive();
 	void send(const ClientMessage* client_message);
 
+	inline bool timeout() const { return m_timeout; }
+
 protected:
 
 	Connector(const Connector& other) = delete;
@@ -54,9 +56,10 @@ private:
 	void* m_socket;
 	char *m_uri;
 	char *m_module_name;
+	bool m_timeout;
 	uint8_t m_uri_len, m_module_name_len;
-	clock_t m_lastSendMessageTime;
-	clock_t m_lastReceivedMessageTime;
+	int64_t m_lastSendMessageTime;
+	int64_t m_lastReceivedMessageTime;
 	bool m_started;
 	using job_queue = tbb::concurrent_bounded_queue<std::shared_ptr<IJob>>;
 	job_queue* m_job_queue;
