@@ -16,6 +16,7 @@
 #include <job_init.h>
 
 Connector::Connector(const char* uri, const char* module_name) :
+m_timeout(false),
 m_lastSendMessageTime(-1),
 m_lastReceivedMessageTime(-1),
 m_started(false),
@@ -91,25 +92,34 @@ Connector::~Connector()
 
 void Connector::heartbeat(long timeout)
 {
+	std::unique_ptr<ServerMessage> msg;
 	zmq_pollitem_t items[] = {
 		{ m_socket, 0, ZMQ_POLLIN, 0 }
 	};
 	zmq_poll(items, 1, timeout);
 	if (items[0].revents & ZMQ_POLLIN){
-		receive();
+		msg = receive();
 	}
     auto currentTime = current_time();
-    auto timeSinceLastMessageSend = currentTime - m_lastSendMessageTime;
-    auto timeSinceLastMessageReceived = currentTime - m_lastReceivedMessageTime;
-    auto secondsSinceLastMessageSend = timeSinceLastMessageSend / CLOCKS_PER_SEC;
-    auto secondsSinceLastMessageReceived = timeSinceLastMessageReceived / CLOCKS_PER_SEC;
+	auto secondsSinceLastMessageSend = currentTime - m_lastSendMessageTime;
+	auto secondsSinceLastMessageReceived = currentTime - m_lastReceivedMessageTime;
     if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
         // Timeout all!
-        std::cout << "timeout!\n" << "m_lastReceivedMessageTime: " << currentTime;
-        m_job_queue->push(nullptr); // drop the connection and try to reconnect.
+		m_timeout = true;
     }
     if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
-        m_job_queue->push(move(std::make_shared<JobPong>(this)));
+		if (msg)
+		{
+			switch (msg->type())
+			{
+			case Ping:
+				m_job_queue->push(move(std::make_shared<JobPong>(this)));
+				break;
+			case Pong: break;
+			case Init: break;
+			default: break;
+			}
+		}
     }
 }
 
@@ -143,7 +153,7 @@ void Connector::start()
 std::unique_ptr<ServerMessage> Connector::receive()
 {
 	auto server_message = recv_server_message(m_socket);
-	m_lastReceivedMessageTime = clock();
+	m_lastReceivedMessageTime = current_time();
 	return server_message;
 }
 
@@ -151,7 +161,7 @@ void Connector::send(const ClientMessage* client_message)
 {
 	send_client_message(m_socket, client_message);
 
-	m_lastSendMessageTime = clock();
+	m_lastSendMessageTime = current_time();
 
 	if (m_lastReceivedMessageTime < 0)
 		m_lastReceivedMessageTime = m_lastSendMessageTime;
