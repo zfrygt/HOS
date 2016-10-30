@@ -7,7 +7,7 @@ echo "installing zeromq..."
 	./autogen.sh
 	./configure --with-libsodium
 	make -j $nproc
-	#sudo make install
-	#sudo ldconfig
+	sudo make install
+	sudo ldconfig
 } &> /dev/null
 echo "Done."

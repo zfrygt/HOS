@@ -7,7 +7,7 @@ echo "installing sodium..."
 	./autogen.sh
 	./configure
 	make -j $nproc
-	#sudo make install
-	#sudo ldconfig
+	sudo make install
+	sudo ldconfig
 } &> /dev/null
 echo "Done."

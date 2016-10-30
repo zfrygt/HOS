@@ -2,7 +2,7 @@
 
 echo "installing tbb..."
 {
-	#sudo apt-get install libtbb2
-	#sudo ldconfig
+	sudo apt-get install libtbb2
+	sudo ldconfig
 } &> /dev/null
 echo "Done."
