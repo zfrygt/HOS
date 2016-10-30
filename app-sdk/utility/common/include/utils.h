@@ -5,14 +5,11 @@
 #include <hos_protocol.pb.h>
 #include <serializer.h>
 #include <memory>
-#include <time.h>
+#include <chrono>
 
-inline clock_t current_time(){
-#if defined(_WIN32) && defined(_MSC_VER)
-    return clock();
-#else
-    return time(0);
-#endif
+inline int64_t current_time(){
+	auto temp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	return static_cast<int64_t>(temp) / 1000;
 }
 
 inline void send_server_message(void* socket, const ServerMessage* server_message, const std::string& client_name)
