@@ -17,6 +17,11 @@ inline int64_t current_time(){
 	return static_cast<int64_t>(temp) / 1000;
 }
 
+inline void hos_sleep(uint64_t ms)
+{
+	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
 inline void send_server_message(void* socket, const ServerMessage* server_message, const std::string& client_name)
 {
 	auto c = client_name.c_str();
