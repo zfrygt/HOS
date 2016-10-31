@@ -3,11 +3,9 @@
 
 #include <macros.h>
 #include <string>
-#include <time.h>
 #include <stdint.h>
 #include <job.h>
 #include <memory>
-
 
 #ifdef _WIN32
 namespace tbb
@@ -38,14 +36,13 @@ public:
 	Connector(const char* uri, const char* module_name);
 	virtual ~Connector();
 	void heartbeat(long timeout);
-	void start();
+	void connect();
 	std::unique_ptr<ServerMessage> receive();
 	void send(const ClientMessage* client_message);
 
 	inline bool timeout() const { return m_timeout; }
 
 protected:
-
 	Connector(const Connector& other) = delete;
 	Connector(Connector&& other) = delete;
 	Connector& operator=(const Connector& other) = delete;

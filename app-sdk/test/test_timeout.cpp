@@ -10,7 +10,7 @@ int main()
 	assert(context != nullptr);
 
 	auto server_socket = zmq_socket(context, ZMQ_ROUTER);
-	assert(context != nullptr);
+	assert(server_socket != nullptr);
 
 	auto val = 1;
 	auto xx = zmq_setsockopt(server_socket, ZMQ_ROUTER_MANDATORY, &val, sizeof val);
@@ -36,7 +36,7 @@ int main()
 
     auto connector_loop = [connector]()
 	{
-		connector->start();
+		connector->connect();
 
         while (!connector->timeout())
 		{

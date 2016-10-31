@@ -123,8 +123,13 @@ void Connector::heartbeat(long timeout)
     }
 }
 
-void Connector::start()
+void Connector::connect()
 {
+	zmq_connect(m_socket, m_uri);
+	ClientMessage msg;
+	msg.set_type(Init);
+	send(&msg);
+
 	if (!m_started && m_job_thread == nullptr)
 	{
 		m_started = true;
