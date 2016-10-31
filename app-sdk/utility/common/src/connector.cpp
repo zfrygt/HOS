@@ -4,16 +4,11 @@
 #include <hos_protocol.pb.h>
 #include <tbb/concurrent_queue.h>
 #include <utils.h>
-#include <job_pong.h>
 #include <future>
 #include <iostream>
-
-#define HEARTHBEAT_INTERVAL_IN_SECONDS 5 
-#define TIMEOUT_INTERVAL_IN_SECONDS (3 * HEARTHBEAT_INTERVAL_IN_SECONDS)
-#define TIMEOUT_CHECK_INTERVAL_IN_SECONDS 2
+#include <job_pong.h>
 
 #define ZMQ_CHECK(x){int result = (x); if (result==1)printf("%d\n",zmq_errno()); assert(result!=-1);}
-#include <job_init.h>
 
 Connector::Connector(const char* uri, const char* module_name) :
 m_timeout(false),
@@ -99,15 +94,6 @@ void Connector::heartbeat(long timeout)
 	zmq_poll(items, 1, timeout);
 	if (items[0].revents & ZMQ_POLLIN){
 		msg = receive();
-	}
-    auto currentTime = current_time();
-	auto secondsSinceLastMessageSend = currentTime - m_lastSendMessageTime;
-	auto secondsSinceLastMessageReceived = currentTime - m_lastReceivedMessageTime;
-    if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
-        // Timeout all!
-		m_timeout = true;
-    }
-    if (m_lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
 		if (msg)
 		{
 			switch (msg->type())
@@ -115,11 +101,14 @@ void Connector::heartbeat(long timeout)
 			case Ping:
 				m_job_queue->push(move(std::make_shared<JobPong>(this)));
 				break;
-			case Pong: break;
-			case Init: break;
 			default: break;
 			}
 		}
+	}
+	auto secondsSinceLastMessageReceived = current_time() - m_lastReceivedMessageTime;
+    if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
+        // Timeout all!
+		m_timeout = true;
     }
 }
 
@@ -143,10 +132,10 @@ void Connector::connect()
 			{
 				std::shared_ptr<IJob> job;
 				job_queue->pop(job);
-                if (!job) {
-                    std::cout << "breaking!\n";
-                    break;
-                }
+				if (!job) {
+					std::cout << "breaking!\n";
+					break;
+				}
 				job->execute();
 			}
 		};
@@ -159,6 +148,9 @@ std::unique_ptr<ServerMessage> Connector::receive()
 {
 	auto server_message = recv_server_message(m_socket);
 	m_lastReceivedMessageTime = current_time();
+
+	std::cout << "from server: " << MessageType_Name(server_message->type()) << "\n";
+
 	return server_message;
 }
 
@@ -170,4 +162,6 @@ void Connector::send(const ClientMessage* client_message)
 
 	if (m_lastReceivedMessageTime < 0)
 		m_lastReceivedMessageTime = m_lastSendMessageTime;
+
+	std::cout << "to server: " << MessageType_Name(client_message->type()) << "\n";
 }
