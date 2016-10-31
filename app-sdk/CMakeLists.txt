@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 
 project(HOS)
 
+set(USE_CURVE ON CACHE BOOL "Use Elliptic Curve Algorithm to secure the communication.")
+
 if (MSVC)
 	set(PROVIDEO_DEPENDS_FOLDER "D:/External" CACHE PATH "Proline Video Analytics Dependency Folder Path")
 
