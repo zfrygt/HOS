@@ -15,6 +15,17 @@ int main()
 	auto xx = zmq_setsockopt(server_socket, ZMQ_ROUTER_MANDATORY, &val, sizeof val);
 	assert(xx == 0);
 
+#ifdef USE_CURVE
+	int opt = 1;
+	std::string secretKey("Sd[BRNU[GQ6YL<P5-O!b]{pD@^yxNQ).Iln9%eU1");
+
+	auto curve_server = zmq_setsockopt(server_socket, ZMQ_CURVE_SERVER, &opt, sizeof opt);
+	assert(curve_server == 0);
+
+	auto secret_key = zmq_setsockopt(server_socket, ZMQ_CURVE_SECRETKEY, secretKey.c_str(), secretKey.length());
+	assert(secret_key == 0);
+#endif
+
 	auto bound = zmq_bind(server_socket, "tcp://*:5555");
 	assert(bound == 0);
 

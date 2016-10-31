@@ -35,6 +35,13 @@ FILE(GLOB TARGET_H 							"include/*.h*" "src/*.h*")
 FILE(GLOB TARGET_SRC		 				"src/*.c*")
 add_definitions(-DCOMMON_EXPORTS)
 
+if(USE_CURVE)
+	message(STATUS "Using Elliptic Curve!")
+	add_definitions(-DUSE_CURVE)
+else()
+	message("Not Using Elliptic Curve. Communication is NOT SECURE!")
+endif()
+
 include_directories(include/)
 include_directories(${TBB_INCLUDE})
 include_directories(${ZEROMQ_INCLUDE})

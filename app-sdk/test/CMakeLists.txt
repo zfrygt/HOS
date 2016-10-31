@@ -7,6 +7,7 @@ set(tests
 			test_initialize
 			test_heartbeat
 			test_timeout
+			test_server
 			)
 # add library and include dirs for all targets
 include_directories("../utility/common/include")
@@ -18,6 +19,13 @@ link_directories(${TBB_LIBS})
 link_directories(${PROTOBUF_LIBS})
 link_libraries(common)
 link_libraries(${ZEROMQ_LINK})
+
+if(USE_CURVE)
+	message(STATUS "Using Elliptic Curve!")
+	add_definitions(-DUSE_CURVE)
+else()
+	message("Not Using Elliptic Curve. Communication is NOT SECURE!")
+endif()
 
 set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)
 set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)

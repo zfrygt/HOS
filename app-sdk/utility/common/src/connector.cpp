@@ -44,25 +44,25 @@ m_job_thread(nullptr)
 	auto r = zmq_setsockopt(m_socket, ZMQ_LINGER, &linger, sizeof(linger)); // close cagirildiktan sonra beklemeden socket'i kapat.
 	assert(r == 0);
 
-	//std::string sp("tPw$8v!-!O}kL[5VRvT<yg&NbWolkR=eVQC5Z8X6");
-	//r = zmq_setsockopt(m_socket, ZMQ_CURVE_SERVERKEY, sp.c_str(), sp.length());
-	//assert(r == 0);
 	r = zmq_setsockopt(m_socket, ZMQ_IDENTITY, m_module_name, m_module_name_len);
 	assert(r == 0);
 
-	//char public_key[41];
-	//char secret_key[41];
+#ifdef USE_CURVE
+	std::string sp("tPw$8v!-!O}kL[5VRvT<yg&NbWolkR=eVQC5Z8X6");
+	r = zmq_setsockopt(m_socket, ZMQ_CURVE_SERVERKEY, sp.c_str(), sp.length());
+	assert(r == 0);
 
-	//r = zmq_curve_keypair(public_key, secret_key);
-	//assert(r == 0);
+	char public_key[41];
+	char secret_key[41];
 
-	//r = zmq_setsockopt(m_socket, ZMQ_CURVE_PUBLICKEY, public_key, sizeof(public_key));
-	//assert(r == 0);
-	//r = zmq_setsockopt(m_socket, ZMQ_CURVE_SECRETKEY, secret_key, sizeof(secret_key));
-	//assert(r == 0);
+	r = zmq_curve_keypair(public_key, secret_key);
+	assert(r == 0);
 
-	zmq_connect(m_socket, m_uri);
-	m_job_queue->push(move(std::make_shared<JobInit>(this)));
+	r = zmq_setsockopt(m_socket, ZMQ_CURVE_PUBLICKEY, public_key, sizeof(public_key));
+	assert(r == 0);
+	r = zmq_setsockopt(m_socket, ZMQ_CURVE_SECRETKEY, secret_key, sizeof(secret_key));
+	assert(r == 0);
+#endif
 }
 
 Connector::~Connector()
