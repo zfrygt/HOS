@@ -3,14 +3,16 @@
 #include <zmq.h>
 #include <utils.h>
 #include <iostream>
-#include <tbb/concurrent_queue.h>
 #include <job_ping.h>
 #include <future>
+#include <async_job_queue.h>
+#include <client.h>
+
+tbb::tbb_thread* server_thread = nullptr;
 
 Server::Server(const char* uri):
 m_started(false),
-m_job_queue(new job_queue),
-m_job_thread(nullptr)
+m_job_queue(new AsyncJobQueue<IJob>)
 {
 	m_context = zmq_ctx_new();
 	assert(m_context != nullptr);
@@ -22,8 +24,12 @@ m_job_thread(nullptr)
 	auto xx = zmq_setsockopt(m_socket, ZMQ_ROUTER_MANDATORY, &val, sizeof val);
 	assert(xx == 0);
 
+	auto linger = 0;
+	auto r = zmq_setsockopt(m_socket, ZMQ_LINGER, &linger, sizeof(linger)); // close cagirildiktan sonra beklemeden socket'i kapat.
+	assert(r == 0);
+
 #ifdef USE_CURVE
-	int opt = 1;
+	auto opt = 1;
 	std::string secretKey("Sd[BRNU[GQ6YL<P5-O!b]{pD@^yxNQ).Iln9%eU1");
 
 	auto curve_server = zmq_setsockopt(m_socket, ZMQ_CURVE_SERVER, &opt, sizeof opt);
@@ -39,37 +45,26 @@ m_job_thread(nullptr)
 
 Server::~Server()
 {
+	stop();
+
+	if (m_job_queue)
+	{
+		delete m_job_queue;
+		m_job_queue = nullptr;
+	}
+
 	zmq_close(m_socket);
 	zmq_ctx_destroy(m_context);
 }
 
 void Server::heartbeat(long timeout)
 {
-	std::unique_ptr<ClientMessage> msg;
-
 	zmq_pollitem_t items[] = {
 		{ m_socket, 0, ZMQ_POLLIN, 0 }
 	};
 	zmq_poll(items, 1, timeout);
 	if (items[0].revents & ZMQ_POLLIN){
-		Client *client = nullptr;
-		msg = receive(&client);
-		assert(client != nullptr);
-
-		switch (msg->type())
-		{
-		case Pong:
-
-			break;
-		case Init:
-		{
-			ServerMessage server_message;
-			server_message.set_type(Init);
-			send(client, &server_message);
-		}
-			break;
-		default: break;
-		}
+		on_receive();
 	}
 
 	auto currentTime = current_time();
@@ -87,7 +82,7 @@ void Server::heartbeat(long timeout)
 			continue;
 		}
 		if (c->lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
-			m_job_queue->push(std::make_shared<JobPing>(this, c));
+			m_job_queue->add_job(std::make_shared<JobPing>(this, c->get_client_name()));
 		}
 		++it;
 	}
@@ -95,28 +90,29 @@ void Server::heartbeat(long timeout)
 
 void Server::start()
 {
-	if (!m_started && m_job_thread == nullptr)
+	if (!m_started && server_thread == nullptr)
 	{
 		m_started = true;
-		auto job_queue = m_job_queue;
 
-		auto loop = [job_queue]()
+		server_thread = new tbb::tbb_thread([](Server* srv)
 		{
-			assert(job_queue != nullptr);
+			assert(srv != nullptr);
+			while (srv->m_started)
+				srv->heartbeat(25);
+		}, this);
+	}
+}
 
-			while (true)
-			{
-				std::shared_ptr<IJob> job;
-				job_queue->pop(job);
-				if (!job) {
-					std::cout << "breaking!\n";
-					break;
-				}
-				job->execute();
-			}
-		};
-
-		m_job_thread = new std::future<void>(std::move(std::async(std::launch::async, loop)));
+void Server::stop()
+{
+	if (m_started && server_thread != nullptr)
+	{
+		m_started = false;
+		server_thread->join();
+		delete server_thread;
+		server_thread = nullptr;
+		delete m_job_queue;
+		m_job_queue = nullptr;
 	}
 }
 
@@ -138,9 +134,40 @@ std::unique_ptr<ClientMessage> Server::receive(Client** sender_client)
 	return msg;
 }
 
+void Server::on_receive()
+{
+	Client *client = nullptr;
+	auto msg = receive(&client);
+	assert(client != nullptr);
+
+	switch (msg->type())
+	{
+	case Pong:
+
+		break;
+	case Init:
+	{
+		ServerMessage server_message;
+		server_message.set_type(Init);
+		send(client, &server_message);
+	}
+	break;
+	default: break;
+	}
+}
+
 void Server::send(Client* client, const ServerMessage* server_message)
 {
 	assert(client != nullptr);
+	assert(server_message != nullptr);
 	send_server_message(m_socket, server_message, client->get_client_name());
 	client->lastSendMessageTime = current_time();
+}
+
+void Server::send(const std::string& client_name, const ServerMessage* server_message)
+{
+	assert(!client_name.empty());
+	auto found_client = m_client_map.find(client_name);
+	assert(found_client != m_client_map.end());
+	send(found_client->second, server_message);
 }
