@@ -9,18 +9,20 @@
 template <typename Job>
 class AsyncJobQueue
 {
+	using spJob = std::shared_ptr<Job>;
+	using job_queue = tbb::concurrent_bounded_queue<spJob>;
+
 public:
 	explicit AsyncJobQueue();
 	~AsyncJobQueue();
 
-	void add_job(std::shared_ptr<Job> job);
-	typename tbb::concurrent_bounded_queue<std::shared_ptr<Job>>::size_type job_count() const { return m_job_queue->size(); }
+	void add_job(spJob&& job);
+	typename job_queue::size_type job_count() const { return m_job_queue->size(); }
 protected:
 	void start();
 	void stop();
 
 private:
-	using job_queue = tbb::concurrent_bounded_queue<std::shared_ptr<Job>>;
 	job_queue* m_job_queue;
 	tbb::tbb_thread* m_job_thread;
 	volatile bool m_started;
@@ -43,9 +45,9 @@ AsyncJobQueue<Job>::~AsyncJobQueue()
 }
 
 template <typename Job>
-void AsyncJobQueue<Job>::add_job(std::shared_ptr<Job> job)
+void AsyncJobQueue<Job>::add_job(spJob&& job)
 {
-	m_job_queue->push(std::move(job));
+	m_job_queue->push(std::forward<spJob>(job));
 }
 
 template <typename Job>
@@ -62,7 +64,7 @@ void AsyncJobQueue<Job>::start()
 
 			while (queue->m_started)
 			{
-				std::shared_ptr<Job> job;
+				spJob job;
 				job_queue->pop(job);
 				if (!job) break;
 				job->execute();
