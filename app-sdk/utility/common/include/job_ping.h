@@ -5,19 +5,18 @@
 #include "server.h"
 
 class Server;
-class Client;
 
 class JobPing : public IJob
 {
 public:
-	explicit JobPing(Server* server, Client* client);
+	explicit JobPing(Server* server, const std::string& client_name);
 	~JobPing();
 
 	void execute() override;
 
 private:
 	Server* m_server;
-	Client* m_client;
+	std::string m_client_name;
 };
 
 #endif // !JOB_QUEUE_H
