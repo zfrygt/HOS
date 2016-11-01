@@ -11,11 +11,12 @@ int main()
 	const std::string module_name("test");
 
 	auto connector = new Connector("tcp://localhost:5555", module_name.c_str());
-	connector->connect();
 
 	auto connector_loop = [connector]()
 	{
-		while (!connector->timeout())
+		connector->connect();
+
+		while (connector->connected())
 		{
 			connector->heartbeat(50);
 		}
@@ -26,13 +27,13 @@ int main()
 	Server server("tcp://*:5555");
 	server.start();
 
-	auto counter = 100;
+	//auto counter = 100;
 
-	do
-	{
-		server.heartbeat(50);
-		
-	} while (counter--);
+	//do
+	//{
+	//	server.heartbeat(50);
+	//	
+	//} while (counter--);
 
 	conn_feature.get();
 

@@ -30,9 +30,13 @@ public:
 	void connect();
 	std::unique_ptr<ServerMessage> receive();
 	void send(const ClientMessage* client_message);
-	inline bool timeout() const { return m_timeout; }
+
+	inline bool connected() const { return m_connected; }
 
 protected:
+	void destroy();
+	void init();
+
 	Connector(const Connector& other) = delete;
 	Connector(Connector&& other) = delete;
 	Connector& operator=(const Connector& other) = delete;
@@ -41,9 +45,10 @@ protected:
 private:
 	void* m_context;
 	void* m_socket;
-	volatile bool m_timeout;
+	volatile bool m_connected;
 	volatile bool m_started;
 	std::string m_uri;
+	std::string m_module_name;
 	uint8_t m_uri_len, m_module_name_len;
 	int64_t m_lastSendMessageTime;
 	int64_t m_lastReceivedMessageTime;

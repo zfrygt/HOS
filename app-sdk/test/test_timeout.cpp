@@ -38,7 +38,7 @@ int main()
 	{
 		connector->connect();
 
-        while (!connector->timeout())
+        while (connector->connected())
 		{
             connector->heartbeat(50);
 		}
