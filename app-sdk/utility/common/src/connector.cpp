@@ -2,33 +2,25 @@
 #include <zmq.h>
 #include <assert.h>
 #include <hos_protocol.pb.h>
-#include <tbb/concurrent_queue.h>
 #include <utils.h>
 #include <future>
 #include <iostream>
 #include <job_pong.h>
+#include <async_job_queue.h>
 
 #define ZMQ_CHECK(x){int result = (x); if (result==1)printf("%d\n",zmq_errno()); assert(result!=-1);}
 
+tbb::tbb_thread* connector_thread = nullptr;
+
 Connector::Connector(const char* uri, const char* module_name) :
 m_timeout(false),
+m_started(false),
+m_uri(uri),
 m_lastSendMessageTime(-1),
 m_lastReceivedMessageTime(-1),
-m_started(false),
-m_job_queue(new job_queue),
-m_job_thread(nullptr)
+m_job_queue(new AsyncJobQueue<IJob>)
 {
-	m_uri_len = strlen(uri);
-	assert(m_uri_len > 0);
-
-	m_module_name_len = strlen(module_name);
-	assert(m_module_name_len > 0);
-
-	m_uri = static_cast<char*>(malloc(m_uri_len + 1));
-	strcpy(m_uri, uri);
-
-	m_module_name = static_cast<char*>(malloc(m_module_name_len + 1));
-	strcpy(m_module_name, module_name);
+	assert(!m_uri.empty());
 
 	m_context = zmq_ctx_new();
 	assert(m_context != nullptr);
@@ -39,7 +31,7 @@ m_job_thread(nullptr)
 	auto r = zmq_setsockopt(m_socket, ZMQ_LINGER, &linger, sizeof(linger)); // close cagirildiktan sonra beklemeden socket'i kapat.
 	assert(r == 0);
 
-	r = zmq_setsockopt(m_socket, ZMQ_IDENTITY, m_module_name, m_module_name_len);
+	r = zmq_setsockopt(m_socket, ZMQ_IDENTITY, module_name, m_module_name_len);
 	assert(r == 0);
 
 #ifdef USE_CURVE
@@ -62,85 +54,66 @@ m_job_thread(nullptr)
 
 Connector::~Connector()
 {
-	if (m_uri)
-	{
-		free(m_uri);
-		m_uri = nullptr;
-	}
-	if (m_module_name)
-	{
-		free(m_module_name);
-		m_module_name = nullptr;
-	}
 	if (m_job_queue)
 	{
-		m_job_queue->push(nullptr);
-		// join the job thread first!
-		m_job_thread->get();
-		assert(m_job_queue->empty());
 		delete m_job_queue;
+		m_job_queue = nullptr;
 	}
-	zmq_disconnect(m_socket, m_uri);
+
+	zmq_disconnect(m_socket, m_uri.c_str());
 	zmq_close(m_socket);
 	zmq_ctx_destroy(m_context);
 }
 
 void Connector::heartbeat(long timeout)
 {
-	std::unique_ptr<ServerMessage> msg;
 	zmq_pollitem_t items[] = {
 		{ m_socket, 0, ZMQ_POLLIN, 0 }
 	};
 	zmq_poll(items, 1, timeout);
 	if (items[0].revents & ZMQ_POLLIN){
-		msg = receive();
+		auto msg = receive();
 		if (msg)
 		{
 			switch (msg->type())
 			{
 			case Ping:
-				m_job_queue->push(move(std::make_shared<JobPong>(this)));
+				m_job_queue->add_job(move(std::make_shared<JobPong>(this)));
 				break;
 			default: break;
 			}
 		}
 	}
 	auto secondsSinceLastMessageReceived = current_time() - m_lastReceivedMessageTime;
-    if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
-        // Timeout all!
+	if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
+		// Timeout all!
 		m_timeout = true;
-    }
+		connector_thread->join();
+		delete connector_thread;
+		connector_thread = nullptr;
+
+		// reconnect
+		connect();
+	}
 }
 
 void Connector::connect()
 {
-	zmq_connect(m_socket, m_uri);
+	zmq_connect(m_socket, m_uri.c_str());
 	ClientMessage msg;
 	msg.set_type(Init);
 	send(&msg);
 
-	if (!m_started && m_job_thread == nullptr)
+	if (!m_started && connector_thread == nullptr)
 	{
 		m_started = true;
-		auto job_queue = m_job_queue;
 
-		auto loop = [job_queue]()
+		connector_thread = new tbb::tbb_thread([](Connector* cnn)
 		{
-			assert(job_queue != nullptr);
-
-			while (true)
-			{
-				std::shared_ptr<IJob> job;
-				job_queue->pop(job);
-				if (!job) {
-					std::cout << "breaking!\n";
-					break;
-				}
-				job->execute();
-			}
-		};
-
-		m_job_thread = new std::future<void>(std::move(std::async(std::launch::async, loop)));
+			assert(cnn != nullptr);
+			while (cnn->m_started && !cnn->m_timeout)
+				cnn->heartbeat(25);
+		}, this);
 	}
 }
 
