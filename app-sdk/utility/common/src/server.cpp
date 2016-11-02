@@ -159,6 +159,7 @@ void Server::on_receive()
 void Server::send(Client* client, const ServerMessage* server_message)
 {
 	assert(client != nullptr);
+	assert(m_socket != nullptr);
 	assert(server_message != nullptr);
 	send_server_message(m_socket, server_message, client->get_client_name());
 	client->lastSendMessageTime = current_time();

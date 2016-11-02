@@ -7,37 +7,28 @@
 
 int main()
 {
-
+	Server server("tcp://*:5555");
+	server.start();
 	const std::string module_name("test");
 
 	auto connector = new Connector("tcp://localhost:5555", module_name.c_str());
+	connector->connect();
 
-	auto connector_loop = [connector]()
-	{
-		connector->connect();
-
-		while (connector->connected())
-		{
-			connector->heartbeat(50);
-		}
-	};
-
-	auto conn_feature = std::async(std::launch::async, connector_loop);
-
-	Server server("tcp://*:5555");
-	server.start();
-
-	//auto counter = 100;
-
-	//do
+	//auto connector_loop = []()
 	//{
-	//	server.heartbeat(50);
-	//	
-	//} while (counter--);
 
-	conn_feature.get();
+	//	while (true)
+	//	{
+	//		connector->heartbeat(50);
+	//	}
+	//	delete connector;
+	//};
 
-	delete connector;
+	//auto conn_feature = std::async(std::launch::async, connector_loop);
+
+	//conn_feature.get();
+
+	std::cin.get();
 
 	return 0;
 }

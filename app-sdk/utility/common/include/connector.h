@@ -4,7 +4,6 @@
 #include <macros.h>
 #include <string>
 #include <stdint.h>
-#include <job.h>
 #include <memory>
 
 class ServerMessage;
@@ -49,7 +48,6 @@ private:
 	volatile bool m_started;
 	std::string m_uri;
 	std::string m_module_name;
-	uint8_t m_uri_len, m_module_name_len;
 	int64_t m_lastSendMessageTime;
 	int64_t m_lastReceivedMessageTime;
 	AsyncJobQueue<IJob>* m_job_queue;

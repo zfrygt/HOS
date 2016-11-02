@@ -57,9 +57,7 @@ void Connector::heartbeat(long timeout)
 	if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
 		// Timeout all!
 
-		//destroy
 		destroy();
-
 		init();
 
 		// reconnect
@@ -73,25 +71,23 @@ void Connector::connect()
 	assert(m_socket != nullptr);
 
 	zmq_connect(m_socket, m_uri.c_str());
+	ClientMessage msg;
+	msg.set_type(Init);
+	send(&msg);
+	// wait for the response from the server
+	m_connected = receive()->type() == Init;
+
+	if (!m_started && connector_thread == nullptr)
 	{
-		ClientMessage msg;
-		msg.set_type(Init);
-		send(&msg);
-		// wait for the response from the server
-		m_connected = receive()->type() == Init;
+		m_started = true;
+
+		connector_thread = new tbb::tbb_thread([](Connector* cnn)
+		{
+			assert(cnn != nullptr);
+			while (cnn->m_started && cnn->m_connected)
+				cnn->heartbeat(25);
+		}, this);
 	}
-
-	//if (!m_started && connector_thread == nullptr)
-	//{
-	//	m_started = true;
-
-	//	connector_thread = new tbb::tbb_thread([](Connector* cnn)
-	//	{
-	//		assert(cnn != nullptr);
-	//		while (cnn->m_started /*&& cnn->m_connected*/)
-	//			cnn->heartbeat(25);
-	//	}, this);
-	//}
 }
 
 std::unique_ptr<ServerMessage> Connector::receive()
@@ -127,7 +123,7 @@ void Connector::init()
 	auto r = zmq_setsockopt(m_socket, ZMQ_LINGER, &linger, sizeof(linger)); // close cagirildiktan sonra beklemeden socket'i kapat.
 	assert(r == 0);
 
-	r = zmq_setsockopt(m_socket, ZMQ_IDENTITY, m_module_name.c_str(), m_module_name_len);
+	r = zmq_setsockopt(m_socket, ZMQ_IDENTITY, m_module_name.c_str(), m_module_name.length());
 	assert(r == 0);
 
 #ifdef USE_CURVE
