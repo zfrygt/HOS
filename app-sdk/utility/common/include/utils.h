@@ -35,9 +35,12 @@ inline void send_server_message(void* socket, const ServerMessage* server_messag
 	auto buf = so->get_buf();
 	auto size = so->get_size();
 
-	zmq_send(socket, c, s, ZMQ_SNDMORE);
-	zmq_send(socket, nullptr, 0, ZMQ_SNDMORE);
-	zmq_send(socket, buf, size, 0);
+	int r1 = zmq_send(socket, c, s, ZMQ_SNDMORE);
+	assert(r1 == s);
+	int r2 = zmq_send(socket, nullptr, 0, ZMQ_SNDMORE);
+	assert(r2 == 0);
+	int r3 = zmq_send(socket, buf, size, 0);
+	assert(r3 == size);
 }
 
 inline void send_client_message(void* socket, const ClientMessage* client_message)
