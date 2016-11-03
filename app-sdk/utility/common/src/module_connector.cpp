@@ -1,27 +1,15 @@
-#include "connector.h"
+#include <module_connector.h>
 #include <zmq.h>
-#include <assert.h>
 #include <hos_protocol.pb.h>
-#include <utils.h>
-#include <future>
 #include <iostream>
-#include <job_pong.h>
-#include <async_job_queue.h>
+#include <strategy_base.h>
 
 #define ZMQ_CHECK(x){int result = (x); if (result==1)printf("%d\n",zmq_errno()); assert(result!=-1);}
 
-tbb::tbb_thread* connector_thread = nullptr;
-
-Connector::Connector(const char* uri, const char* module_name) :
-m_context(nullptr),
-m_socket(nullptr),
-m_connected(false),
-m_started(false),
+ModuleConnector::ModuleConnector(IStrategy* receive_strategy, const char* uri, const char* module_name) :
 m_uri(uri),
 m_module_name(module_name),
-m_lastSendMessageTime(-1),
-m_lastReceivedMessageTime(-1),
-m_job_queue(new AsyncJobQueue<IJob>)
+m_on_receive_func(receive_strategy)
 {
 	assert(!m_uri.empty());
 	assert(!m_module_name.empty());
@@ -29,43 +17,28 @@ m_job_queue(new AsyncJobQueue<IJob>)
 	init();
 }
 
-Connector::~Connector()
+ModuleConnector::~ModuleConnector()
 {
 	destroy();
 }
 
-void Connector::heartbeat(long timeout)
+void ModuleConnector::poll(long timeout)
 {
 	zmq_pollitem_t items[] = {
 		{ m_socket, 0, ZMQ_POLLIN, 0 }
 	};
 	zmq_poll(items, 1, timeout);
 	if (items[0].revents & ZMQ_POLLIN){
-		auto msg = receive();
-		if (msg)
-		{
-			switch (msg->type())
-			{
-			case Ping:
-				m_job_queue->add_job(move(std::make_shared<JobPong>(this)));
-				break;
-			default: break;
-			}
-		}
+		m_on_receive_func->operator()(move(receive()));
 	}
 	auto secondsSinceLastMessageReceived = current_time() - m_lastReceivedMessageTime;
 	if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
 		// Timeout all!
-
-		destroy();
-		init();
-
-		// reconnect
-		connect();
+		reconnect();
 	}
 }
 
-void Connector::connect()
+void ModuleConnector::connect()
 {
 	assert(m_context != nullptr);
 	assert(m_socket != nullptr);
@@ -76,21 +49,9 @@ void Connector::connect()
 	send(&msg);
 	// wait for the response from the server
 	m_connected = receive()->type() == Init;
-
-	if (!m_started && connector_thread == nullptr)
-	{
-		m_started = true;
-
-		connector_thread = new tbb::tbb_thread([](Connector* cnn)
-		{
-			assert(cnn != nullptr);
-			while (cnn->m_started && cnn->m_connected)
-				cnn->heartbeat(25);
-		}, this);
-	}
 }
 
-std::unique_ptr<ServerMessage> Connector::receive()
+std::unique_ptr<ServerMessage> ModuleConnector::receive()
 {
 	auto server_message = recv_server_message(m_socket);
 	m_lastReceivedMessageTime = current_time();
@@ -100,7 +61,7 @@ std::unique_ptr<ServerMessage> Connector::receive()
 	return server_message;
 }
 
-void Connector::send(const ClientMessage* client_message)
+void ModuleConnector::send(const ClientMessage* client_message)
 {
 	send_client_message(m_socket, client_message);
 
@@ -112,12 +73,16 @@ void Connector::send(const ClientMessage* client_message)
 	std::cout << "to server: " << MessageType_Name(client_message->type()) << "\n";
 }
 
-void Connector::init()
+void ModuleConnector::init()
 {
 	m_context = zmq_ctx_new();
 	assert(m_context != nullptr);
 	m_socket = zmq_socket(m_context, ZMQ_DEALER);
 	assert(m_socket != nullptr);
+	m_connected = false;
+	m_started = false;
+	m_lastSendMessageTime = -1;
+	m_lastReceivedMessageTime = -1;
 
 	auto linger = 0;
 	auto r = zmq_setsockopt(m_socket, ZMQ_LINGER, &linger, sizeof(linger)); // close cagirildiktan sonra beklemeden socket'i kapat.
@@ -144,23 +109,17 @@ void Connector::init()
 #endif
 }
 
-void Connector::destroy()
+void ModuleConnector::reconnect()
+{
+	destroy();
+	init();
+	connect();
+}
+
+void ModuleConnector::destroy()
 {
 	m_connected = false;
 	m_started = false;
-
-	if (m_job_queue)
-	{
-		delete m_job_queue;
-		m_job_queue = nullptr;
-	}
-
-	if (connector_thread != nullptr)
-	{
-		connector_thread->join();
-		delete connector_thread;
-		connector_thread = nullptr;
-	}
 
 	if (m_socket != nullptr)
 	{
