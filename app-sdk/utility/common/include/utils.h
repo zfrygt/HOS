@@ -12,6 +12,19 @@
 #define TIMEOUT_CHECK_INTERVAL_IN_SECONDS 2
 #include <thread>
 
+class no_copy_move
+{
+public:
+	no_copy_move() { }
+
+protected:
+
+	no_copy_move(const no_copy_move& other) = delete;
+	no_copy_move(no_copy_move&& other) = delete;
+	no_copy_move& operator=(const no_copy_move& other) = delete;
+	no_copy_move& operator=(no_copy_move&& other) = delete;
+};
+
 inline int64_t current_time(){
 	auto temp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	return static_cast<int64_t>(temp) / 1000;
