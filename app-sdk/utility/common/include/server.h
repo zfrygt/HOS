@@ -5,16 +5,17 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <utils.h>
 
 class Client;
 class ServerMessage;
 class ClientMessage;
 class IJob;
 
-template<typename T>
+template<typename T, int>
 class AsyncJobQueue;
 
-class COMMON_EXPORT Server
+class COMMON_EXPORT Server : no_copy_move
 {
 	friend class IJob;
 public:
@@ -26,11 +27,6 @@ public:
 	void heartbeat(long timeout);
 
 protected:
-	Server(const Server& other) = delete;
-	Server(Server&& other) = delete;
-	Server& operator=(const Server& other) = delete;
-	Server& operator=(Server&& other) = delete;
-
 	std::unique_ptr<ClientMessage> receive(Client** sender_client);
 	void send(Client* client, const ServerMessage* server_message);
 	void on_receive();
@@ -40,7 +36,7 @@ private:
 	void* m_socket;
 	volatile bool m_started;
 	std::unordered_map<std::string, Client*> m_client_map;
-	AsyncJobQueue<IJob>* m_job_queue;
+	AsyncJobQueue<IJob, 100>* m_job_queue;
 };
 
 #endif

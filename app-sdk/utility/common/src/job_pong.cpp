@@ -1,11 +1,11 @@
 #include <job_pong.h>
 #include <hos_protocol.pb.h>
-#include <connector.h>
+#include <module_connector.h>
 
-JobPong::JobPong(Connector* connector):
-m_connector(connector)
+JobPong::JobPong(ModuleConnector* module_connector) :
+m_module_connector(module_connector)
 {
-	assert(m_connector != nullptr);
+	assert(m_module_connector != nullptr);
 }
 
 JobPong::~JobPong()
@@ -14,8 +14,8 @@ JobPong::~JobPong()
 
 void JobPong::execute()
 {
-	assert(m_connector != nullptr);
+	assert(m_module_connector != nullptr);
 	ClientMessage client_message;
 	client_message.set_type(Pong);
-	m_connector->send(&client_message);
+	m_module_connector->send(&client_message);
 }

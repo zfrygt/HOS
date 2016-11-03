@@ -12,7 +12,7 @@ tbb::tbb_thread* server_thread = nullptr;
 
 Server::Server(const char* uri):
 m_started(false),
-m_job_queue(new AsyncJobQueue<IJob>)
+m_job_queue(new AsyncJobQueue<IJob, 100>)
 {
 	m_context = zmq_ctx_new();
 	assert(m_context != nullptr);
