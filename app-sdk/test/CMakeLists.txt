@@ -4,10 +4,10 @@ cmake_minimum_required(VERSION 3.1)
 PROJECT(tests)
 
 set(tests 
-			test_initialize
-			test_heartbeat
-			test_timeout
-			test_server
+			# test_initialize
+			# test_heartbeat
+			# test_timeout
+			# test_server
 			)
 # add library and include dirs for all targets
 include_directories("../utility/common/include")
