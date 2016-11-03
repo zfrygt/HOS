@@ -1,5 +1,5 @@
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef SERVER_CONNECTOR_H
+#define SERVER_CONNECTOR_H
 
 #include <macros.h>
 #include <string>
@@ -15,12 +15,12 @@ class IJob;
 template<typename T, int>
 class AsyncJobQueue;
 
-class COMMON_EXPORT Server : no_copy_move
+class COMMON_EXPORT ServerConnector : no_copy_move
 {
 	friend class IJob;
 public:
-	explicit Server(const char* uri);
-	virtual ~Server();
+	explicit ServerConnector(const char* uri);
+	virtual ~ServerConnector();
 	void start();
 	void stop();
 	void send(const std::string& client_name, const ServerMessage* server_message);

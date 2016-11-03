@@ -1,4 +1,4 @@
-#include <server.h>
+#include <server_connector.h>
 #include <hos_protocol.pb.h>
 #include <zmq.h>
 #include <utils.h>
@@ -10,7 +10,7 @@
 
 tbb::tbb_thread* server_thread = nullptr;
 
-Server::Server(const char* uri):
+ServerConnector::ServerConnector(const char* uri) :
 m_started(false),
 m_job_queue(new AsyncJobQueue<IJob, 100>)
 {
@@ -43,7 +43,7 @@ m_job_queue(new AsyncJobQueue<IJob, 100>)
 	assert(bound == 0);
 }
 
-Server::~Server()
+ServerConnector::~ServerConnector()
 {
 	stop();
 
@@ -57,7 +57,7 @@ Server::~Server()
 	zmq_ctx_destroy(m_context);
 }
 
-void Server::heartbeat(long timeout)
+void ServerConnector::heartbeat(long timeout)
 {
 	zmq_pollitem_t items[] = {
 		{ m_socket, 0, ZMQ_POLLIN, 0 }
@@ -88,13 +88,13 @@ void Server::heartbeat(long timeout)
 	}
 }
 
-void Server::start()
+void ServerConnector::start()
 {
 	if (!m_started && server_thread == nullptr)
 	{
 		m_started = true;
 
-		server_thread = new tbb::tbb_thread([](Server* srv)
+		server_thread = new tbb::tbb_thread([](ServerConnector* srv)
 		{
 			assert(srv != nullptr);
 			while (srv->m_started)
@@ -103,7 +103,7 @@ void Server::start()
 	}
 }
 
-void Server::stop()
+void ServerConnector::stop()
 {
 	if (m_started && server_thread != nullptr)
 	{
@@ -116,7 +116,7 @@ void Server::stop()
 	}
 }
 
-std::unique_ptr<ClientMessage> Server::receive(Client** sender_client)
+std::unique_ptr<ClientMessage> ServerConnector::receive(Client** sender_client)
 {
 	assert(*sender_client == nullptr);
 
@@ -134,7 +134,7 @@ std::unique_ptr<ClientMessage> Server::receive(Client** sender_client)
 	return msg;
 }
 
-void Server::on_receive()
+void ServerConnector::on_receive()
 {
 	Client *client = nullptr;
 	auto msg = receive(&client);
@@ -156,7 +156,7 @@ void Server::on_receive()
 	}
 }
 
-void Server::send(Client* client, const ServerMessage* server_message)
+void ServerConnector::send(Client* client, const ServerMessage* server_message)
 {
 	assert(client != nullptr);
 	assert(m_socket != nullptr);
@@ -165,7 +165,7 @@ void Server::send(Client* client, const ServerMessage* server_message)
 	client->lastSendMessageTime = current_time();
 }
 
-void Server::send(const std::string& client_name, const ServerMessage* server_message)
+void ServerConnector::send(const std::string& client_name, const ServerMessage* server_message)
 {
 	assert(!client_name.empty());
 	auto found_client = m_client_map.find(client_name);
