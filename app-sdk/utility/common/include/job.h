@@ -1,7 +1,9 @@
 #ifndef JOB_H
 #define JOB_H
 
-class IJob
+#include <macros.h>
+
+class COMMON_EXPORT IJob
 {
 public:
 	virtual ~IJob() { }

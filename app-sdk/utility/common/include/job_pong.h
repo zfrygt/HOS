@@ -3,18 +3,18 @@
 
 #include <job.h>
 
-class Connector;
+class ModuleConnector;
 
-class JobPong : public IJob
+class COMMON_EXPORT JobPong : public IJob
 {
 public:
-	explicit JobPong(Connector* connector);
+	explicit JobPong(ModuleConnector* module_connector);
 	~JobPong();
 
 	void execute() override;
 
 private:
-	Connector* m_connector;
+	ModuleConnector* m_module_connector;
 };
 
 #endif // !JOB_QUEUE_H
