@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.1)
-
 # Project Name
 project(receptionist)
 
@@ -9,9 +7,7 @@ set(VERSION_TYPE "0" CACHE STRING "Type")
 set(VERSION_BUILD "0" CACHE STRING "Build")
 
 message(STATUS "Version: " ${VERSION_MAJOR} "." ${VERSION_MINOR} "." ${VERSION_TYPE} "." ${VERSION_BUILD})
-if (NOT MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-endif()
+
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
   ${CMAKE_CURRENT_BINARY_DIR}/version.rc
@@ -26,14 +22,12 @@ FILE(GLOB TARGET_H 							"include/*.h*" "src/*.h*")
 FILE(GLOB TARGET_SRC		 				"src/*.c*")
 
 if(USE_CURVE)
-	message(STATUS "Using Elliptic Curve!")
+	message(STATUS "${PROJECT_NAME} is using Elliptic Curve Encryption!")
 	add_definitions(-DUSE_CURVE)
 else()
-	message("Not Using Elliptic Curve. Communication is NOT SECURE!")
+	message("${PROJECT_NAME} is not Using Elliptic Curve Encryption. Communication is NOT SECURE!")
 endif()
 
-set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)
-set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
 if (NOT MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()

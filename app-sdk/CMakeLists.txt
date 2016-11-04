@@ -87,6 +87,9 @@ else()
 
 endif()
 
+set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)
+set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
+
 enable_testing ()
 
 add_subdirectory (supervisor)

@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.1)
-
 # name of Windows project will tests.sln
 PROJECT(tests)
 
@@ -21,17 +19,18 @@ link_libraries(common)
 link_libraries(${ZEROMQ_LINK})
 
 if(USE_CURVE)
-	message(STATUS "Using Elliptic Curve!")
+	message(STATUS "${PROJECT_NAME} is using Elliptic Curve Encryption!")
 	add_definitions(-DUSE_CURVE)
 else()
-	message("Not Using Elliptic Curve. Communication is NOT SECURE!")
+	message("${PROJECT_NAME} is not Using Elliptic Curve Encryption. Communication is NOT SECURE!")
 endif()
 
-set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)
-set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
 if (NOT MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
+
+set(COMMON_BIN ${COMMON_PATH}/utility/common/Debug)
+
 foreach(test ${tests})
 	add_executable(${test} ${test}.cpp "${COMMON_PATH}/include/hos_protocol.pb.h" "${COMMON_PATH}/src/hos_protocol.pb.cc")
 	add_test(NAME ${test} COMMAND ${test})
