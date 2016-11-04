@@ -16,8 +16,9 @@ JobPing::~JobPing()
 
 void JobPing::execute()
 {
-	assert(m_server != nullptr);
+	assert(m_server_connector != nullptr);
 	ServerMessage server_message;
 	server_message.set_type(Ping);
-	m_server->send(m_client_name, &server_message);
+	m_server_connector->send(m_client_name, &server_message);
+	std::cout << "ping to [" << m_client_name << "]\n";
 }

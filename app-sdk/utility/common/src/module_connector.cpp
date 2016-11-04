@@ -34,8 +34,10 @@ void ModuleConnector::poll(long timeout)
 	auto secondsSinceLastMessageReceived = current_time() - m_lastReceivedMessageTime;
 	if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
 		// Timeout all!
+		std::cout << "reconnecting to server\n";
 		reconnect();
 	}
+	return true;
 }
 
 void ModuleConnector::connect()

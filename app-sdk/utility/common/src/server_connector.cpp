@@ -76,7 +76,7 @@ void ServerConnector::heartbeat(long timeout)
 		auto secondsSinceLastMessageReceived = currentTime - c->lastReceivedMessageTime;
 		if (c->lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
 			// Timeout this client!
-			std::cout << "dropping " << c->get_client_name() << " from the list\n";
+			std::cout << "[" << c->get_client_name() << "] disconnected\n";
 			delete c;
 			it = m_client_map.erase(it);
 			continue;
@@ -143,13 +143,14 @@ void ServerConnector::on_receive()
 	switch (msg->type())
 	{
 	case Pong:
-
+		std::cout << "pong from [" << client->get_client_name() << "]\n";
 		break;
 	case Init:
 	{
 		ServerMessage server_message;
 		server_message.set_type(Init);
 		send(client, &server_message);
+		std::cout << "[" << client->get_client_name() << "] connected\n";
 	}
 	break;
 	default: break;
