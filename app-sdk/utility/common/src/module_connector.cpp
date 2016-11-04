@@ -5,11 +5,13 @@
 #include <strategy_base.h>
 
 #define ZMQ_CHECK(x){int result = (x); if (result==1)printf("%d\n",zmq_errno()); assert(result!=-1);}
+#include <future>
 
 ModuleConnector::ModuleConnector(IStrategy* receive_strategy, const char* uri, const char* module_name) :
 m_uri(uri),
 m_module_name(module_name),
-m_on_receive_func(receive_strategy)
+m_on_receive_func(receive_strategy),
+m_connected(false)
 {
 	assert(!m_uri.empty());
 	assert(!m_module_name.empty());
@@ -22,7 +24,7 @@ ModuleConnector::~ModuleConnector()
 	destroy();
 }
 
-void ModuleConnector::poll(long timeout)
+bool ModuleConnector::poll(long timeout)
 {
 	zmq_pollitem_t items[] = {
 		{ m_socket, 0, ZMQ_POLLIN, 0 }
@@ -51,6 +53,9 @@ void ModuleConnector::connect()
 	send(&msg);
 	// wait for the response from the server
 	m_connected = receive()->type() == Init;
+
+	while (m_connected)
+		if (!poll(25)) break;
 }
 
 std::unique_ptr<ServerMessage> ModuleConnector::receive()
@@ -82,7 +87,6 @@ void ModuleConnector::init()
 	m_socket = zmq_socket(m_context, ZMQ_DEALER);
 	assert(m_socket != nullptr);
 	m_connected = false;
-	m_started = false;
 	m_lastSendMessageTime = -1;
 	m_lastReceivedMessageTime = -1;
 
@@ -121,7 +125,6 @@ void ModuleConnector::reconnect()
 void ModuleConnector::destroy()
 {
 	m_connected = false;
-	m_started = false;
 
 	if (m_socket != nullptr)
 	{
@@ -129,6 +132,14 @@ void ModuleConnector::destroy()
 		zmq_close(m_socket);
 		m_socket = nullptr;
 	}
+
+	//if (module_thread != nullptr)
+	//{
+	//	if (module_thread->joinable())
+	//		module_thread->join();
+	//	delete module_thread;
+	//	module_thread = nullptr;
+	//}
 
 	if (m_context != nullptr)
 	{

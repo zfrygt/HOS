@@ -2,20 +2,20 @@
 #define JOB_PING_H
 
 #include <job.h>
-#include "server.h"
+#include <string>
 
-class Server;
+class ServerConnector;
 
 class JobPing : public IJob
 {
 public:
-	explicit JobPing(Server* server, const std::string& client_name);
+	explicit JobPing(ServerConnector* server_connector, const std::string& client_name);
 	~JobPing();
 
 	void execute() override;
 
 private:
-	Server* m_server;
+	ServerConnector* m_server_connector;
 	std::string m_client_name;
 };
 

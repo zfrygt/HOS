@@ -5,6 +5,7 @@
 #include <job.h>
 #include <async_job_queue.h>
 #include <job_pong.h>
+#include <future>
 
 using spServerMessage = std::shared_ptr<ServerMessage>;
 const int MAX_JOB_COUNT = 100;
@@ -20,7 +21,9 @@ int main()
 
 	ModuleConnector module_base(strategy, "tcp://localhost:5555", "receptionist");
 	
-	module_base.connect();
+	auto future = std::async(std::launch::async, [&module_base](){
+		module_base.connect(); 
+	});
 
 	while (true)
 	{
@@ -31,7 +34,6 @@ int main()
 
 		if (message)
 		{
-
 			switch (message->type())
 			{
 			case Ping:
@@ -43,6 +45,8 @@ int main()
 			}
 		}
 	}
+
+	future.get();
 
 	delete strategy;
 

@@ -1,12 +1,13 @@
 #include <job_ping.h>
 #include <hos_protocol.pb.h>
-#include <server.h>
+#include <server_connector.h>
+#include <iostream>
 
-JobPing::JobPing(Server* server, const std::string& client_name):
-m_server(server),
+JobPing::JobPing(ServerConnector* server_connector, const std::string& client_name) :
+m_server_connector(server_connector),
 m_client_name(std::move(client_name))
 {
-	assert(m_server != nullptr);
+	assert(m_server_connector != nullptr);
 	assert(!m_client_name.empty());
 }
 

@@ -10,12 +10,6 @@ set(VERSION_BUILD "0" CACHE STRING "Build")
 
 message(STATUS "Version: " ${VERSION_MAJOR} "." ${VERSION_MINOR} "." ${VERSION_TYPE} "." ${VERSION_BUILD})
 
-set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
-
-if (NOT MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-endif()
-
 if(MSVC)
 	execute_process(COMMAND protoc -I=${COMMON_PATH} --cpp_out=${COMMON_PATH} ${COMMON_PATH}/hos_protocol.proto WORKING_DIRECTORY ${PROTOBUF_BIN})
 else()
@@ -36,10 +30,14 @@ FILE(GLOB TARGET_SRC		 				"src/*.c*")
 add_definitions(-DCOMMON_EXPORTS)
 
 if(USE_CURVE)
-	message(STATUS "Using Elliptic Curve!")
+	message(STATUS "${PROJECT_NAME} is using Elliptic Curve Encryption!")
 	add_definitions(-DUSE_CURVE)
 else()
-	message("Not Using Elliptic Curve. Communication is NOT SECURE!")
+	message("${PROJECT_NAME} is not Using Elliptic Curve Encryption. Communication is NOT SECURE!")
+endif()
+
+if (NOT MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 include_directories(include/)

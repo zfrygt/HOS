@@ -18,8 +18,7 @@ public:
 	explicit ModuleConnector(IStrategy* receive_strategy, const char* uri, const char* module_name);
 	virtual ~ModuleConnector();	
 	void connect();
-	void poll(long timeout);
-	inline bool connected() const { return m_connected; }
+	bool poll(long timeout);
 	std::unique_ptr<ServerMessage> receive();
 	void send(const ClientMessage* client_message);
 
@@ -31,13 +30,12 @@ protected:
 private:
 	void* m_context;
 	void* m_socket;
-	volatile bool m_connected;
-	volatile bool m_started;
 	std::string m_uri;
 	std::string m_module_name;
 	int64_t m_lastSendMessageTime;
 	int64_t m_lastReceivedMessageTime;
 	IStrategy* m_on_receive_func;
+	bool m_connected;
 };
 
 #endif
