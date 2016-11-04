@@ -3,9 +3,7 @@
 #include <hos_protocol.pb.h>
 #include <iostream>
 #include <strategy_base.h>
-
-#define ZMQ_CHECK(x){int result = (x); if (result==1)printf("%d\n",zmq_errno()); assert(result!=-1);}
-#include <future>
+#include <spdlog/spdlog.h>
 
 ModuleConnector::ModuleConnector(IStrategy* receive_strategy, const char* uri, const char* module_name) :
 m_uri(uri),
@@ -15,7 +13,8 @@ m_connected(false)
 {
 	assert(!m_uri.empty());
 	assert(!m_module_name.empty());
-
+	spdlog::set_async_mode(4096);
+	m_logger = spdlog::stdout_color_mt("console");
 	init();
 }
 
@@ -36,7 +35,7 @@ bool ModuleConnector::poll(long timeout)
 	auto secondsSinceLastMessageReceived = current_time() - m_lastReceivedMessageTime;
 	if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
 		// Timeout all!
-		std::cout << "reconnecting to server\n";
+		m_logger->error("reconnecting to server...");
 		reconnect();
 	}
 	return true;
@@ -63,8 +62,7 @@ std::unique_ptr<ServerMessage> ModuleConnector::receive()
 	auto server_message = recv_server_message(m_socket);
 	m_lastReceivedMessageTime = current_time();
 
-	std::cout << "from server: " << MessageType_Name(server_message->type()) << "\n";
-
+	m_logger->info("from server: {}..", MessageType_Name(server_message->type()));
 	return server_message;
 }
 
@@ -77,7 +75,7 @@ void ModuleConnector::send(const ClientMessage* client_message)
 	if (m_lastReceivedMessageTime < 0)
 		m_lastReceivedMessageTime = m_lastSendMessageTime;
 
-	std::cout << "to server: " << MessageType_Name(client_message->type()) << "\n";
+	m_logger->info("to server: {}..", MessageType_Name(client_message->type()));
 }
 
 void ModuleConnector::init()
@@ -132,14 +130,6 @@ void ModuleConnector::destroy()
 		zmq_close(m_socket);
 		m_socket = nullptr;
 	}
-
-	//if (module_thread != nullptr)
-	//{
-	//	if (module_thread->joinable())
-	//		module_thread->join();
-	//	delete module_thread;
-	//	module_thread = nullptr;
-	//}
 
 	if (m_context != nullptr)
 	{

@@ -53,6 +53,9 @@ if (MSVC)
 	set(PROTOBUF_LIBS ${DEPENDS_FOLDER}/protobuf/lib/x64/Md)
 	set(PROTOBUF_BIN ${DEPENDS_FOLDER}/protobuf/bin)
 	set(PROTOBUF_LINK optimized "libprotobuf" debug "libprotobuf-d")
+	
+	#spdlog
+	set(SPDLOG_INCLUDE ${DEPENDS_FOLDER}/spdlog/include)
 else()
 	set(LOCAL /usr/local)
 

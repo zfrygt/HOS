@@ -10,6 +10,10 @@
 class ServerMessage;
 class ClientMessage;
 class IStrategy;
+namespace spdlog
+{
+	class logger;
+}
 
 // ModuleConnector class that abstracts the heartbeating and other communication details.
 class COMMON_EXPORT ModuleConnector : no_copy_move
@@ -36,6 +40,7 @@ private:
 	int64_t m_lastReceivedMessageTime;
 	IStrategy* m_on_receive_func;
 	bool m_connected;
+	std::shared_ptr<spdlog::logger> m_logger;
 };
 
 #endif
