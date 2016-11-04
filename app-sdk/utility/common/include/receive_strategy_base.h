@@ -6,9 +6,9 @@
 
 class ServerMessage;
 
-class COMMON_EXPORT IStrategy{
+class COMMON_EXPORT IReceiveStrategy{
 public:
-	virtual ~IStrategy() { }
+	virtual ~IReceiveStrategy() { }
 	virtual void operator()(std::unique_ptr<ServerMessage>&&) = 0;
 };
 

@@ -1,4 +1,4 @@
-#include <strategy_queue.h>
+#include <receive_strategy_queue.h>
 #include <assert.h>
 #include <hos_protocol.pb.h>
 
