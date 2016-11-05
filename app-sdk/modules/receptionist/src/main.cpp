@@ -20,7 +20,7 @@ int main()
 	QueueType queue;
 	queue.set_capacity(MAX_JOB_COUNT);
 
-	ModuleConnectorTemp<QueuePolicy, QueueType*> module(spdlog::stdout_color_mt("console"), "tcp://localhost:5555", &queue);
+	ModuleConnectorTemp<QueuePolicy, QueueType*> module(spdlog::stdout_color_mt("console"), "tcp://192.168.1.5:5555", &queue);
 
 	while (true)
 	{
