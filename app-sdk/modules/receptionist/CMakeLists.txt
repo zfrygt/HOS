@@ -37,6 +37,7 @@ include_directories(${TBB_INCLUDE})
 include_directories(${ZEROMQ_INCLUDE})
 include_directories(${PROTOBUF_INCLUDE})
 include_directories(${COMMON_PATH}/include)
+include_directories(${SPDLOG_INCLUDE})
 
 # add library directories
 link_directories(${TBB_LIBS})

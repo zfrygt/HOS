@@ -1,29 +1,26 @@
 #include <module_connector.h>
 #include <utils.h>
 #include <tbb/concurrent_queue.h>
-#include <strategy_queue.h>
 #include <job.h>
 #include <async_job_queue.h>
 #include <job_pong.h>
-#include <future>
+#include <receive_policy_queue.h>
+#include <module_connector_policy.h>
+#include <spdlog/spdlog.h>
 
 using spServerMessage = std::shared_ptr<ServerMessage>;
 const int MAX_JOB_COUNT = 100;
+
+using QueueType = tbb::concurrent_bounded_queue<spServerMessage>;
 
 int main()
 {
 	AsyncJobQueue<IJob, MAX_JOB_COUNT> q;
 
-	tbb::concurrent_bounded_queue<spServerMessage> queue;
+	QueueType queue;
 	queue.set_capacity(MAX_JOB_COUNT);
 
-	IStrategy *strategy = new QueueStrategy(&queue);
-
-	ModuleConnector module_base(strategy, "tcp://localhost:5555", "receptionist");
-	
-	auto future = std::async(std::launch::async, [&module_base](){
-		module_base.connect(); 
-	});
+	ModuleConnectorTemp<QueuePolicy, QueueType*> module(spdlog::stdout_color_mt("console"), "tcp://localhost:5555", &queue);
 
 	while (true)
 	{
@@ -37,7 +34,7 @@ int main()
 			switch (message->type())
 			{
 			case Ping:
-				q.add_job(std::make_shared<JobPong>(&module_base));
+				q.add_job(std::make_shared<JobPong>(module.get_connector()));
 				break;
 			case Pong: break;
 			case Init: break;
@@ -45,10 +42,6 @@ int main()
 			}
 		}
 	}
-
-	future.get();
-
-	delete strategy;
 
 	return 0;
 }

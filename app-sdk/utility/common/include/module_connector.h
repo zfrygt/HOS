@@ -9,7 +9,8 @@
 
 class ServerMessage;
 class ClientMessage;
-class IStrategy;
+class IReceivePolicy;
+
 namespace spdlog
 {
 	class logger;
@@ -19,7 +20,7 @@ namespace spdlog
 class COMMON_EXPORT ModuleConnector : no_copy_move
 {
 public:
-	explicit ModuleConnector(IStrategy* receive_strategy, const char* uri, const char* module_name);
+	explicit ModuleConnector(IReceivePolicy* receive_strategy, std::shared_ptr<spdlog::logger> logger, const char* uri, const char* module_name);
 	virtual ~ModuleConnector();	
 	void connect();
 	bool poll(long timeout);
@@ -38,9 +39,9 @@ private:
 	std::string m_module_name;
 	int64_t m_lastSendMessageTime;
 	int64_t m_lastReceivedMessageTime;
-	IStrategy* m_on_receive_func;
-	bool m_connected;
+	IReceivePolicy* m_on_receive_func;
 	std::shared_ptr<spdlog::logger> m_logger;
+	bool m_connected;
 };
 
 #endif
