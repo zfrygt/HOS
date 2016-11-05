@@ -1,14 +1,15 @@
-#ifndef STRATEGY_QUEUE_H
-#define STRATEGY_QUEUE_H
+#ifndef QUEUE_POLICY_H
+#define QUEUE_POLICY_H
 
-#include <receive_strategy_base.h>
+#include <receive_policy_base.h>
 #include <tbb/concurrent_queue.h>
 
-class COMMON_EXPORT QueueStrategy : public IReceiveStrategy{
+class COMMON_EXPORT QueuePolicy : public IReceivePolicy{
 	using Queue = tbb::concurrent_bounded_queue<std::shared_ptr<ServerMessage>>;
 public:
-	explicit QueueStrategy(Queue* queue);
-	~QueueStrategy() { }
+	explicit QueuePolicy() {}
+	explicit QueuePolicy(Queue* queue);
+	~QueuePolicy() { }
 	void operator()(std::unique_ptr<ServerMessage>&&) override;
 
 private:

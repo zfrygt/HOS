@@ -1,14 +1,14 @@
-#ifndef STRATEGY_BASE_H
-#define STRATEGY_BASE_H
+#ifndef RECEIVE_POLICY_BASE_H
+#define RECEIVE_POLICY_BASE_H
 
 #include <memory>
 #include <macros.h>
 
 class ServerMessage;
 
-class COMMON_EXPORT IReceiveStrategy{
+class COMMON_EXPORT IReceivePolicy{
 public:
-	virtual ~IReceiveStrategy() { }
+	virtual ~IReceivePolicy() { }
 	virtual void operator()(std::unique_ptr<ServerMessage>&&) = 0;
 };
 
