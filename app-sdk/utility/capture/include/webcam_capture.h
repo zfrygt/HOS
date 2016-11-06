@@ -16,7 +16,7 @@ struct AVCodecContext;
 struct AVDictionary;
 
 class FrameContainer;
-struct CaptureSettings;
+class CaptureSettings;
 
 class WebcamCapture: public ICapture {
 	friend class WebcamCaptureFactory;

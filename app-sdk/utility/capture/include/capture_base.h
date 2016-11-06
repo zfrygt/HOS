@@ -12,7 +12,7 @@
 
 typedef void (*CaptureCallback)(void*);
 
-struct CaptureSettings;
+class CaptureSettings;
 
 class CAPTURE_EXPORT ICapture {
 public:
