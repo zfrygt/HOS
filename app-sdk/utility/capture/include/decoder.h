@@ -9,7 +9,7 @@
 #define DECODER_H_
 
 #include <stdlib.h>
-#include <macros.h>
+#include <capture_macros.h>
 
 struct AVPacket;
 struct AVCodecContext;

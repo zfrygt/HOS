@@ -8,7 +8,7 @@
 #ifndef FRAME_CONTAINER_H
 #define FRAME_CONTAINER_H
 
-#include <macros.h>
+#include <capture_macros.h>
 #include <stdint.h>
 
 class CAPTURE_EXPORT FrameContainer {

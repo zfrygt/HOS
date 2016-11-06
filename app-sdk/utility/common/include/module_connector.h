@@ -1,7 +1,7 @@
 #ifndef MODULE_CONNECTOR_H
 #define MODULE_CONNECTOR_H
 
-#include <macros.h>
+#include <common_macros.h>
 #include <string>
 #include <stdint.h>
 #include <memory>

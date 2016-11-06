@@ -8,8 +8,8 @@
 #ifndef ICAPTUREFACTORY_H_
 #define ICAPTUREFACTORY_H_
 
+#include <capture_macros.h>
 #include <string>
-#include <macros.h>
 
 class ICapture;
 

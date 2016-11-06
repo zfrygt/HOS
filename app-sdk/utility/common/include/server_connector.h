@@ -1,7 +1,7 @@
 #ifndef SERVER_CONNECTOR_H
 #define SERVER_CONNECTOR_H
 
-#include <macros.h>
+#include <common_macros.h>
 #include <string>
 #include <memory>
 #include <unordered_map>

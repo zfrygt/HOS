@@ -37,13 +37,16 @@ include_directories(${TBB_INCLUDE})
 include_directories(${ZEROMQ_INCLUDE})
 include_directories(${PROTOBUF_INCLUDE})
 include_directories(${COMMON_PATH}/include)
+include_directories(${CAPTURE_PATH}/include)
 include_directories(${SPDLOG_INCLUDE})
+include_directories(${FFMPEG_INCLUDE})
 
 # add library directories
 link_directories(${TBB_LIBS})
 link_directories(${ZEROMQ_LIBS})
 link_directories(${SODIUM_LIBS})
 link_directories(${PROTOBUF_LIBS})
+link_directories(${FFMPEG_LIBS})
 
 add_executable(${PROJECT_NAME} 	${TARGET_SRC} 
 								${TARGET_H} 
@@ -54,6 +57,7 @@ target_link_libraries(${PROJECT_NAME} ${SODIUM_LINK})
 target_link_libraries(${PROJECT_NAME} ${TBB_LINK})
 target_link_libraries(${PROJECT_NAME} ${ZEROMQ_LINK})
 target_link_libraries(${PROJECT_NAME} common)
+target_link_libraries(${PROJECT_NAME} capture)
 
 if (MSVC)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -67,6 +71,10 @@ if (MSVC)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			"${COMMON_BIN}/common.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${CAPTURE_BIN}/capture.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 	foreach(file ${ZEROMQ_DLL})
 		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

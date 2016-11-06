@@ -8,9 +8,10 @@
 #ifndef CAPTURESETTINGS_H_
 #define CAPTURESETTINGS_H_
 
-#include <macros.h>
+#include <capture_macros.h>
+
 extern "C" {
-#include <libavcodec/avcodec.h>
+#include "libavcodec/avcodec.h"
 }
 
 class CAPTURE_EXPORT CaptureSettings 

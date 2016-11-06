@@ -2,7 +2,7 @@
 #define RECEIVE_POLICY_BASE_H
 
 #include <memory>
-#include <macros.h>
+#include <common_macros.h>
 
 class ServerMessage;
 

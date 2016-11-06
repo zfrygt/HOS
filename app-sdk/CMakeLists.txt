@@ -103,6 +103,9 @@ endif()
 set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)
 set(COMMON_PATH ${CMAKE_SOURCE_DIR}/utility/common)
 
+set(CAPTURE_BIN ${CMAKE_BINARY_DIR}/utility/capture/Debug)
+set(CAPTURE_PATH ${CMAKE_SOURCE_DIR}/utility/capture)
+
 enable_testing ()
 
 add_subdirectory (supervisor)

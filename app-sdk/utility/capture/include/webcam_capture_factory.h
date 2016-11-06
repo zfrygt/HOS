@@ -8,7 +8,7 @@
 #ifndef WEBCAMCAPTUREFACTORY_H_
 #define WEBCAMCAPTUREFACTORY_H_
 
-#include <capture_factory.h>
+#include "capture_factory.h"
 
 class CAPTURE_EXPORT WebcamCaptureFactory: public ICaptureFactory {
 public:

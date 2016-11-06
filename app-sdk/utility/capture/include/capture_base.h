@@ -8,7 +8,7 @@
 #ifndef ICAPTURE_H_
 #define ICAPTURE_H_
 
-#include <macros.h>
+#include <capture_macros.h>
 
 typedef void (*CaptureCallback)(void*);
 

@@ -1,7 +1,7 @@
 #ifndef JOB_H
 #define JOB_H
 
-#include <macros.h>
+#include <common_macros.h>
 
 class COMMON_EXPORT IJob
 {

@@ -7,6 +7,11 @@
 #include <receive_policy_queue.h>
 #include <module_connector_policy.h>
 #include <spdlog/spdlog.h>
+#include <capture.h>
+#include <iostream>
+
+const auto WIDTH = 640;
+const auto HEIGHT = 480;
 
 using spServerMessage = std::shared_ptr<ServerMessage>;
 const int MAX_JOB_COUNT = 100;
@@ -15,6 +20,20 @@ using QueueType = tbb::concurrent_bounded_queue<spServerMessage>;
 
 int main()
 {
+	ICaptureFactory* captureFactory = new WebcamCaptureFactory();
+	auto capture = captureFactory->createFactory("/dev/video0");
+
+	CaptureSettings set(WIDTH, HEIGHT, 3, 5, AV_CODEC_ID_MJPEG);
+
+	capture->init(&set);
+
+	Decoder decoder(WIDTH, HEIGHT);
+
+	if (!decoder.setup(capture)) {
+		std::cout << "cannot initialize decoder" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
 	AsyncJobQueue<IJob, MAX_JOB_COUNT> q;
 
 	QueueType queue;
