@@ -56,6 +56,12 @@ if (MSVC)
 	
 	#spdlog
 	set(SPDLOG_INCLUDE ${DEPENDS_FOLDER}/spdlog/include)
+
+	#ffmpeg
+	set(FFMPEG_INCLUDE ${DEPENDS_FOLDER}/ffmpeg/x64/include)
+	set(FFMPEG_LIBS ${DEPENDS_FOLDER}/ffmpeg/x64/lib)
+	set(FFMPEG_LINK avcodec avformat avutil swscale avdevice)
+
 else()
 	set(LOCAL /usr/local)
 
@@ -88,6 +94,10 @@ else()
 	set(PROTOBUF_BIN ${LOCAL}/bin)
 	set(PROTOBUF_LINK protobuf)
 
+	#ffmpeg
+	set(FFMPEG_INCLUDE ${LOCAL}/include)
+	set(FFMPEG_LIBS ${LOCAL}/lib)
+	set(FFMPEG_LINK avcodec avformat avutil swscale avdevice)
 endif()
 
 set(COMMON_BIN ${CMAKE_BINARY_DIR}/utility/common/Debug)

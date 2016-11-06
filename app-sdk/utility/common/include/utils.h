@@ -1,5 +1,5 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef COMMON_UTILS_H
+#define COMMON_UTILS_H
 
 #include <zmq.h>
 #include <hos_protocol.pb.h>
