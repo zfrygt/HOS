@@ -35,31 +35,13 @@ inline void hos_sleep(uint64_t ms)
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-inline void send_server_message(void* socket, const ServerMessage* server_message, const std::string& client_name)
+template<typename T>
+inline void send_message(void* socket, const T* message)
 {
-	auto c = client_name.c_str();
-	auto s = client_name.length();
+	assert(socket != nullptr);
+	assert(message != nullptr);
 
-	assert(c != nullptr);
-	assert(s > 0);
-
-	auto so = Serializer::serialize(server_message);
-
-	auto buf = so->get_buf();
-	auto size = so->get_size();
-
-	int r1 = zmq_send(socket, c, s, ZMQ_SNDMORE);
-	//assert(r1 == s);
-	int r2 = zmq_send(socket, nullptr, 0, ZMQ_SNDMORE);
-	//assert(r2 == 0);
-	int r3 = zmq_send(socket, buf, size, 0);
-	//assert(r3 == size);
-}
-
-inline void send_client_message(void* socket, const ClientMessage* client_message)
-{
-	assert(client_message != nullptr);
-	auto so = Serializer::serialize(client_message);
+	auto so = Serializer::serialize(message);
 
 	auto buf = so->get_buf();
 	auto size = so->get_size();
@@ -68,11 +50,10 @@ inline void send_client_message(void* socket, const ClientMessage* client_messag
 	assert(size > 0);
 
 	// Send empty frame
-	int r1 = zmq_send(socket, nullptr, 0, ZMQ_SNDMORE);
-	assert(r1 == 0);
+	zmq_send(socket, nullptr, 0, ZMQ_SNDMORE);
 
-	int r4 = zmq_send(socket, buf, size, 0);
-	assert(r4 == size);
+	// Send data frame
+	zmq_send(socket, buf, size, 0);
 }
 
 template <typename T>
@@ -93,12 +74,30 @@ inline std::unique_ptr<T> recv_message(void* socket)
 #if defined(_WIN32) && defined(_MSC_VER)
 	auto so = std::make_unique<SerializedObject>(data_size);
 #else
-    std::unique_ptr<SerializedObject> so(new SerializedObject(data_size));
+	std::unique_ptr<SerializedObject> so(new SerializedObject(data_size));
 #endif
 
 	so->copyFrom(buffer);
 
 	return Serializer::deserialize<T>(so.get());
+}
+
+inline void send_server_message(void* socket, const ServerMessage* server_message, const std::string& client_name)
+{
+	auto c = client_name.c_str();
+	auto s = client_name.length();
+
+	assert(c != nullptr);
+	assert(s > 0);
+
+	// send client id
+	zmq_send(socket, c, s, ZMQ_SNDMORE);
+	send_message(socket, server_message);
+}
+
+inline void send_client_message(void* socket, const ClientMessage* client_message)
+{
+	send_message(socket, client_message);
 }
 
 inline std::unique_ptr<ClientMessage> recv_client_message(void* socket, std::string& client)
