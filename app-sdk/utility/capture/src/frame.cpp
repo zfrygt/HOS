@@ -12,7 +12,7 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 }
 
-Frame::Frame(int width, int height, int channels, size_t frameCount) :
+Frame::Frame(int width, int height, int channels, uint64_t frameCount) :
 		m_packet(new AVPacket()), m_index(0), m_width(width), m_height(height), m_channels(channels), m_frameCount(
 				frameCount) {
 	av_init_packet(m_packet);
@@ -32,15 +32,15 @@ bool Frame::isKey() {
 	return m_packet->flags & AV_PKT_FLAG_KEY;
 }
 
-bool Frame::decodeFrame(void* data, size_t len) {
+bool Frame::decodeFrame(void* data, uint64_t len) {
 	return false;
 }
 
-size_t Frame::getEncodedLength() {
+uint64_t Frame::getEncodedLength() {
 	return m_packet->size;
 }
 
-size_t Frame::size() {
+uint64_t Frame::size() {
 	return m_packet->size;
 }
 

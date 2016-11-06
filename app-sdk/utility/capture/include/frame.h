@@ -9,13 +9,12 @@
 #define FRAME_H
 
 #include <frame_container.h>
-#include <macros.h>
 
 struct AVPacket;
 
 class CAPTURE_EXPORT Frame: public FrameContainer {
 public:
-	Frame(int width, int height, int channels, size_t frameCount);
+	Frame(int width, int height, int channels, uint64_t frameCount);
 	~Frame() override;
 
 	inline int getWidth() override
@@ -30,11 +29,11 @@ public:
 	{
 		return m_channels;
 	}
-	inline size_t getFrameIndex() override
+	inline uint64_t getFrameIndex() override
 	{
 		return m_index;
 	}
-	inline size_t getFrameCount() override
+	inline uint64_t getFrameCount() override
 	{
 		return m_frameCount;
 	}
@@ -42,23 +41,23 @@ public:
 		return m_packet;
 	}
 
-	size_t getEncodedLength() override;
+	uint64_t getEncodedLength() override;
 
 	bool isKey() override;
 
-	bool decodeFrame(void*, size_t) override;
+	bool decodeFrame(void*, uint64_t) override;
 
-	size_t size() override;
+	uint64_t size() override;
 
 	void* data() override;
 
 private:
 	AVPacket* m_packet;
-	size_t m_index;
+	uint64_t m_index;
 	int m_width;
 	int m_height;
 	int m_channels;
-	size_t m_frameCount;
+	uint64_t m_frameCount;
 };
 
 #endif /* VAFRAME_H_ */
