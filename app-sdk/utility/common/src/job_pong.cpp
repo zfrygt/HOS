@@ -16,6 +16,6 @@ void JobPong::execute()
 {
 	assert(m_module_connector != nullptr);
 	ClientMessage client_message;
-	client_message.set_type(Pong);
+	client_message.set_type(ClientMessage::Pong);
 	m_module_connector->send(&client_message);
 }

@@ -18,6 +18,11 @@ struct AVDictionary;
 class FrameContainer;
 class CaptureSettings;
 
+namespace spdlog
+{
+	class logger;
+}
+
 class VideoFileCapture: public ICapture {
 public:
 	friend class VideoFileCaptureFactory;
@@ -34,7 +39,7 @@ public:
 
 protected:
 	FrameContainer* grabFrame();
-	explicit VideoFileCapture(const std::string& connectionString);
+	explicit VideoFileCapture(const std::string& connectionString, std::shared_ptr<spdlog::logger> logger);
 
 private:
 	std::string m_connectionString;
@@ -47,6 +52,7 @@ private:
 	std::future<void> m_captureHandle;
 	AVFormatContext* m_formatContext;
 	AVCodecContext* m_codecContext;
+	std::shared_ptr<spdlog::logger> m_logger;
 };
 
 #endif /* VIDEOFILECAPTURE_H_ */

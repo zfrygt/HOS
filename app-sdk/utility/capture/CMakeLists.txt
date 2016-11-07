@@ -31,6 +31,7 @@ endif()
 include_directories(include/)
 include_directories(${TBB_INCLUDE})
 include_directories(${FFMPEG_INCLUDE})
+include_directories(${SPDLOG_INCLUDE})
 
 # add library directories
 link_directories(${TBB_LIBS})

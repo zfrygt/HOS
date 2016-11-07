@@ -142,13 +142,13 @@ void ServerConnector::on_receive()
 
 	switch (msg->type())
 	{
-	case Pong:
+	case ClientMessage::Pong:
 		std::cout << "pong from [" << client->get_client_name() << "]\n";
 		break;
-	case Init:
+	case ClientMessage::Init:
 	{
 		ServerMessage server_message;
-		server_message.set_type(Init);
+		server_message.set_type(ServerMessage_Type_Success);
 		send(client, &server_message);
 		std::cout << "[" << client->get_client_name() << "] connected\n";
 	}

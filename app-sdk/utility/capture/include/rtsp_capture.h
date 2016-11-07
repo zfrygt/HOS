@@ -19,7 +19,7 @@ public:
 	virtual ~RTSPCapture();
 
 protected:
-	explicit RTSPCapture(const std::string& connectionString);
+	explicit RTSPCapture(const std::string& connectionString, std::shared_ptr<spdlog::logger>&& logger);
 };
 
 #endif /* RTSPCAPTURE_H_ */

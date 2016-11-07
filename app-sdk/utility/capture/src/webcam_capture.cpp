@@ -14,7 +14,8 @@
 #include <capture_settings.h>
 #include <chrono>
 #include <thread>
-#include <cctype>
+#include <utils.h>
+#include <spdlog/spdlog.h>
 
 extern "C" {
 #include <libavformat/avformat.h>
@@ -22,21 +23,22 @@ extern "C" {
 #include <libavdevice/avdevice.h>
 }
 
-inline static bool is_number(const std::string& s) {
-	std::string::const_iterator it = s.begin();
-	while (it != s.end() && std::isdigit(*it))
-		++it;
-	return !s.empty() && it == s.end();
-}
-
-WebcamCapture::WebcamCapture(const std::string& connectionString) :
-		m_connectionString(connectionString), m_width(0), m_height(0), m_channels(0), m_completed(false), m_run(false), m_indexofVideoStream(
-				0), m_formatContext(nullptr), m_options(nullptr), m_codecContext(nullptr), m_settings(nullptr) {
-
+WebcamCapture::WebcamCapture(const std::string& connectionString, std::shared_ptr<spdlog::logger> logger) :
+m_connectionString(connectionString),
+m_width(0), m_height(0), m_channels(0),
+m_completed(false), m_run(false),
+m_indexofVideoStream(0),
+m_formatContext(nullptr),
+m_options(nullptr),
+m_codecContext(nullptr),
+m_settings(nullptr),
+m_logger(std::move(logger))
+{
+	spdlog::set_async_mode(4096);
 }
 
 WebcamCapture::~WebcamCapture() {
-	std::cout << "closing..." << std::endl;
+	m_logger->info("closing {}", m_connectionString);
 }
 
 void WebcamCapture::init(CaptureSettings* settings) {
@@ -50,28 +52,30 @@ void WebcamCapture::init(CaptureSettings* settings) {
 	m_formatContext = avformat_alloc_context();
 
 	m_formatContext->interrupt_callback.callback = [](void* ctx)
-	{	return reinterpret_cast<int>(ctx);};
+	{	return reinterpret_cast<int>(ctx); };
 	m_formatContext->interrupt_callback.opaque = static_cast<void*>(nullptr);
 
 	if (settings != nullptr) {
 
-		auto codec = avcodec_get_name((AVCodecID) settings->getCodecId());
-		if (codec != nullptr) {
-			av_dict_set(&m_options, "input_format", codec, 0);
-			std::cout << "codec: " << codec << std::endl;
-		} else {
+		auto codec_name = avcodec_get_name(static_cast<AVCodecID>(settings->getCodecId()));
+		if (codec_name != nullptr) {
+			av_dict_set(&m_options, "input_format", codec_name, 0);
+			m_logger->info("codec: {}", codec_name);
+		}
+		else {
 			av_dict_set(&m_options, "input_format", "mjpeg", 0);
-			std::cout << "codec not found. setting it to mjpeg" << std::endl;
+			m_logger->warn("codec not found. setting it to {}", "mjpeg");
 		}
 
 		auto fps = std::to_string(settings->getFPS());
 
 		if (is_number(fps)) {
 			av_dict_set(&m_options, "framerate", fps.c_str(), 0);
-			std::cout << "frame rate: " << fps.c_str() << std::endl;
-		} else {
+			m_logger->info("frame rate: {}", settings->getFPS());
+		}
+		else {
 			av_dict_set(&m_options, "framerate", "15", 0);
-			std::cout << "wrong frame rate format. setting it to 15" << std::endl;
+			m_logger->warn("wrong frame rate format. setting it to {}", 15);
 		}
 
 		if (is_number(std::to_string(settings->getWidth())) && is_number(std::to_string(settings->getHeight()))) {
@@ -81,19 +85,21 @@ void WebcamCapture::init(CaptureSettings* settings) {
 			ss << m_width << "x" << m_height;
 			auto vs = ss.str().c_str();
 			av_dict_set(&m_options, "video_size", vs, 0);
-			std::cout << "video size: " << vs << std::endl;
-		} else {
-			av_dict_set(&m_options, "video_size", "640x480", 0);
-			std::cout << "wrong resolution format. setting it to 640x480" << std::endl;
+			m_logger->info("video size: {}", vs);
 		}
-	} else {
+		else {
+			av_dict_set(&m_options, "video_size", "640x480", 0);
+			m_logger->warn("wrong resolution format. setting it to {}", "640x480");
+		}
+	}
+	else {
 		av_dict_set(&m_options, "framerate", "15", 0);
 		av_dict_set(&m_options, "input_format", "mjpeg", 0);
 		av_dict_set(&m_options, "video_size", "640x480", 0);
 
-		std::cout << "codec: " << "mjpeg" << std::endl;
-		std::cout << "frame rate: " << "15" << std::endl;
-		std::cout << "video size: " << "640x480" << std::endl;
+		m_logger->info("codec: {}", "mjpeg");
+		m_logger->info("frame rate: {}", 15);
+		m_logger->info("video size: {}", "640x480");
 
 		m_width = 640;
 		m_height = 480;
@@ -117,14 +123,15 @@ FrameContainer* WebcamCapture::grabFrame() {
 
 void WebcamCapture::start(CaptureCallback func) {
 
-	auto input_format = av_find_input_format("video4linux2");
+	auto input_format = find_input_format();
+
 	// open input file, and allocate format context
 	if (avformat_open_input(&m_formatContext, m_connectionString.c_str(), input_format, &m_options) < 0) {
-		std::cout << "cannot open input " << m_connectionString << std::endl;
+		m_logger->error("cannot open input {}", m_connectionString);
 		return;
 	}
 
-	std::cout << "started grabbing" << std::endl;
+	m_logger->info("started grabbing");
 
 	m_run = true;
 
@@ -138,12 +145,12 @@ void WebcamCapture::start(CaptureCallback func) {
 
 	m_completed = true;
 	func(nullptr);
-	std::cout << "completed" << std::endl;
+	m_logger->info("completed");
 }
 
 void WebcamCapture::startAsync(CaptureCallback func) {
 
-	auto future = std::async(std::launch::async, [this](CaptureCallback f) {start(f);}, func);
+	auto future = std::async(std::launch::async, [this](CaptureCallback f) {start(f); }, func);
 
 	m_captureHandle = std::move(future);
 }
@@ -152,7 +159,7 @@ void WebcamCapture::stop() {
 
 	// in case of the user stops capturing too soon.
 	while (!m_run) {
-		std::cout << "capturing is not started yet" << std::endl;
+		m_logger->warn("capturing is not started yet");
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 
@@ -178,10 +185,11 @@ void* WebcamCapture::getCodecInfo() {
 	if (m_codecContext != nullptr)
 		return m_codecContext;
 
-	auto input_format = av_find_input_format("video4linux2");
+	auto input_format = find_input_format();
+
 	// open input file, and allocate format context
 	if (avformat_open_input(&m_formatContext, m_connectionString.c_str(), input_format, &m_options) < 0) {
-		std::cout << "cannot open input " << m_connectionString << std::endl;
+		m_logger->error("cannot open input {}", m_connectionString);
 		return nullptr;
 	}
 

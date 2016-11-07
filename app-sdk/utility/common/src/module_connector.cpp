@@ -47,10 +47,10 @@ void ModuleConnector::connect()
 
 	zmq_connect(m_socket, m_uri.c_str());
 	ClientMessage msg;
-	msg.set_type(Init);
+	msg.set_type(ClientMessage::Init);
 	send(&msg);
 	// wait for the response from the server
-	m_connected = receive()->type() == Init;
+	m_connected = receive()->type() == ServerMessage_Type_Success;
 
 	while (m_connected)
 		if (!poll(25)) break;
@@ -62,7 +62,7 @@ std::unique_ptr<ServerMessage> ModuleConnector::receive()
 	m_lastReceivedMessageTime = current_time();
 
 	if (m_logger)
-		m_logger->info("from server: {}..", MessageType_Name(server_message->type()));
+		m_logger->info("from server: {}..", ServerMessage::Type_Name(server_message->type()));
 	return server_message;
 }
 
@@ -76,7 +76,7 @@ void ModuleConnector::send(const ClientMessage* client_message)
 		m_lastReceivedMessageTime = m_lastSendMessageTime;
 
 	if (m_logger)
-		m_logger->info("to server: {}..", MessageType_Name(client_message->type()));
+		m_logger->info("to server: {}..", ClientMessage::Type_Name(client_message->type()));
 }
 
 void ModuleConnector::init()

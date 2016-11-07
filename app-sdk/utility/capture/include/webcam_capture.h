@@ -18,6 +18,11 @@ struct AVDictionary;
 class FrameContainer;
 class CaptureSettings;
 
+namespace spdlog
+{
+	class logger;
+}
+
 class WebcamCapture: public ICapture {
 	friend class WebcamCaptureFactory;
 public:
@@ -34,7 +39,7 @@ public:
 
 protected:
 	FrameContainer* grabFrame();
-	explicit WebcamCapture(const std::string& connectionString);
+	explicit WebcamCapture(const std::string& connectionString, std::shared_ptr<spdlog::logger> logger);
 
 private:
 	std::string m_connectionString;
@@ -49,6 +54,8 @@ private:
 	AVDictionary* m_options;
 	AVCodecContext* m_codecContext;
 	CaptureSettings* m_settings;
+
+	std::shared_ptr<spdlog::logger> m_logger;
 };
 
 #endif /* WEBCAMCAPTURE_H_ */

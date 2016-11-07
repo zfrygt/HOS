@@ -9,6 +9,7 @@
 #include <iostream>
 #include <video_file_capture.h>
 #include <frame.h>
+#include <spdlog/spdlog.h>
 
 extern "C" {
 #include <libavformat/avformat.h>
@@ -16,9 +17,15 @@ extern "C" {
 #include <libavdevice/avdevice.h>
 }
 
-VideoFileCapture::VideoFileCapture(const std::string& connectionString) :
-m_connectionString(connectionString), m_width(0), m_height(0), m_channels(0), m_completed(false), m_run(false), m_indexofVideoStream(
-0), m_formatContext(nullptr), m_codecContext(nullptr) {
+VideoFileCapture::VideoFileCapture(const std::string& connectionString, std::shared_ptr<spdlog::logger> logger) :
+m_connectionString(connectionString), m_width(0), m_height(0), m_channels(0), 
+m_completed(false), 
+m_run(false), 
+m_indexofVideoStream(0), 
+m_formatContext(nullptr), 
+m_codecContext(nullptr),
+m_logger(std::move(logger))
+{
 
 }
 
@@ -59,11 +66,11 @@ void VideoFileCapture::start(CaptureCallback func) {
 
 	// open input file, and allocate format context
 	if (avformat_open_input(&m_formatContext, m_connectionString.c_str(), nullptr, nullptr) < 0) {
-		std::cout << "cannot open input " << m_connectionString.c_str() << std::endl;
+		m_logger->error("cannot open input {}", m_connectionString);
 		return;
 	}
 
-	std::cout << "started grabbing" << std::endl;
+	m_logger->info("started grabbing");
 
 	m_run = true;
 
@@ -77,7 +84,7 @@ void VideoFileCapture::start(CaptureCallback func) {
 
 	m_completed = true;
 	func(nullptr);
-	std::cout << "completed" << std::endl;
+	m_logger->info("completed");
 }
 
 void VideoFileCapture::startAsync(CaptureCallback func) {
@@ -91,7 +98,7 @@ void VideoFileCapture::stop() {
 
 	// in case of the user stops capturing too soon.
 	while (!m_run) {
-		std::cout << "capturing is not started yet" << std::endl;
+		m_logger->warn("capturing is not started yet");
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 
@@ -119,7 +126,7 @@ void* VideoFileCapture::getCodecInfo() {
 
 	// open input file, and allocate format context
 	if (avformat_open_input(&m_formatContext, m_connectionString.c_str(), nullptr, nullptr) < 0) {
-		std::cout << "cannot open input " << m_connectionString.c_str() << std::endl;
+		m_logger->error("cannot open input {}", m_connectionString);
 		return nullptr;
 	}
 

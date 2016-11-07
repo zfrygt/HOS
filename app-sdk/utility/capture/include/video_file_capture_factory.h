@@ -14,7 +14,7 @@ class CAPTURE_EXPORT VideoFileCaptureFactory: public ICaptureFactory {
 public:
 	VideoFileCaptureFactory();
 	virtual ~VideoFileCaptureFactory();
-	ICapture* createFactory(const std::string& connectionString) override;
+	ICapture* create(const std::string& connectionString, std::shared_ptr<spdlog::logger>&& logger) override;
 };
 
 #endif /* VIDEOFILECAPTUREFACTORY_H_ */

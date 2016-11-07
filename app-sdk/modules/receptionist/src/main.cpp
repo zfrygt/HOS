@@ -1,5 +1,4 @@
 #include <module_connector.h>
-#include <utils.h>
 #include <tbb/concurrent_queue.h>
 #include <job.h>
 #include <async_job_queue.h>
@@ -7,44 +6,48 @@
 #include <receive_policy_queue.h>
 #include <module_connector_policy.h>
 #include <spdlog/spdlog.h>
-#include <capture.h>
-#include <iostream>
+#include <video_capture.h>
+#include <utils.h>
+#include <direct.h>
 
 const auto WIDTH = 640;
 const auto HEIGHT = 480;
+
 
 using spServerMessage = std::shared_ptr<ServerMessage>;
 const int MAX_JOB_COUNT = 100;
 
 using QueueType = tbb::concurrent_bounded_queue<spServerMessage>;
 
+inline bool dir_exists(const char* pathname)
+{
+	struct stat info;
+	auto ret = stat(pathname, &info);
+	return ret == 0 && (info.st_mode & S_IFDIR) == 0;
+}
+
 int main()
 {
-	ICaptureFactory* captureFactory = new WebcamCaptureFactory();
-	auto capture = captureFactory->createFactory("/dev/video0");
+	//if (!dir_exists("logs")) _mkdir("logs");
 
-	CaptureSettings set(WIDTH, HEIGHT, 3, 5, AV_CODEC_ID_MJPEG);
-
-	capture->init(&set);
-
-	Decoder decoder(WIDTH, HEIGHT);
-
-	if (!decoder.setup(capture)) {
-		std::cout << "cannot initialize decoder" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+	//VideoCapture<Webcam> capture("/dev/video0");
+	//capture.init();
+	//capture.start([](void* ptr)
+	//{
+	//	
+	//});
 
 	AsyncJobQueue<IJob, MAX_JOB_COUNT> q;
 
-	QueueType queue;
-	queue.set_capacity(MAX_JOB_COUNT);
+	QueueType message_queue;
+	message_queue.set_capacity(MAX_JOB_COUNT);
 
-	ModuleConnectorTemp<QueuePolicy, QueueType*> module(spdlog::stdout_color_mt("console"), "tcp://192.168.1.5:5555", &queue);
+	ModuleConnectorTemp<QueuePolicy, QueueType*> module(spdlog::stdout_color_mt("console"), "tcp://localhost:5555", &message_queue);
 
 	while (true)
 	{
 		spServerMessage message;
-		queue.pop(message);
+		message_queue.pop(message);
 
 		if (!message) break;
 
@@ -52,11 +55,9 @@ int main()
 		{
 			switch (message->type())
 			{
-			case Ping:
+			case ServerMessage_Type_Ping:
 				q.add_job(std::make_shared<JobPong>(module.get_connector()));
 				break;
-			case Pong: break;
-			case Init: break;
 			default: break;
 			}
 		}

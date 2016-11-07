@@ -60,6 +60,7 @@ if (MSVC)
 	#ffmpeg
 	set(FFMPEG_INCLUDE ${DEPENDS_FOLDER}/ffmpeg/x64/include)
 	set(FFMPEG_LIBS ${DEPENDS_FOLDER}/ffmpeg/x64/lib)
+	set(FFMPEG_BINS ${DEPENDS_FOLDER}/ffmpeg/x64/bin)
 	set(FFMPEG_LINK avcodec avformat avutil swscale avdevice)
 
 else()

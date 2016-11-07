@@ -14,7 +14,7 @@ class CAPTURE_EXPORT WebcamCaptureFactory: public ICaptureFactory {
 public:
 	WebcamCaptureFactory(){}
 	~WebcamCaptureFactory() {}
-	ICapture* createFactory(const std::string& connectionString) override;
+	ICapture* create(const std::string& connectionString, std::shared_ptr<spdlog::logger>&& logger) override;
 };
 
 #endif /* WEBCAMCAPTUREFACTORY_H_ */

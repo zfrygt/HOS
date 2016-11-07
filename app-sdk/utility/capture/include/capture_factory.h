@@ -10,13 +10,19 @@
 
 #include <capture_macros.h>
 #include <string>
+#include <memory>
 
 class ICapture;
+
+namespace spdlog
+{
+	class logger;
+}
 
 class CAPTURE_EXPORT ICaptureFactory {
 public:
 	virtual ~ICaptureFactory() { }
-	virtual ICapture* createFactory(const std::string& connectionString) = 0;
+	virtual ICapture* create(const std::string& connectionString, std::shared_ptr<spdlog::logger>&& logger) = 0;
 };
 
 #endif /* ICAPTUREFACTORY_H_ */

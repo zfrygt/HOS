@@ -22,6 +22,7 @@ public:
 	~ModuleConnectorTemp()
 	{
 		m_future.get();
+		delete m_receive_policy;
 	}
 
 	inline ModuleConnector* get_connector() const { return m_connector.get(); }

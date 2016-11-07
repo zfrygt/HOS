@@ -76,6 +76,38 @@ if (MSVC)
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			"${CAPTURE_BIN}/capture.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${FFMPEG_LIBS}/avcodec-54.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${FFMPEG_LIBS}/avdevice-54.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${FFMPEG_LIBS}/avfilter-3.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${FFMPEG_LIBS}/avformat-54.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${FFMPEG_LIBS}/avutil-52.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${FFMPEG_LIBS}/postproc-52.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${FFMPEG_LIBS}/swresample-0.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${FFMPEG_LIBS}/swscale-2.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 	foreach(file ${ZEROMQ_DLL})
 		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
