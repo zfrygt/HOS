@@ -6,7 +6,9 @@
 struct FileCloser
 {
 	void operator()(FILE* desc){
-		_pclose(desc);
+#ifndef _WIN32
+		pclose(desc);
+#endif
 	}
 };
 
@@ -27,7 +29,9 @@ float HardwareStatus::get_mem_usage()
 
 float HardwareStatus::execute_command(const char* command)
 {
-	std::unique_ptr<FILE, FileCloser> fd(_popen(command, "r"));
+#ifndef _WIN32
+
+	std::unique_ptr<FILE, FileCloser> fd(popen(command, "r"));
 
 	if (!fd) return 0.f;
 
@@ -36,4 +40,7 @@ float HardwareStatus::execute_command(const char* command)
 	while (fgets(buffer, sizeof buffer, fd.get()) != nullptr);
 
 	return static_cast<float>(atof(buffer));
+#else
+	return 0.f;
+#endif
 }
