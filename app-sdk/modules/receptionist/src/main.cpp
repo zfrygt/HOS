@@ -8,6 +8,8 @@
 #include <spdlog/spdlog.h>
 #include <video_capture.h>
 #include <capture_utils.h>
+#include <module_status.h>
+#include <iostream>
 
 const auto WIDTH = 640;
 const auto HEIGHT = 480;
@@ -30,6 +32,12 @@ int main()
 	//{
 	//	
 	//});
+	HardwareStatus hardware_status;
+
+	std::cout << "CPU Usage: " << hardware_status.get_cpu_usage() << "\n";
+	std::cout << "MEM Usage: " << hardware_status.get_mem_usage() << "\n";
+	std::cout << "DSK Usage: " << hardware_status.get_disk_usage() << "\n";
+
 
 	AsyncJobQueue<IJob, MAX_JOB_COUNT> q;
 
