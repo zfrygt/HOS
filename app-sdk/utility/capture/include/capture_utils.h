@@ -8,6 +8,30 @@ extern "C" {
 }
 
 #include <cctype>
+#include <sys/stat.h>
+
+#ifdef _WIN32
+	#include <direct.h>
+#endif
+
+inline bool dir_exists(const char* pathname)
+{
+	struct stat info;
+	auto ret = stat(pathname, &info);
+	return ret == 0 && (info.st_mode & S_IFDIR) == 0;
+}
+
+inline void create_if_not_exist(const char* path)
+{
+	if (!dir_exists(path))
+	{
+#if defined(_WIN32) && defined(_MSC_VER)
+		_mkdir(path);
+#else
+		mkdir(path, 0777);
+#endif
+	}
+}
 
 inline static bool is_number(const std::string& s) {
 	std::string::const_iterator it = s.begin();
