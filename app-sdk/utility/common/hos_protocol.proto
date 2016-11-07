@@ -1,17 +1,85 @@
 syntax = "proto2";
 
-enum MessageType{
-	Ping = 0;
-	Pong = 1;
-	Init = 2;
+enum CodecType{
+	RAW = 0;
+	H264 = 1;
+	MJPEG = 2;
+}
+
+message CaptureStartRequestMessage{
+	required CodecType codec = 1;
+	required int32 width = 2;
+	required int32 height = 3;
+	required int32 channels = 4;
+	required int32 fps = 5;
+}
+
+message AlgorithmStartRequestMessage{
+	enum Type{
+		FaceRecognition = 0;
+		SmokeDetection = 1;
+	}
+	required Type type = 1;
 }
 
 message ServerMessage{
-	required MessageType type = 1;
+	enum Type{
+		Success = 0;
+		Ping = 1;
+		CaptureInfo = 2;
+		CaptureStart = 3;
+		CaptureStop = 4;
+		AlgorithmStart = 5;
+		AlgorithmStop = 6;
+		Snapshot = 7;
+		HostStatus = 8;
+	}
+	
+	required Type type = 1;
+	optional CaptureStartRequestMessage cap_start_request = 2;
+	optional AlgorithmStartRequestMessage algorithm_start_request = 3;
+}
+
+message CaptureInfoMessage{
+	enum Status{
+		Started = 0;
+		Stopped = 1;
+	}
+	required Status status = 1;
+	required int32 width = 2;
+	required int32 height = 3;
+	required int32 channels = 4;
+	required int32 fps = 5;
+	required CodecType codec = 6;
+}
+
+message SnapshotMessage{
+	required int32 width = 1;
+	required int32 height = 2;
+	required int32 channels = 3;
+	required bytes data = 4;
+}
+
+message HostStatusMessage{
+	required int32 cpu_usage = 1;
+	required int32 ram_usage = 2;
+	required int32 disk_usage = 3;
+	required int32 uptime = 4;
 }
 
 message ClientMessage{
-	required MessageType type = 1;
+	enum Type{
+		Success = 0;
+		Init = 1;
+		Pong = 2;
+		BadRequest = 3;
+		CaptureInfoResponse = 4;
+		SnapshotResponse = 5;
+	}
+	required Type type = 1;
+	optional CaptureInfoMessage cap_info = 2;
+	optional SnapshotMessage snapshot = 3;
+	optional HostStatusMessage host_status = 4;
 }
 
 option cc_enable_arenas = true;
