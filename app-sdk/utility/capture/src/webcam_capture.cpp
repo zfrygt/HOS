@@ -14,7 +14,7 @@
 #include <capture_settings.h>
 #include <chrono>
 #include <thread>
-#include <utils.h>
+#include <capture_utils.h>
 #include <spdlog/spdlog.h>
 
 extern "C" {

@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <iostream>
 #include <capture_base.h>
-#include <utils.h>
+#include <capture_utils.h>
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))

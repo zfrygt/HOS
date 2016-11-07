@@ -7,8 +7,7 @@
 #include <module_connector_policy.h>
 #include <spdlog/spdlog.h>
 #include <video_capture.h>
-#include <utils.h>
-#include <direct.h>
+#include <capture_utils.h>
 
 const auto WIDTH = 640;
 const auto HEIGHT = 480;
@@ -19,15 +18,10 @@ const int MAX_JOB_COUNT = 100;
 
 using QueueType = tbb::concurrent_bounded_queue<spServerMessage>;
 
-inline bool dir_exists(const char* pathname)
-{
-	struct stat info;
-	auto ret = stat(pathname, &info);
-	return ret == 0 && (info.st_mode & S_IFDIR) == 0;
-}
-
 int main()
 {
+	create_if_not_exist("logs");
+
 	//if (!dir_exists("logs")) _mkdir("logs");
 
 	//VideoCapture<Webcam> capture("/dev/video0");
