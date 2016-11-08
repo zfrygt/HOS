@@ -41,7 +41,7 @@ T HardwareStatus::execute_command(const char* command)
 #if defined(_WIN32) && defined(_MSC_VER)
 	return 0.f; // not implemented yet!
 #else
-	std::unique_ptr<FILE, FileCloser> fd(_popen(command, "r"));
+	std::unique_ptr<FILE, FileCloser> fd(popen(command, "r"));
 
 	if (!fd) return 0.f;
 
