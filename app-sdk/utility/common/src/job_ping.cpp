@@ -1,7 +1,6 @@
 #include <job_ping.h>
 #include <hos_protocol.pb.h>
 #include <server_connector.h>
-#include <iostream>
 
 JobPing::JobPing(ServerConnector* server_connector, const std::string& client_name) :
 m_server_connector(server_connector),
@@ -18,8 +17,8 @@ JobPing::~JobPing()
 void JobPing::execute()
 {
 	assert(m_server_connector != nullptr);
-	ServerMessage server_message;
-	server_message.set_type(ServerMessage_Type_Ping);
-	m_server_connector->send(m_client_name, &server_message);
-	std::cout << "ping to [" << m_client_name << "]\n";
+	auto server_message = std::make_unique<ServerMessage>();
+	server_message->set_type(ServerMessage_Type_Ping);
+	Envelope<::google::protobuf::Message> envelope(std::move(server_message), m_client_name);
+	m_server_connector->send(&envelope);
 }

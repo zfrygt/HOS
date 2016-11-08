@@ -1,35 +1,27 @@
 #include <module_connector.h>
 #include <zmq.h>
 #include <hos_protocol.pb.h>
-#include <receive_policy_base.h>
 #include <spdlog/spdlog.h>
+#include <receive_policy_base.h>
 
 ModuleConnector::ModuleConnector(IReceivePolicy* receive_strategy, std::shared_ptr<spdlog::logger> logger, const char* uri, const char* module_name) :
-m_uri(uri),
+ConnectorBase(receive_strategy, std::forward<std::shared_ptr<spdlog::logger>>(logger), uri),
 m_module_name(module_name),
-m_on_receive_func(receive_strategy),
-m_logger(std::move(logger)),
 m_connected(false)
 {
 	assert(!m_uri.empty());
 	assert(!m_module_name.empty());
-	init();
 }
 
 ModuleConnector::~ModuleConnector()
 {
-	destroy();
+	ModuleConnector::destroy();
 }
 
-bool ModuleConnector::poll(long timeout)
+void ModuleConnector::poll(long timeout)
 {
-	zmq_pollitem_t items[] = {
-		{ m_socket, 0, ZMQ_POLLIN, 0 }
-	};
-	zmq_poll(items, 1, timeout);
-	if (items[0].revents & ZMQ_POLLIN){
-		m_on_receive_func->operator()(move(receive()));
-	}
+	ConnectorBase::poll(timeout);
+
 	auto secondsSinceLastMessageReceived = current_time() - m_lastReceivedMessageTime;
 	if (m_lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
 		// Timeout all!
@@ -37,46 +29,27 @@ bool ModuleConnector::poll(long timeout)
 			m_logger->info("reconnecting to server...", "");
 		reconnect();
 	}
-	return true;
 }
 
-void ModuleConnector::connect()
+void ModuleConnector::start()
 {
+	this->init();
+
 	assert(m_context != nullptr);
 	assert(m_socket != nullptr);
 
 	zmq_connect(m_socket, m_uri.c_str());
-	ClientMessage msg;
-	msg.set_type(ClientMessage::Init);
-	send(&msg);
+	auto msg = std::make_unique<ClientMessage>();
+	msg->set_type(ClientMessage::Init);
+
+	Envelope<::google::protobuf::Message> env(std::move(msg));
+	send(&env);
+
 	// wait for the response from the server
-	m_connected = receive()->type() == ServerMessage_Type_Success;
+	m_connected = static_cast<ClientMessage*>(receive().payload.get())->type() == ServerMessage_Type_Success;
 
 	while (m_connected)
-		if (!poll(25)) break;
-}
-
-std::unique_ptr<ServerMessage> ModuleConnector::receive()
-{
-	auto server_message = recv_server_message(m_socket);
-	m_lastReceivedMessageTime = current_time();
-
-	if (m_logger)
-		m_logger->info("from server: {}..", ServerMessage::Type_Name(server_message->type()));
-	return server_message;
-}
-
-void ModuleConnector::send(const ClientMessage* client_message)
-{
-	send_client_message(m_socket, client_message);
-
-	m_lastSendMessageTime = current_time();
-
-	if (m_lastReceivedMessageTime < 0)
-		m_lastReceivedMessageTime = m_lastSendMessageTime;
-
-	if (m_logger)
-		m_logger->info("to server: {}..", ClientMessage::Type_Name(client_message->type()));
+		poll(25);
 }
 
 void ModuleConnector::init()
@@ -117,8 +90,7 @@ void ModuleConnector::init()
 void ModuleConnector::reconnect()
 {
 	destroy();
-	init();
-	connect();
+	start();
 }
 
 void ModuleConnector::destroy()
@@ -137,4 +109,32 @@ void ModuleConnector::destroy()
 		zmq_ctx_destroy(m_context);
 		m_context = nullptr;
 	}
+}
+
+void ModuleConnector::send(Envelope<::google::protobuf::Message>* envelope)
+{
+	send_client_message(m_socket, envelope);
+
+	m_lastSendMessageTime = current_time();
+
+	if (m_lastReceivedMessageTime < 0)
+		m_lastReceivedMessageTime = m_lastSendMessageTime;
+
+	auto payload = static_cast<ClientMessage*>(envelope->payload.get());
+
+	if (m_logger)
+		m_logger->info("to server: {}..", ClientMessage::Type_Name(payload->type()));
+}
+
+Envelope<::google::protobuf::Message> ModuleConnector::receive()
+{
+	auto server_message = recv_server_message(m_socket);
+	m_lastReceivedMessageTime = current_time();
+
+	auto payload = static_cast<ServerMessage*>(server_message.payload.get());
+
+	if (m_logger)
+		m_logger->info("from server: {}..", ServerMessage::Type_Name(payload->type()));
+
+	return server_message;
 }

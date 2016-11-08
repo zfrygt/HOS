@@ -11,19 +11,7 @@
 #define TIMEOUT_INTERVAL_IN_SECONDS (3 * HEARTHBEAT_INTERVAL_IN_SECONDS)
 #define TIMEOUT_CHECK_INTERVAL_IN_SECONDS 2
 #include <thread>
-
-class no_copy_move
-{
-public:
-	no_copy_move() { }
-
-protected:
-
-	no_copy_move(const no_copy_move& other) = delete;
-	no_copy_move(no_copy_move&& other) = delete;
-	no_copy_move& operator=(const no_copy_move& other) = delete;
-	no_copy_move& operator=(no_copy_move&& other) = delete;
-};
+#include <envelope.h>
 
 inline int64_t current_time(){
 	auto temp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -82,39 +70,39 @@ inline std::unique_ptr<T> recv_message(void* socket)
 	return Serializer::deserialize<T>(so.get());
 }
 
-inline void send_server_message(void* socket, const ServerMessage* server_message, const std::string& client_name)
+inline void send_server_message(void* socket, const Envelope<::google::protobuf::Message>* server_message)
 {
-	auto c = client_name.c_str();
-	auto s = client_name.length();
+	assert(server_message != nullptr);
+
+	auto c = server_message->to.c_str();
+	auto s = server_message->to.length();
 
 	assert(c != nullptr);
 	assert(s > 0);
 
 	// send client id
 	zmq_send(socket, c, s, ZMQ_SNDMORE);
-	send_message(socket, server_message);
+	send_message(socket, server_message->payload.get());
 }
 
-inline void send_client_message(void* socket, const ClientMessage* client_message)
+inline void send_client_message(void* socket, const Envelope<::google::protobuf::Message>* client_message)
 {
-	send_message(socket, client_message);
+	send_message(socket, client_message->payload.get());
 }
 
-inline std::unique_ptr<ClientMessage> recv_client_message(void* socket, std::string& client)
+inline Envelope<::google::protobuf::Message> recv_client_message(void* socket)
 {
 	// get client identifier
 	char buffer[80] = { 0 };
 	auto len_id = zmq_recv(socket, buffer, sizeof buffer, 0);
 	assert(len_id > 0);
 
-	client = std::move(std::string(buffer));
-
-	return recv_message<ClientMessage>(socket);
+	return Envelope<::google::protobuf::Message>(recv_message<ClientMessage>(socket), "", std::string(buffer));
 }
 
-inline std::unique_ptr<ServerMessage> recv_server_message(void* socket)
+inline Envelope<::google::protobuf::Message> recv_server_message(void* socket)
 {
-	return recv_message<ServerMessage>(socket);
+	return Envelope<::google::protobuf::Message>(recv_message<ServerMessage>(socket));
 }
 
 #endif

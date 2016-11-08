@@ -1,20 +1,92 @@
 #include <server_connector.h>
-#include <hos_protocol.pb.h>
 #include <zmq.h>
+#include <hos_protocol.pb.h>
+#include <spdlog/spdlog.h>
 #include <common_utils.h>
-#include <iostream>
-#include <job_ping.h>
 #include <future>
 #include <async_job_queue.h>
 #include <client.h>
-#include <spdlog/spdlog.h>
+#include <job_ping.h>
 
 tbb::tbb_thread* server_thread = nullptr;
 
-ServerConnector::ServerConnector(const char* uri, std::shared_ptr<spdlog::logger> logger) :
-m_started(false),
-m_job_queue(new AsyncJobQueue<IJob, 100>),
-m_logger(std::move(logger))
+ServerConnector::ServerConnector(IReceivePolicy* receive_strategy, const char* uri, std::shared_ptr<spdlog::logger> logger) :
+ConnectorBase(receive_strategy, std::forward<std::shared_ptr<spdlog::logger>>(logger), uri),
+m_started(false)
+{
+
+}
+
+ServerConnector::~ServerConnector()
+{
+	ServerConnector::destroy();
+}
+
+void ServerConnector::poll(long timeout)
+{
+	ConnectorBase::poll(timeout);
+
+	auto currentTime = current_time();
+
+	for (auto it = m_client_map.begin(); it != m_client_map.end();)
+	{
+		auto c = it->second;
+		auto secondsSinceLastMessageSend = currentTime - c->lastSendMessageTime;
+		auto secondsSinceLastMessageReceived = currentTime - c->lastReceivedMessageTime;
+		if (c->lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
+			// Timeout this client!
+			m_logger->warn("[{}] disconnected", c->get_client_name());
+			delete c;
+			it = m_client_map.erase(it);
+			continue;
+		}
+		if (c->lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
+			JobPing job_ping(this, c->get_client_name());
+			job_ping.execute();
+		}
+		++it;
+	}
+}
+
+void ServerConnector::start()
+{
+	if (!m_started && server_thread == nullptr)
+	{
+		m_started = true;
+
+		server_thread = new tbb::tbb_thread([](ServerConnector* srv)
+		{
+			assert(srv != nullptr);
+			while (srv->m_started)
+				srv->poll(25);
+		}, this);
+	}
+}
+
+void ServerConnector::destroy()
+{
+	if (m_started && server_thread != nullptr)
+	{
+		m_started = false;
+		server_thread->join();
+		delete server_thread;
+		server_thread = nullptr;
+	}
+
+	if (m_socket != nullptr)
+	{
+		zmq_close(m_socket);
+		m_socket = nullptr;
+	}
+
+	if (m_context != nullptr)
+	{
+		zmq_ctx_destroy(m_context);
+		m_context = nullptr;
+	}
+}
+
+void ServerConnector::init()
 {
 	m_context = zmq_ctx_new();
 	assert(m_context != nullptr);
@@ -41,150 +113,30 @@ m_logger(std::move(logger))
 	assert(secret_key == 0);
 #endif
 
-	auto bound = zmq_bind(m_socket, uri);
+	auto bound = zmq_bind(m_socket, m_uri.c_str());
 	assert(bound == 0);
 }
 
-ServerConnector::~ServerConnector()
+void ServerConnector::send(Envelope<google::protobuf::Message>* envelope)
 {
-	stop();
-
-	if (m_job_queue)
-	{
-		delete m_job_queue;
-		m_job_queue = nullptr;
-	}
-
-	zmq_close(m_socket);
-	zmq_ctx_destroy(m_context);
+	assert(envelope != nullptr);
+	assert(!envelope->to.empty());
+	auto found_client = m_client_map.find(envelope->to);
+	assert(found_client != m_client_map.end());
+	send_server_message(m_socket, envelope);
+	found_client->second->lastSendMessageTime = current_time();
 }
 
-void ServerConnector::heartbeat(long timeout)
+Envelope<::google::protobuf::Message> ServerConnector::receive()
 {
-	zmq_pollitem_t items[] = {
-		{ m_socket, 0, ZMQ_POLLIN, 0 }
-	};
-	zmq_poll(items, 1, timeout);
-	if (items[0].revents & ZMQ_POLLIN){
-		on_receive();
-	}
-
-	auto currentTime = current_time();
-
-	for (auto it = m_client_map.begin(); it != m_client_map.end();)
-	{
-		auto c = it->second;
-		auto secondsSinceLastMessageSend = currentTime - c->lastSendMessageTime;
-		auto secondsSinceLastMessageReceived = currentTime - c->lastReceivedMessageTime;
-		if (c->lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
-			// Timeout this client!
-			m_logger->warn("[{}] disconnected", c->get_client_name());
-			delete c;
-			it = m_client_map.erase(it);
-			continue;
-		}
-		if (c->lastSendMessageTime >= 0 && secondsSinceLastMessageSend > HEARTHBEAT_INTERVAL_IN_SECONDS){
-			m_job_queue->add_job(std::make_shared<JobPing>(this, c->get_client_name()));
-		}
-		++it;
-	}
-}
-
-void ServerConnector::start()
-{
-	if (!m_started && server_thread == nullptr)
-	{
-		m_started = true;
-
-		server_thread = new tbb::tbb_thread([](ServerConnector* srv)
-		{
-			assert(srv != nullptr);
-			while (srv->m_started)
-				srv->heartbeat(25);
-		}, this);
-	}
-}
-
-void ServerConnector::stop()
-{
-	if (m_started && server_thread != nullptr)
-	{
-		m_started = false;
-		server_thread->join();
-		delete server_thread;
-		server_thread = nullptr;
-		delete m_job_queue;
-		m_job_queue = nullptr;
-	}
-}
-
-std::unique_ptr<ClientMessage> ServerConnector::receive(Client** sender_client)
-{
-	assert(*sender_client == nullptr);
-
-	std::string client_name;
-	auto msg = recv_client_message(m_socket, client_name);
-	auto found_client = m_client_map.find(client_name);
+	auto msg = recv_client_message(m_socket);
+	auto found_client = m_client_map.find(msg.from);
 
 	// new client connected
 	if (found_client == m_client_map.end())
-		m_client_map[client_name] = new Client(client_name);
+		m_client_map[msg.from] = new Client(msg.from);
 
-	*sender_client = m_client_map[client_name];
-	(*sender_client)->lastReceivedMessageTime = current_time();
+	m_client_map[msg.from]->lastReceivedMessageTime = current_time();
 
 	return msg;
-}
-
-void ServerConnector::on_receive()
-{
-	Client *client = nullptr;
-	auto msg = receive(&client);
-	assert(client != nullptr);
-
-	switch (msg->type())
-	{
-	case ClientMessage::Pong:
-		
-		break;
-	case ClientMessage::Init:
-	{
-		{
-			ServerMessage server_message;
-			server_message.set_type(ServerMessage_Type_Success);
-			send(client, &server_message);
-			m_logger->info("[{}] connected", client->get_client_name());
-		}
-			{
-				ServerMessage server_message;
-				server_message.set_type(ServerMessage_Type_HostInfo);
-				send(client, &server_message);
-			}
-	}
-	break;
-	case ClientMessage::HostInfo:
-	{
-		auto host_info = msg->host_info();
-		m_logger->info("cpu count: {}, total ram: {}, total disk: {}", host_info.total_cpu(), host_info.total_ram(), host_info.total_disk());
-	}
-	break;
-	default: break;
-	}
-}
-
-void ServerConnector::send(Client* client, const ServerMessage* server_message)
-{
-	assert(client != nullptr);
-	assert(m_socket != nullptr);
-	assert(server_message != nullptr);
-	send_server_message(m_socket, server_message, client->get_client_name());
-	client->lastSendMessageTime = current_time();
-}
-
-void ServerConnector::send(const std::string& client_name, const ServerMessage* server_message)
-{
-	assert(!client_name.empty());
-	auto found_client = m_client_map.find(client_name);
-	assert(found_client != m_client_map.end());
-	send(found_client->second, server_message);
 }

@@ -3,13 +3,9 @@
 
 #include <common_macros.h>
 #include <string>
-#include <stdint.h>
 #include <memory>
 #include <common_utils.h>
-
-class ServerMessage;
-class ClientMessage;
-class IReceivePolicy;
+#include <connector_base.h>
 
 namespace spdlog
 {
@@ -17,30 +13,24 @@ namespace spdlog
 }
 
 // ModuleConnector class that abstracts the heartbeating and other communication details.
-class COMMON_EXPORT ModuleConnector : no_copy_move
+class COMMON_EXPORT ModuleConnector : ConnectorBase
 {
 public:
 	explicit ModuleConnector(IReceivePolicy* receive_strategy, std::shared_ptr<spdlog::logger> logger, const char* uri, const char* module_name);
 	virtual ~ModuleConnector();	
-	void connect();
-	bool poll(long timeout);
-	std::unique_ptr<ServerMessage> receive();
-	void send(const ClientMessage* client_message);
+	void poll(long timeout) override;
+	void start() override;
+	void destroy() override;
+
+	void send(Envelope<::google::protobuf::Message>* envelope) override;
+	Envelope<::google::protobuf::Message> receive() override;
 
 protected:
-	void destroy();
-	void init();
+	void init() override;
 	void reconnect();
 
 private:
-	void* m_context;
-	void* m_socket;
-	std::string m_uri;
 	std::string m_module_name;
-	int64_t m_lastSendMessageTime;
-	int64_t m_lastReceivedMessageTime;
-	IReceivePolicy* m_on_receive_func;
-	std::shared_ptr<spdlog::logger> m_logger;
 	bool m_connected;
 };
 

@@ -5,45 +5,37 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
-#include <common_utils.h>
+#include <connector_base.h>
 
 class Client;
 class ServerMessage;
 class ClientMessage;
 class IJob;
 
+template<typename T>
+class Envelope;
+
 namespace spdlog
 {
 	class logger;
 }
 
-template<typename T, int>
-class AsyncJobQueue;
-
-class COMMON_EXPORT ServerConnector : no_copy_move
+class COMMON_EXPORT ServerConnector : ConnectorBase
 {
 	friend class IJob;
 public:
-	explicit ServerConnector(const char* uri, std::shared_ptr<spdlog::logger> logger);
+	explicit ServerConnector(IReceivePolicy* receive_strategy, const char* uri, std::shared_ptr<spdlog::logger> logger);
 	virtual ~ServerConnector();
-	void start();
-	void stop();
-	void send(const std::string& client_name, const ServerMessage* server_message);
-	void heartbeat(long timeout);
-	std::unordered_map<std::string, Client*>::size_type client_count() const { return m_client_map.size(); }
-
-protected:
-	std::unique_ptr<ClientMessage> receive(Client** sender_client);
-	void send(Client* client, const ServerMessage* server_message);
-	void on_receive();
+	void start() override;
+	void destroy() override;
+	void poll(long timeout) override;
+	void init() override;
+	void send(Envelope<google::protobuf::Message>* envelope) override;
+	Envelope<::google::protobuf::Message> receive() override;
 
 private:
-	void* m_context;
-	void* m_socket;
 	volatile bool m_started;
 	std::unordered_map<std::string, Client*> m_client_map;
-	AsyncJobQueue<IJob, 100>* m_job_queue;
-	std::shared_ptr<spdlog::logger> m_logger;
 };
 
 #endif

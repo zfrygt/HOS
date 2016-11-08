@@ -18,7 +18,9 @@ const auto HEIGHT = 480;
 using spServerMessage = std::shared_ptr<ServerMessage>;
 const int MAX_JOB_COUNT = 100;
 
-using QueueType = tbb::concurrent_bounded_queue<spServerMessage>;
+using EnvelopType = Envelope<::google::protobuf::Message>;
+
+using QueueType = tbb::concurrent_bounded_queue<std::shared_ptr<EnvelopType>>;
 
 int main(int argc, char* argv[])
 {
@@ -38,13 +40,14 @@ int main(int argc, char* argv[])
 
 	while (true)
 	{
-		spServerMessage message;
-		message_queue.pop(message);
+		std::shared_ptr<EnvelopType> envelope;
 
-		if (!message) break;
+		message_queue.pop(envelope);
 
-		if (message)
+		if (envelope->payload)
 		{
+			auto message = static_cast<ServerMessage*>(envelope->payload.get());
+
 			switch (message->type())
 			{
 			case ServerMessage_Type_Ping:
@@ -56,6 +59,8 @@ int main(int argc, char* argv[])
 			default: break;
 			}
 		}
+		else
+			break;
 	}
 
 	return 0;

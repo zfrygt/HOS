@@ -31,7 +31,7 @@ protected:
 	void connect()
 	{
 		auto future = std::async(std::launch::async, [this](){
-			m_connector->connect();
+			m_connector->start();
 		});
 
 		m_future = std::move(future);
