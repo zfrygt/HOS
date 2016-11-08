@@ -6,6 +6,7 @@
 #include <memory>
 #include <cctype>
 #include <stdio.h>
+#include <sstream>
 
 struct FileCloser
 {
@@ -40,7 +41,7 @@ T HardwareStatus::execute_command(const char* command)
 #if defined(_WIN32) && defined(_MSC_VER)
 	return 0.f; // not implemented yet!
 #else
-	std::unique_ptr<FILE, FileCloser> fd(popen(command, "r"));
+	std::unique_ptr<FILE, FileCloser> fd(_popen(command, "r"));
 
 	if (!fd) return 0.f;
 
@@ -48,7 +49,13 @@ T HardwareStatus::execute_command(const char* command)
 
 	while (fgets(buffer, sizeof buffer, fd.get()) != nullptr);
 
-	return static_cast<T>(atof(buffer));
+	std::stringstream ss(buffer);
+
+	T retVal;
+
+	ss >> retVal;
+
+	return retVal;
 #endif
 }
 #endif // !MODULE_STATUS_H
