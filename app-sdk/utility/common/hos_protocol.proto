@@ -8,10 +8,10 @@ enum CodecType{
 
 message CaptureStartRequestMessage{
 	required CodecType codec = 1;
-	required int32 width = 2;
-	required int32 height = 3;
-	required int32 channels = 4;
-	required int32 fps = 5;
+	required uint32 width = 2;
+	required uint32 height = 3;
+	required uint32 channels = 4;
+	required uint32 fps = 5;
 }
 
 message AlgorithmStartRequestMessage{
@@ -33,6 +33,7 @@ message ServerMessage{
 		AlgorithmStop = 6;
 		Snapshot = 7;
 		HostStatus = 8;
+		HostInfo = 9;
 	}
 	
 	required Type type = 1;
@@ -46,25 +47,31 @@ message CaptureInfoMessage{
 		Stopped = 1;
 	}
 	required Status status = 1;
-	required int32 width = 2;
-	required int32 height = 3;
-	required int32 channels = 4;
-	required int32 fps = 5;
+	required uint32 width = 2;
+	required uint32 height = 3;
+	required uint32 channels = 4;
+	required uint32 fps = 5;
 	required CodecType codec = 6;
 }
 
 message SnapshotMessage{
-	required int32 width = 1;
-	required int32 height = 2;
-	required int32 channels = 3;
+	required uint32 width = 1;
+	required uint32 height = 2;
+	required uint32 channels = 3;
 	required bytes data = 4;
 }
 
 message HostStatusMessage{
-	required int32 cpu_usage = 1;
-	required int32 ram_usage = 2;
-	required int32 disk_usage = 3;
-	required int32 uptime = 4;
+	required float cpu_usage = 1;
+	required float ram_usage = 2;
+	required float disk_usage = 3;
+	required float uptime = 4;
+}
+
+message HostInfoMessage{
+	required uint32 total_cpu = 1;
+	required uint32 total_ram = 2; //mb
+	required uint32 total_disk = 3; //mb
 }
 
 message ClientMessage{
@@ -73,13 +80,16 @@ message ClientMessage{
 		Init = 1;
 		Pong = 2;
 		BadRequest = 3;
-		CaptureInfoResponse = 4;
-		SnapshotResponse = 5;
+		CaptureInfo = 4;
+		HostInfo = 5;
+		Snapshot = 6;
+		HostStatus = 7;
 	}
 	required Type type = 1;
 	optional CaptureInfoMessage cap_info = 2;
 	optional SnapshotMessage snapshot = 3;
 	optional HostStatusMessage host_status = 4;
+	optional HostInfoMessage host_info = 5;
 }
 
 option cc_enable_arenas = true;

@@ -6,10 +6,10 @@
 #include <receive_policy_queue.h>
 #include <module_connector_policy.h>
 #include <spdlog/spdlog.h>
-#include <video_capture.h>
 #include <capture_utils.h>
-#include <module_status.h>
-#include <iostream>
+#include <job_hostinfo.h>
+#include <sstream>
+
 
 const auto WIDTH = 640;
 const auto HEIGHT = 480;
@@ -20,29 +20,21 @@ const int MAX_JOB_COUNT = 100;
 
 using QueueType = tbb::concurrent_bounded_queue<spServerMessage>;
 
-int main()
+int main(int argc, char* argv[])
 {
+	if (argc != 2) return -1;
+
 	create_if_not_exist("logs");
-
-	//if (!dir_exists("logs")) _mkdir("logs");
-
-	//VideoCapture<Webcam> capture("/dev/video0");
-	//capture.init();
-	//capture.start([](void* ptr)
-	//{
-	//	
-	//});
-	std::cout << "CPU Usage: " << HardwareStatus::get_cpu_usage() << "\n";
-	std::cout << "MEM Usage: " << HardwareStatus::get_mem_usage() << "\n";
-	std::cout << "DSK Usage: " << HardwareStatus::get_disk_usage() << "\n";
-
 
 	AsyncJobQueue<IJob, MAX_JOB_COUNT> q;
 
 	QueueType message_queue;
 	message_queue.set_capacity(MAX_JOB_COUNT);
 
-	ModuleConnectorTemp<QueuePolicy, QueueType*> module(spdlog::stdout_color_mt("console"), "tcp://localhost:5555", &message_queue);
+	std::stringstream ss;
+	ss << "tcp://" << argv[1] << ":5555";
+
+	ModuleConnectorTemp<QueuePolicy, QueueType*> module(spdlog::stdout_color_mt("console"), ss.str(), &message_queue);
 
 	while (true)
 	{
@@ -57,6 +49,9 @@ int main()
 			{
 			case ServerMessage_Type_Ping:
 				q.add_job(std::make_shared<JobPong>(module.get_connector()));
+				break;
+			case ServerMessage_Type_HostInfo:
+				q.add_job(std::make_shared<JobHostInfo>(module.get_connector()));
 				break;
 			default: break;
 			}

@@ -7,12 +7,14 @@
 #include <future>
 #include <async_job_queue.h>
 #include <client.h>
+#include <spdlog/spdlog.h>
 
 tbb::tbb_thread* server_thread = nullptr;
 
-ServerConnector::ServerConnector(const char* uri) :
+ServerConnector::ServerConnector(const char* uri, std::shared_ptr<spdlog::logger> logger) :
 m_started(false),
-m_job_queue(new AsyncJobQueue<IJob, 100>)
+m_job_queue(new AsyncJobQueue<IJob, 100>),
+m_logger(std::move(logger))
 {
 	m_context = zmq_ctx_new();
 	assert(m_context != nullptr);
@@ -76,7 +78,7 @@ void ServerConnector::heartbeat(long timeout)
 		auto secondsSinceLastMessageReceived = currentTime - c->lastReceivedMessageTime;
 		if (c->lastReceivedMessageTime >= 0 && secondsSinceLastMessageReceived > TIMEOUT_INTERVAL_IN_SECONDS){
 			// Timeout this client!
-			std::cout << "[" << c->get_client_name() << "] disconnected\n";
+			m_logger->warn("[{}] disconnected", c->get_client_name());
 			delete c;
 			it = m_client_map.erase(it);
 			continue;
@@ -143,14 +145,27 @@ void ServerConnector::on_receive()
 	switch (msg->type())
 	{
 	case ClientMessage::Pong:
-		std::cout << "pong from [" << client->get_client_name() << "]\n";
+		
 		break;
 	case ClientMessage::Init:
 	{
-		ServerMessage server_message;
-		server_message.set_type(ServerMessage_Type_Success);
-		send(client, &server_message);
-		std::cout << "[" << client->get_client_name() << "] connected\n";
+		{
+			ServerMessage server_message;
+			server_message.set_type(ServerMessage_Type_Success);
+			send(client, &server_message);
+			m_logger->info("[{}] connected", client->get_client_name());
+		}
+			{
+				ServerMessage server_message;
+				server_message.set_type(ServerMessage_Type_HostInfo);
+				send(client, &server_message);
+			}
+	}
+	break;
+	case ClientMessage::HostInfo:
+	{
+		auto host_info = msg->host_info();
+		m_logger->info("cpu count: {}, total ram: {}, total disk: {}", host_info.total_cpu(), host_info.total_ram(), host_info.total_disk());
 	}
 	break;
 	default: break;
