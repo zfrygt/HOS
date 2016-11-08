@@ -3,6 +3,8 @@
 
 #include <common_macros.h>
 #include <stdint.h>
+#include <memory>
+#include <cctype>
 
 class COMMON_EXPORT HardwareStatus
 {

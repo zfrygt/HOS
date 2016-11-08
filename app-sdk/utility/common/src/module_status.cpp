@@ -1,7 +1,5 @@
 #include "module_status.h"
 #include <stdio.h>
-#include <cmath>
-#include <memory>
 
 struct FileCloser
 {
