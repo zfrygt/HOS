@@ -42,7 +42,7 @@ void ModuleConnector::start()
 	auto msg = std::make_unique<ClientMessage>();
 	msg->set_type(ClientMessage::Init);
 
-	Envelope<::google::protobuf::Message> env(std::move(msg));
+	ProtobufMessageEnvelope env(std::move(msg));
 	send(&env);
 
 	// wait for the response from the server
@@ -111,7 +111,7 @@ void ModuleConnector::destroy()
 	}
 }
 
-void ModuleConnector::send(Envelope<::google::protobuf::Message>* envelope)
+void ModuleConnector::send(ProtobufMessageEnvelope* envelope)
 {
 	send_client_message(m_socket, envelope);
 
@@ -126,7 +126,7 @@ void ModuleConnector::send(Envelope<::google::protobuf::Message>* envelope)
 		m_logger->info("to server: {}..", ClientMessage::Type_Name(payload->type()));
 }
 
-Envelope<::google::protobuf::Message> ModuleConnector::receive()
+ProtobufMessageEnvelope ModuleConnector::receive()
 {
 	auto server_message = recv_server_message(m_socket);
 	m_lastReceivedMessageTime = current_time();

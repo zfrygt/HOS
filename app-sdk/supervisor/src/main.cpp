@@ -13,7 +13,9 @@ int main()
 
 	QueuePolicy queue_policy(&message_queue);
 
-	ServerConnector connector(&queue_policy, "tcp://*:5555", spdlog::stdout_color_mt("supervisor"));
+	auto logger = spdlog::stdout_color_mt("supervisor");
+
+	ServerConnector connector(&queue_policy, "tcp://*:5555", logger);
 
 	connector.start();
 
@@ -31,16 +33,30 @@ int main()
 			case ClientMessage_Type_Success: break;
 			case ClientMessage_Type_Init:
 			{
-				auto server_message = std::make_unique<ServerMessage>();
-				server_message->set_type(ServerMessage_Type_Success);
-				Envelope<::google::protobuf::Message> env(std::move(server_message), envelope->from);
-				connector.send(&env);
+				{
+					auto server_message = std::make_unique<ServerMessage>();
+					server_message->set_type(ServerMessage_Type_Success);
+					Envelope<::google::protobuf::Message> env(std::move(server_message), envelope->from);
+					connector.send(&env);
+				}
+				{
+					auto server_message = std::make_unique<ServerMessage>();
+					server_message->set_type(ServerMessage_Type_HostInfo);
+					Envelope<::google::protobuf::Message> env(std::move(server_message), envelope->from);
+					connector.send(&env);
+				}
 			}
-				break;
+			break;
 			case ClientMessage_Type_Pong: break;
 			case ClientMessage_Type_BadRequest: break;
 			case ClientMessage_Type_CaptureInfo: break;
-			case ClientMessage_Type_HostInfo: break;
+			case ClientMessage_Type_HostInfo:
+			{
+				assert(message->has_host_info());
+				auto host_info = message->host_info();
+				logger->info("cpu count: {}, total ram: {}, total disk: {}", host_info.total_cpu(), host_info.total_ram(), host_info.total_disk());
+			}
+			break;
 			case ClientMessage_Type_Snapshot: break;
 			case ClientMessage_Type_HostStatus: break;
 			default: break;
@@ -49,43 +65,6 @@ int main()
 		else
 			break;
 	}
-
-	/*
-	//Client *client = nullptr;
-	//auto msg = receive(&client);
-	//assert(client != nullptr);
-
-	//switch (msg->type())
-	//{
-	//case ClientMessage::Pong:
-	//	
-	//	break;
-	//case ClientMessage::Init:
-	//{
-	//	{
-	//		ServerMessage server_message;
-	//		server_message.set_type(ServerMessage_Type_Success);
-	//		send(client, &server_message);
-	//		m_logger->info("[{}] connected", client->get_client_name());
-	//	}
-	//		{
-	//			ServerMessage server_message;
-	//			server_message.set_type(ServerMessage_Type_HostInfo);
-	//			send(client, &server_message);
-	//		}
-	//}
-	//break;
-	//case ClientMessage::HostInfo:
-	//{
-	//	assert(msg->has_host_info());
-
-	//	auto host_info = msg->host_info();
-	//	m_logger->info("cpu count: {}, total ram: {}, total disk: {}", host_info.total_cpu(), host_info.total_ram(), host_info.total_disk());
-	//}
-	//break;
-	//default: break;
-	//}
-	*/
 
 	std::cin.get();
 

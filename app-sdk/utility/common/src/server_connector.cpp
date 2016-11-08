@@ -2,7 +2,6 @@
 #include <zmq.h>
 #include <hos_protocol.pb.h>
 #include <spdlog/spdlog.h>
-#include <common_utils.h>
 #include <future>
 #include <async_job_queue.h>
 #include <client.h>
@@ -119,7 +118,7 @@ void ServerConnector::init()
 	assert(bound == 0);
 }
 
-void ServerConnector::send(Envelope<google::protobuf::Message>* envelope)
+void ServerConnector::send(ProtobufMessageEnvelope* envelope)
 {
 	assert(envelope != nullptr);
 	assert(!envelope->to.empty());
@@ -129,7 +128,7 @@ void ServerConnector::send(Envelope<google::protobuf::Message>* envelope)
 	found_client->second->lastSendMessageTime = current_time();
 }
 
-Envelope<::google::protobuf::Message> ServerConnector::receive()
+ProtobufMessageEnvelope ServerConnector::receive()
 {
 	auto msg = recv_client_message(m_socket);
 	auto found_client = m_client_map.find(msg.from);

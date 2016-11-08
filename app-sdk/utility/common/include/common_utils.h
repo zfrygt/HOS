@@ -23,6 +23,8 @@ inline void hos_sleep(uint64_t ms)
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
+using ProtobufMessageEnvelope = Envelope<::google::protobuf::Message>;
+
 template<typename T>
 inline void send_message(void* socket, const T* message)
 {
@@ -70,7 +72,7 @@ inline std::unique_ptr<T> recv_message(void* socket)
 	return Serializer::deserialize<T>(so.get());
 }
 
-inline void send_server_message(void* socket, const Envelope<::google::protobuf::Message>* server_message)
+inline void send_server_message(void* socket, const ProtobufMessageEnvelope* server_message)
 {
 	assert(server_message != nullptr);
 
@@ -85,24 +87,24 @@ inline void send_server_message(void* socket, const Envelope<::google::protobuf:
 	send_message(socket, server_message->payload.get());
 }
 
-inline void send_client_message(void* socket, const Envelope<::google::protobuf::Message>* client_message)
+inline void send_client_message(void* socket, const ProtobufMessageEnvelope* client_message)
 {
 	send_message(socket, client_message->payload.get());
 }
 
-inline Envelope<::google::protobuf::Message> recv_client_message(void* socket)
+inline ProtobufMessageEnvelope recv_client_message(void* socket)
 {
 	// get client identifier
 	char buffer[80] = { 0 };
 	auto len_id = zmq_recv(socket, buffer, sizeof buffer, 0);
 	assert(len_id > 0);
 
-	return Envelope<::google::protobuf::Message>(recv_message<ClientMessage>(socket), "", std::string(buffer));
+	return ProtobufMessageEnvelope(recv_message<ClientMessage>(socket), "", std::string(buffer));
 }
 
-inline Envelope<::google::protobuf::Message> recv_server_message(void* socket)
+inline ProtobufMessageEnvelope recv_server_message(void* socket)
 {
-	return Envelope<::google::protobuf::Message>(recv_message<ServerMessage>(socket));
+	return ProtobufMessageEnvelope(recv_message<ServerMessage>(socket));
 }
 
 #endif

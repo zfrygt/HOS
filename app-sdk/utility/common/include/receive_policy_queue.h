@@ -5,12 +5,12 @@
 #include <tbb/concurrent_queue.h>
 
 class COMMON_EXPORT QueuePolicy : public IReceivePolicy{
-	using Queue = tbb::concurrent_bounded_queue<std::shared_ptr<EnvelopeType>>;
+	using Queue = tbb::concurrent_bounded_queue<std::shared_ptr<ProtobufMessageEnvelope>>;
 public:
 	explicit QueuePolicy() {}
 	explicit QueuePolicy(Queue* queue);
 	~QueuePolicy() { }
-	void operator()(std::shared_ptr<EnvelopeType> msg) override;
+	void operator()(std::shared_ptr<ProtobufMessageEnvelope> msg) override;
 
 private:
 	Queue* m_queue;

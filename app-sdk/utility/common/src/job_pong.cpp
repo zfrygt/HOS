@@ -17,6 +17,6 @@ void JobPong::execute()
 	assert(m_module_connector != nullptr);
 	auto client_message = std::make_unique<ClientMessage>();
 	client_message->set_type(ClientMessage::Pong);
-	Envelope<::google::protobuf::Message> envelope(std::move(client_message));
+	ProtobufMessageEnvelope envelope(std::move(client_message));
 	m_module_connector->send(&envelope);
 }

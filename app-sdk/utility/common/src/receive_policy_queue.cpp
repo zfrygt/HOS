@@ -8,7 +8,7 @@ m_queue(queue)
 	assert(m_queue != nullptr);
 }
 
-void QueuePolicy::operator()(std::shared_ptr<EnvelopeType> msg)
+void QueuePolicy::operator()(std::shared_ptr<ProtobufMessageEnvelope> msg)
 {
 	m_queue->push(std::move(msg));
 }

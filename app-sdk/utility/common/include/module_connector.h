@@ -22,8 +22,8 @@ public:
 	void start() override;
 	void destroy() override;
 
-	void send(Envelope<::google::protobuf::Message>* envelope) override;
-	Envelope<::google::protobuf::Message> receive() override;
+	void send(ProtobufMessageEnvelope* envelope) override;
+	ProtobufMessageEnvelope receive() override;
 
 protected:
 	void init() override;

@@ -6,6 +6,7 @@
 #include <memory>
 #include <unordered_map>
 #include <connector_base.h>
+#include <common_utils.h>
 
 class Client;
 class ServerMessage;
@@ -30,8 +31,8 @@ public:
 	void destroy() override;
 	void poll(long timeout) override;
 	void init() override;
-	void send(Envelope<google::protobuf::Message>* envelope) override;
-	Envelope<::google::protobuf::Message> receive() override;
+	void send(ProtobufMessageEnvelope* envelope) override;
+	ProtobufMessageEnvelope receive() override;
 
 private:
 	volatile bool m_started;

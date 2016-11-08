@@ -7,6 +7,7 @@
 #include <string>
 #include <envelope.h>
 #include <hos_protocol.pb.h>
+#include "common_utils.h"
 
 class IReceivePolicy;
 
@@ -23,8 +24,8 @@ public:
 	virtual void start() = 0;
 	virtual void init() = 0;
 	virtual void destroy() = 0;
-	virtual void send(Envelope<::google::protobuf::Message>* envelope) = 0;
-	virtual Envelope<::google::protobuf::Message> receive() = 0;
+	virtual void send(ProtobufMessageEnvelope* envelope) = 0;
+	virtual ProtobufMessageEnvelope receive() = 0;
 
 	ConnectorBase(const ConnectorBase& other) = delete;
 	ConnectorBase(ConnectorBase&& other) = delete;

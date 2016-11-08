@@ -19,6 +19,6 @@ void JobPing::execute()
 	assert(m_server_connector != nullptr);
 	auto server_message = std::make_unique<ServerMessage>();
 	server_message->set_type(ServerMessage_Type_Ping);
-	Envelope<::google::protobuf::Message> envelope(std::move(server_message), m_client_name);
+	ProtobufMessageEnvelope envelope(std::move(server_message), m_client_name);
 	m_server_connector->send(&envelope);
 }

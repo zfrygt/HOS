@@ -23,7 +23,6 @@ void ConnectorBase::poll(long timeout)
 	};
 	zmq_poll(items, 1, timeout);
 	if (items[0].revents & ZMQ_POLLIN){
-		auto env = std::move(receive());
-		m_receive_policy->operator()(std::make_shared<EnvelopeType>(std::move(env.payload), std::move(env.to), std::move(env.from)));
+		m_receive_policy->operator()(std::make_shared<ProtobufMessageEnvelope>(receive()));
 	}
 }
