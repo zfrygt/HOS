@@ -1,16 +1,4 @@
 #include "module_status.h"
-#include <stdio.h>
-
-struct FileCloser
-{
-	void operator()(FILE* desc){
-#if defined(_WIN32) && defined(_MSC_VER)
-		//_pclose(desc);
-#else
-		pclose(desc);
-#endif
-	}
-};
 
 float HardwareStatus::get_cpu_usage()
 {

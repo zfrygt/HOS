@@ -5,6 +5,18 @@
 #include <stdint.h>
 #include <memory>
 #include <cctype>
+#include <stdio.h>
+
+struct FileCloser
+{
+	void operator()(FILE* desc){
+#if defined(_WIN32) && defined(_MSC_VER)
+		//_pclose(desc);
+#else
+		pclose(desc);
+#endif
+	}
+};
 
 class COMMON_EXPORT HardwareStatus
 {
