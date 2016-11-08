@@ -46,7 +46,7 @@ void ModuleConnector::start()
 	send(&env);
 
 	// wait for the response from the server
-	m_connected = static_cast<ClientMessage*>(receive().payload.get())->type() == ServerMessage_Type_Success;
+	m_connected = static_cast<ServerMessage*>(receive().payload.get())->type() == ServerMessage_Type_Success;
 
 	while (m_connected)
 		poll(25);
