@@ -50,6 +50,8 @@ void ServerConnector::poll(long timeout)
 
 void ServerConnector::start()
 {
+	init();
+
 	if (!m_started && server_thread == nullptr)
 	{
 		m_started = true;
