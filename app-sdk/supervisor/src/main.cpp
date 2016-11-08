@@ -33,7 +33,7 @@ int main()
 			{
 				auto server_message = std::make_unique<ServerMessage>();
 				server_message->set_type(ServerMessage_Type_Success);
-				Envelope<::google::protobuf::Message> env(std::move(server_message), envelope->to);
+				Envelope<::google::protobuf::Message> env(std::move(server_message), envelope->from);
 				connector.send(&env);
 			}
 				break;
