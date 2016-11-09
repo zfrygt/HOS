@@ -61,11 +61,7 @@ inline std::unique_ptr<T> recv_message(void* socket)
 	auto data_size = zmq_recv(socket, buffer, sizeof buffer, 0);
 	assert(data_size != -1);
 
-#if defined(_WIN32) && defined(_MSC_VER)
 	auto so = std::make_unique<SerializedObject>(data_size);
-#else
-	std::unique_ptr<SerializedObject> so(new SerializedObject(data_size));
-#endif
 
 	so->copyFrom(buffer);
 

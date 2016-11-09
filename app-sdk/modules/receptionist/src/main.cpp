@@ -10,17 +10,10 @@
 #include <job_hostinfo.h>
 #include <sstream>
 
-
-const auto WIDTH = 640;
-const auto HEIGHT = 480;
-
-
-using spServerMessage = std::shared_ptr<ServerMessage>;
 const int MAX_JOB_COUNT = 100;
 
-using EnvelopType = Envelope<::google::protobuf::Message>;
-
-using QueueType = tbb::concurrent_bounded_queue<std::shared_ptr<EnvelopType>>;
+using spEnvelope = std::shared_ptr<ProtobufMessageEnvelope>;
+using MessageQueueType = tbb::concurrent_bounded_queue<spEnvelope>;
 
 int main(int argc, char* argv[])
 {
@@ -30,18 +23,17 @@ int main(int argc, char* argv[])
 
 	AsyncJobQueue<IJob, MAX_JOB_COUNT> q;
 
-	QueueType message_queue;
+	MessageQueueType message_queue;
 	message_queue.set_capacity(MAX_JOB_COUNT);
 
 	std::stringstream ss;
 	ss << "tcp://" << argv[1] << ":5555";
 
-	ModuleConnectorTemp<QueuePolicy, QueueType*> module(spdlog::stdout_color_mt("console"), ss.str(), &message_queue);
+	ModuleConnectorTemp<QueuePolicy, MessageQueueType*> module(spdlog::stdout_color_mt("console"), ss.str(), &message_queue);
 
 	while (true)
 	{
-		std::shared_ptr<EnvelopType> envelope;
-
+		spEnvelope envelope;
 		message_queue.pop(envelope);
 
 		if (envelope->payload)

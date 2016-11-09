@@ -17,7 +17,7 @@ public:
 	static std::unique_ptr<ICapture> get_capture(const std::string& connection_string, std::shared_ptr<spdlog::logger>&& logger)
 	{
 		CaptureFactory factory;
-		return std::unique_ptr<ICapture>(factory.create(std::move(connection_string), std::forward<std::shared_ptr<spdlog::logger>>(logger)));
+		return std::make_unique<ICapture>(factory.create(std::move(connection_string), std::forward<std::shared_ptr<spdlog::logger>>(logger)));
 	}
 };
 

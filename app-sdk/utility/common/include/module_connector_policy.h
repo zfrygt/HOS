@@ -11,11 +11,7 @@ public:
 	explicit ModuleConnectorTemp(std::shared_ptr<spdlog::logger>&& logger, const std::string url, Args&&... args) :
 		m_receive_policy(new ReceivePolicy(std::forward<Args>(args)...))
 	{
-#if defined(_WIN32) && defined(_MSC_VER)
 		m_connector = std::make_unique<ModuleConnector>(m_receive_policy, std::forward<std::shared_ptr<spdlog::logger>>(logger), url.c_str(), "receptionist");
-#else
-		m_connector = std::unique_ptr<ModuleConnector>(new ModuleConnector(m_receive_policy, std::forward<std::shared_ptr<spdlog::logger>>(logger), url.c_str(), "receptionist"));
-#endif
 		connect();
 	}
 
