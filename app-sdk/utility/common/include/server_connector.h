@@ -21,7 +21,7 @@ namespace spdlog
 	class logger;
 }
 
-class COMMON_EXPORT ServerConnector : ConnectorBase
+class COMMON_EXPORT ServerConnector : public ConnectorBase
 {
 	friend class IJob;
 public:

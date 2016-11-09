@@ -7,6 +7,15 @@
 
 using EnvelopType = Envelope<::google::protobuf::Message>;
 
+template<typename Type, typename ...Args>
+inline void send_server_request(ConnectorBase* connector, Type type, Args&&... args)
+{
+	auto server_message = std::make_unique<ServerMessage>();
+	server_message->set_type(type);
+	EnvelopType env(std::move(server_message), std::forward<Args>(args)...);
+	connector->send(&env);
+}
+
 int main()
 {
 	tbb::concurrent_bounded_queue<std::shared_ptr<EnvelopType>> message_queue;
@@ -33,18 +42,8 @@ int main()
 			case ClientMessage_Type_Success: break;
 			case ClientMessage_Type_Init:
 			{
-				{
-					auto server_message = std::make_unique<ServerMessage>();
-					server_message->set_type(ServerMessage_Type_Success);
-					Envelope<::google::protobuf::Message> env(std::move(server_message), envelope->from);
-					connector.send(&env);
-				}
-				{
-					auto server_message = std::make_unique<ServerMessage>();
-					server_message->set_type(ServerMessage_Type_HostInfo);
-					Envelope<::google::protobuf::Message> env(std::move(server_message), envelope->from);
-					connector.send(&env);
-				}
+				send_server_request(&connector, ServerMessage_Type_Success, envelope->from);
+				send_server_request(&connector, ServerMessage_Type_HostInfo, envelope->from);
 			}
 			break;
 			case ClientMessage_Type_Pong: break;
