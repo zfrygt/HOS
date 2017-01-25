@@ -1,0 +1,22 @@
+#include <LiquidCrystal.h>
+int lm35Pin = A0;
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2); //LCD connection ports
+ 
+void setup() 
+{
+  lcd.begin(16, 2);
+  analogReference(INTERNAL);          // ADC for LM35 Temperature sensor: Referance voltage: 1,1V ; 10 mV = 1 °C (0-1023)
+  lcd.print("Temperature:");
+}
+ 
+void loop()
+{
+  int tempVolt = analogRead(lm35Pin);
+  float tempC = tempC = tempVolt / 9.31; 
+  lcd.setCursor(0, 1);
+  lcd.print(tempC);
+  lcd.setCursor(6,1);                 
+  lcd.print("\337C");                 //degree symbol
+  delay(100);
+}
