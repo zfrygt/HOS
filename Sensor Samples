@@ -1,3 +1,5 @@
+//Temperature Sensor
+
 #include <LiquidCrystal.h>
 int lm35Pin = A0;
 
